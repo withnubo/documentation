@@ -25,7 +25,9 @@
       }
     ],
     "background": {
-      "dark": "#0a0a0a"
+        "color": {
+            "dark": "#0a0a0a"
+        }
     },
     "global": {
       "anchors": [
