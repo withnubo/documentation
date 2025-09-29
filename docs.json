@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "NUBO DOCS",
   "colors": {
-    "primary": "#dc2626",
-    "light": "#dc2626",
-    "dark": "#dc2626"
+    "primary": "#8085ff",
+    "light": "#8085ff",
+    "dark": "#8085ff"
   },
   "favicon": "/favicon.svg",
   "navigation": {
