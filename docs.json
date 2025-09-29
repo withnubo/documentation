@@ -3,9 +3,9 @@
   "theme": "willow",
   "name": "NUBO DOCS",
   "colors": {
-    "primary": "#FFD966",
-    "light": "#07C983",
-    "dark": "#FFD966"
+    "primary": "#FF0000",
+    "light": "#00FF00",
+    "dark": "#0000FF"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -25,7 +25,7 @@
       }
     ],
     "background": {
-      "dark": "#0a0a0a"
+      "dark": "#121212"
     },
     "global": {
       "anchors": [
