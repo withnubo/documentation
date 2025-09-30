@@ -17,14 +17,13 @@
     "navigation": {
         "tabs": [
             {
-                "tab": "Guides",
+                "tab": "Documentation",
                 "groups": [
                     {
                         "group": "Getting started",
                         "pages": [
                             "index",
-                            "concepts-and-terms",
-                            "development"
+                            "concepts-and-terms"
                         ]
                     }
                 ]
@@ -45,7 +44,7 @@
                 {
                     "anchor": "Release Notes",
                     "href": "https://www.withnubo.com/release-notes",
-                    "icon": "notepad-text"
+                    "icon": "memo"
                 }
             ]
         }
