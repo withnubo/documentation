@@ -34,7 +34,8 @@
                                 "group": "JavaScript",
                                 "icon": "square-js",
                                 "pages": [
-                                    "deploy-guides/javascript/react"
+                                    "deploy-guides/javascript/react",
+                                    "deploy-guides/javascript/discordjs"
                                 ]
                             },
                             "deploy-guides/static",
