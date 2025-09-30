@@ -20,10 +20,23 @@
                 "tab": "Documentation",
                 "groups": [
                     {
-                        "group": "Getting started",
+                        "group": "Overview",
                         "pages": [
                             "index",
-                            "concepts-and-terms"
+                            "concepts-and-terms",
+                            "quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Languages and frameworks",
+                        "pages": [
+                            {
+                                "group": "JavaScript",
+                                "icon": "square-js",
+                                "pages": [
+                                    "languages/javascript/react"
+                                ]
+                            }
                         ]
                     }
                 ]
