@@ -37,6 +37,10 @@
                                     "deploy-guides/javascript/react"
                                 ]
                             },
+                            "deploy-guides/static",
+                            "deploy-guides/golang",
+                            "deploy-guides/rust",
+                            "deploy-guides/php",
                             "deploy-guides/static"
                         ]
                     }
