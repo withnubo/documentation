@@ -34,7 +34,7 @@
                                 "group": "JavaScript",
                                 "icon": "square-js",
                                 "pages": [
-                                    "languages/javascript/react"
+                                    "deployment-guides/javascript/react"
                                 ]
                             },
                             "Static sites"
