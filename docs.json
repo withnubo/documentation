@@ -42,6 +42,7 @@
                             "deploy-guides/golang",
                             "deploy-guides/rust",
                             "deploy-guides/php",
+                            "deploy-guides/python",
                             "deploy-guides/static"
                         ]
                     }
