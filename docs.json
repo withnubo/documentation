@@ -47,27 +47,14 @@
                         ]
                     }
                 ]
+            },
+            {
+                "tab": "Release notes",
+                "pages": [
+                    "release-notes"
+                ]
             }
-        ],
-        "global": {
-            "anchors": [
-                {
-                    "anchor": "Documentation",
-                    "href": "https://docs.withnubo.com",
-                    "icon": "book-open-cover"
-                },
-                {
-                    "anchor": "Blog",
-                    "href": "https://www.withnubo.com/blog",
-                    "icon": "newspaper"
-                },
-                {
-                    "anchor": "Release Notes",
-                    "href": "https://www.withnubo.com/release-notes",
-                    "icon": "memo"
-                }
-            ]
-        }
+        ]
     },
     "logo": {
         "light": "/logo/logo.png",
