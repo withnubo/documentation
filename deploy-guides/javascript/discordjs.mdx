@@ -1,5 +1,303 @@
 ---
 title: "Discord.js bot"
-description: "Deploying a Discord.js application"
+description: "Deploying a Discord bot"
 icon: "discord"
 ---
+
+In this tutorial, we will be using [discord.js](https://discord.js.org) to create and then deploy a Discord bot with Nubo.
+
+## Creating a Discord.js Bot
+
+If you already have a Discord bot programmed, simply head to the "Deploying with Nubo" section below.
+
+<Info>This documentation assumes that you have already registered a Discord application and bot via the [discord developers portal](https://discord.com/developers/applications).</Info>
+
+### Setup a new codebase
+
+<Steps>
+    <Step title="Initialize project">
+        <CodeGroup>
+
+            ```bash npm
+            npm init
+            ```
+
+            ```bash yarn
+            yarn init
+            ```
+
+            ```bash pnpm
+            pnpm init
+            ```
+
+            ```bash bun
+            bun init
+            ```
+
+        </CodeGroup>
+        <Warning>
+            Using Bun? Use the **blank** template and rename your `index.ts` file to `index.js`. At this moment, Bun is not directly supported with Nubo and Node will be used at runtime. Therefore, TypeScript isn't supported by default.
+        </Warning>
+    </Step>
+    <Step title="Install dotenv">
+        The `dotenv` package will make variables stored in our .env available at runtime. This is required to register our commands.
+        
+        <CodeGroup>
+
+        ```bash npm
+        npm install dotenv --save
+        ```
+
+        ```bash yarn
+        yarn add dotenv
+        ```
+
+        ```bash pnpm
+        pnpm add dotenv
+        ```
+
+        </CodeGroup>
+
+        <Note>This step is not required if you are using Bun. This is because Bun automatically makes .env variables available at runtime. This is why we love Bun!</Note>
+
+    </Step>
+</Steps>
+
+### Registering our slash commands
+
+For now, there isn't a good way to securely handle environment variables at build time with Nubo. Therefore, we must register our commands locally. In the future, we will support build environment variables that will allow us to run this register command for every build automatically.
+
+<Steps>
+    <Step title="Create a registerCommands.js file">
+
+        This file will interact with the Discord API to register your slash commands.
+
+        The contents of this file should look like:
+
+        ```javascript registerCommands.js
+        import { REST, Routes } from 'discord.js';
+        import dotenv from "dotenv/config"
+
+        const commands = [
+            {
+                name: 'ping',
+                description: 'Replies with Pong!',
+            },
+        ];
+
+        const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
+
+        try {
+            console.log('Started refreshing application (/) commands.');
+
+            await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
+
+            console.log('Successfully reloaded application (/) commands.');
+        } catch (error) {
+            console.error(error);
+        }
+        ```
+
+        As we can see, this is registering one command: the "ping" command. Which by our description simply replies with "pong".
+    </Step>
+    <Step title="Create a .env file">
+        Create a `.env` file in the project's root directory that will hold our secrets.
+
+        <Warning>Be sure to add this file to your `.gitignore` so that your secrets are not publicly exposed to your Git repository.</Warning>
+        
+        Input the following content to your `.env` file and replace with your application secrets:
+
+        ```
+        CLIENT_ID="your discord application id"
+        TOKEN="your discord bot token"
+        ```
+    </Step>
+    <Step title="Register the commands">
+
+        To register the commands, run the `registerCommands.js` file:
+
+        <CodeGroup>
+
+        ```bash node
+        node run registerCommands.js
+        ```
+
+        ```bash yarn
+        yarn run registerCommands.js
+        ```
+
+        ```bash pnpm
+        pnpm run registerCommands.js
+        ```
+
+        ```bash bun
+        bun run registerCommands.js
+        ```
+
+        </CodeGroup>
+
+        You should receive a success message in your terminal that looks like:
+
+        ```
+        Successfully reloaded application (/) commands
+        ```
+    </Step>
+</Steps>
+
+### Programming the `/ping` command
+
+Create an `index.js` file with the following content:
+
+```javascript index.js
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import dotenv from 'dotenv/config'
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+
+client.on(Events.ClientReady, readyClient => {
+  console.log(`Logged in as ${readyClient.user.tag}!`);
+});
+
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+
+  if (interaction.commandName === 'ping') {
+    await interaction.reply('Pong!');
+  }
+});
+
+client.login(process.env.TOKEN);
+```
+
+This logic simply logs in as the bot on startup and handles the `/ping` command.
+
+To test this bot locally, simply run the following:
+
+<CodeGroup>
+
+    ```bash node
+    node index.js
+    ```
+
+    ```bash yarn
+    yarn node index.js
+    ```
+
+    ```bash pnpm
+    pnpm exec node index.js
+    ```
+
+    ```bash bun
+    bun index.js
+    ```
+
+</CodeGroup>
+
+Your bot should now be up and running. You may add it to your server and test the `/ping` command.
+
+Congratulations! You have successfully built a very basic Discord bot using `discord.js`.
+
+### Push changes to GitHub
+
+Stage all changes:
+
+```bash
+git add .
+```
+
+Commit changes:
+
+```bash
+git commit -m "Initial commit"
+```
+
+Push to GitHub:
+
+```bash
+git push
+```
+
+## Deploying with Nubo
+
+<Steps>
+    <Step title="Configuring start script">
+        First we must create a start script that tells Nubo to run our bot as the default process for the container.
+
+        Edit your `package.json`, and add a "scripts" section. Example:
+
+        ```json package.json
+        {
+            "name": "discordjs-starter",
+            "module": "index.ts",
+            "type": "module",
+            "private": true,
+            "scripts": {
+                "start": "node index.js" <-- This line
+            },
+            ....
+        }
+        ```
+        <Note>This start script does not change if you are using Bun. As Bun is not supported yet with Nubo.</Note>
+    </Step>
+    <Step title="Push your changes to GitHub">
+        Stage all changes:
+
+        ```bash
+        git add .
+        ```
+        
+        Commit changes:
+
+        ```bash
+        git commit -m "build: setup for Nubo"
+        ```
+        Push to GitHub:
+
+        ```bash
+        git push
+        ```
+    </Step>
+    <Step title="Deploy via the Nubo dashboard">
+        Head over to the Nubo dashboard. You will need to create or select an existing Project.
+
+        <Frame>
+            ![Projects section of dashboard](/images/select-project.png)
+        </Frame>
+        
+        Now, select the "+ Frame" button
+        
+        <Frame>
+            ![Frame button section of dashboard](/images/create-frame.png)
+        </Frame>
+
+        Next, choose your repository and click "Deploy"
+
+        <Frame>
+            ![Select repository section](/images/select-repository.png)
+        </Frame>
+    </Step>
+    <Step title="Configure environment variables for secrets">
+        Now that our Frame is deploying, the bot will not work until we provide our credentials.
+        
+        Head over to the Frame's settings, and click "Environment variables".
+        
+        <Frame>
+            ![Frame environment variables](/images/frame-environment-variables.png)
+        </Frame>
+
+        We will want to create two environment variables. Those being the following:
+        
+        | Key       | Value                           |
+        | --------  | ------------------------------- |
+        | CLIENT_ID | The application ID for your bot |
+        | TOKEN     | The secret token for your bot   |
+
+        Now, select the "Redeploy" button to manually schedule a Frame deployment.
+
+        <Frame>
+            ![Redeploy button](/images/redeploy-button.png)
+        </Frame>
+    </Step>
+</Steps>
+
+That is the procedure for getting a Discord bot deployed with Nubo.
