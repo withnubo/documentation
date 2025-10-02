@@ -98,7 +98,7 @@ For now, there isn't a good way to securely handle environment variables at buil
         }
         ```
 
-        As we can see, this is registering one command: the "ping" command. Which by our description simply replies with "pong".
+        As we can see, this is registering one command: the "ping" command. Which, by our description simply replies with "pong".
     </Step>
     <Step title="Create a .env file">
         Create a `.env` file in the project's root directory that will hold our secrets.
@@ -237,7 +237,7 @@ git push
             ....
         }
         ```
-        <Note>This start script does not change if you are using Bun. As Bun is not supported yet with Nubo.</Note>
+        <Note>This start script does not change if you are using Bun. As the Bun runtime is not supported yet with Nubo.</Note>
     </Step>
     <Step title="Push your changes to GitHub">
         Stage all changes:
@@ -291,6 +291,8 @@ git push
         | --------  | ------------------------------- |
         | CLIENT_ID | The application ID for your bot |
         | TOKEN     | The secret token for your bot   |
+
+        <Warning>The "key" names are assuming that you are using those keywords in your bot's code. If they are named something else, change the key names.</Warning>
 
         Now, select the "Redeploy" button to manually schedule a Frame deployment.
 
