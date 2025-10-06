@@ -4,4 +4,38 @@ description: "Deploying a Golang application"
 icon: "golang"
 ---
 
-Golang
+Golang is support with Nubo out of the box, with no configuration necessarily required.
+
+## Creating a basic Go HTTP server
+
+In this demonstration, we will be creating a very basic Golang HTTP server.
+
+## Going live with Nubo
+
+<Steps>
+    <Step title="Open the new Frame modal">
+        Click on the "+ Frame" butotn
+        <Frame>
+            ![Frame button section of dashboard](/images/create-frame.png)
+        </Frame>
+    </Step>
+    <Step title="Choose repository and configure port">
+        Select your repository from the list of repos that are displayed. Then, if applicable, configure your port to match the port that your server is listening on.
+        <Frame>
+            ![Select repository section](/images/select-repository.png)
+        </Frame>
+    </Step>
+</Steps>
+
+## Setting a custom Go version
+
+By default, Nubo will determine the version of Golang to use based on your `go.mod` file. But, in the event that you need to manually specify the version. Create `project.toml` file like below:
+
+```toml
+[ _ ]
+schema-version = "0.2"
+
+[[ io.buildpacks.build.env ]]
+  name="BP_GO_VERSION"
+  value="1.14.1" # CUSTOM VERSION HERE
+```
