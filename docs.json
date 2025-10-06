@@ -23,8 +23,7 @@
                         "group": "Overview",
                         "pages": [
                             "index",
-                            "concepts-and-terms",
-                            "quickstart"
+                            "concepts-and-terms"
                         ]
                     },
                     {
@@ -38,12 +37,7 @@
                                     "deploy-guides/javascript/discordjs"
                                 ]
                             },
-                            "deploy-guides/static",
-                            "deploy-guides/golang",
-                            "deploy-guides/rust",
-                            "deploy-guides/php",
-                            "deploy-guides/python",
-                            "deploy-guides/static"
+                            "deploy-guides/golang"
                         ]
                     }
                 ]
