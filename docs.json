@@ -37,7 +37,8 @@
                                     "deploy-guides/javascript/discordjs"
                                 ]
                             },
-                            "deploy-guides/golang"
+                            "deploy-guides/golang",
+                            "deploy-guides/static"
                         ]
                     }
                 ]
