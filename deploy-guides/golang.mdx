@@ -4,13 +4,135 @@ description: "Deploying a Golang application"
 icon: "golang"
 ---
 
-Golang is support with Nubo out of the box, with no configuration necessarily required.
-
 ## Creating a basic Go HTTP server
 
-In this demonstration, we will be creating a very basic Golang HTTP server.
+In this demonstration, we will be creating a very basic Golang HTTP server. If you already have a Golang application, simply head to the "Going live with Nubo" section below.
+
+### Setting up the project
+
+Let's first get our workspace configured. We will create a new folder and initialize a new go module.
+
+```shell
+mkdir go-with-nubo
+cd go-with-nubo
+go mod init go-with-nubo
+```
+
+After running the `go mod init` command we should a new `go.mod` file. This file will look like:
+
+```go-module go.mod
+module go-with-nubo
+
+go 1.25.1
+```
+
+Let's also create a `main.go` file which will store the logic for our server.
+
+```shell
+touch main.go
+```
+
+Finally, lets initialize a new Git repository.
+
+```shell
+git init
+```
+
+### Writing the server (`main.go`)
+
+First we need to initialize our package and define our imports.
+
+```go main.go
+package main
+
+import (
+    "fmt"
+    "log"
+    "net/http"
+)
+```
+
+Then we can implement the main function. This is the entrypoint for our program.
+
+```go main.go
+func main() {
+    http.HandleFunc("/", rootHandleFunc)
+    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Println("Listening on port 8080...")
+}
+```
+
+This code maps out one route, the "/" or root route. It then also starts the server, listening on port `8080`. If the server fails to start our app will panic.
+
+We will now need to define the logic for the "/" endpoint. We will do this by creating our `rootHandleFunc` function.
+
+```go main.go
+func rootHandleFunc(writer http.ResponseWriter, request *http.Request) {
+    if request.Method != "GET" {
+        http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    writer.Header().Set("Content-Type", "text/plain")
+    fmt.Fprint(writer, "Hello from Golang! Powered by Nubo")
+}
+```
+
+All handle functions take in a response writer (for sending back responses) and a pointer to the HTTP request.
+
+Our code is checking the HTTP method to ensure that only the `GET` method is accepted. We are then sending a simple plaintext message back to the user.
+
+### Running the server
+
+We are now ready to test our server! Head to a terminal and run the following:
+
+```shell
+go run main.go
+```
+
+Now if you head to your web browser and go to `localhost:8080` you should receive our message back from the server!
+
+### Full `main.go` file
+
+```go main.go
+package main
+
+import (
+    "fmt"
+    "log"
+    "net/http"
+)
+
+func main() {
+    http.HandleFunc("/", rootHandleFunc)
+    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Println("Listening on port 8080...")
+}
+
+func rootHandleFunc(writer http.ResponseWriter, request *http.Request) {
+    if request.Method != "GET" {
+        http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    writer.Header().Set("Content-Type", "text/plain")
+    fmt.Fprint(writer, "Hello from Golang! Powered by Nubo")
+}
+```
+
+### Git operations
+
+To update our repository we can commit our changes and push to our remote repository.
+
+```shell
+git add .
+git commit -m "initial commit"
+git push
+```
 
 ## Going live with Nubo
+
+Golang is support with Nubo out of the box, with no configuration necessarily required.
 
 <Steps>
     <Step title="Open the new Frame modal">
