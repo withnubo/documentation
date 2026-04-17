@@ -40,6 +40,14 @@
                             "deploy-guides/golang",
                             "deploy-guides/static"
                         ]
+                    },
+                    {
+                        "group": "Self-hosted Agents",
+                        "pages": [
+                            "agents/overview",
+                            "agents/quickstart",
+                            "agents/advanced"
+                        ]
                     }
                 ]
             },
