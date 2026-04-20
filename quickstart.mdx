@@ -26,7 +26,7 @@ A Project is the top-level container for your app. Create one from the dashboard
 
 Inside your Project, click **New Frame**. Pick the repo you want to deploy and the branch to track, then set the port your app listens on.
 
-Nubo detects your language automatically using [buildpacks](https://buildpacks.io), so you don't need a Dockerfile. If your app starts with `npm start`, `python manage.py runserver`, `go run`, or anything similar, it'll just work.
+Nubo detects your language automatically, so you don't need a Dockerfile. If your app starts with `npm start`, `python manage.py runserver`, `go run`, or anything similar, it'll just work.
 
 The build kicks off immediately. You can follow along in real time from the Frame's log panel.
 
@@ -34,7 +34,7 @@ The build kicks off immediately. You can follow along in real time from the Fram
 
 Once the build finishes, your Frame is live at its auto-assigned subdomain (something like `my-app-a3f2.nubo.onl`). Click the URL in the dashboard to open it.
 
-That's the whole deploy loop - push to your tracked branch, Nubo rebuilds, the new version goes live.
+To redeploy, trigger a new build from the dashboard or via the API.
 
 ## Next steps
 

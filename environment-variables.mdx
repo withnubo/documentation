@@ -55,7 +55,7 @@ import "os"
 dbURL := os.Getenv("DATABASE_URL")
 ```
 
-They're available at both build time (inside buildpack execution) and runtime (while the container runs). Build-time values let you use things like `npm install` against a private registry, where runtime values handle the usual connection strings and secrets.
+They're available at both build time and runtime. Build-time values let you use things like `npm install` against a private registry; runtime values handle the usual connection strings and secrets.
 
 ## Update or remove
 
