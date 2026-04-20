@@ -23,7 +23,8 @@
                         "group": "Overview",
                         "pages": [
                             "index",
-                            "concepts-and-terms"
+                            "concepts-and-terms",
+                            "custom-domains"
                         ]
                     },
                     {
@@ -46,7 +47,6 @@
                         "pages": [
                             "agents/overview",
                             "agents/quickstart",
-                            "agents/custom-domains",
                             "agents/advanced"
                         ]
                     }
