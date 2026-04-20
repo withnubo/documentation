@@ -23,6 +23,7 @@
                         "group": "Get Started",
                         "pages": [
                             "index",
+                            "quickstart",
                             "concepts-and-terms"
                         ]
                     },
@@ -44,6 +45,8 @@
                     {
                         "group": "Platform",
                         "pages": [
+                            "deployments",
+                            "environment-variables",
                             "custom-domains"
                         ]
                     },

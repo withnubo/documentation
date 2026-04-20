@@ -1,0 +1,87 @@
+---
+title: "Environment variables"
+description: "Inject config and secrets into your app at build and runtime"
+---
+
+Environment variables are how you feed config into your app - API keys, database URLs, feature flags, anything that shouldn't be hardcoded. Nubo encrypts variables at rest and injects them into both the build and runtime environments.
+
+## Where variables live
+
+Variables are scoped to either a **Project** or a **Frame**:
+
+- **Project variables** apply to every Frame in the Project. Good for things shared across apps (`SENTRY_DSN`, `DATABASE_URL`).
+- **Frame variables** apply to one Frame only. Good for app-specific settings (`PORT`, `NODE_ENV`).
+
+If the same key exists at both levels, the Frame value wins.
+
+## Add a variable
+
+From the dashboard, open the Project or Frame and go to the **Variables** tab. Keys must be valid env var names (`[A-Z_][A-Z0-9_]*`).
+
+Via the API:
+
+```bash
+# project-scoped
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/variables \
+  -H "Authorization: Bearer <your-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "DATABASE_URL", "value": "postgres://..."}'
+
+# frame-scoped
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/variables \
+  -H "Authorization: Bearer <your-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "LOG_LEVEL", "value": "debug"}'
+```
+
+## Using variables in your app
+
+Variables are available exactly like any other env var - no special SDK or prefix.
+
+```js
+// Node.js
+const dbUrl = process.env.DATABASE_URL;
+```
+
+```python
+# Python
+import os
+db_url = os.environ["DATABASE_URL"]
+```
+
+```go
+// Go
+import "os"
+dbURL := os.Getenv("DATABASE_URL")
+```
+
+They're available at both build time (inside buildpack execution) and runtime (while the container runs). Build-time values let you use things like `npm install` against a private registry, where runtime values handle the usual connection strings and secrets.
+
+## Update or remove
+
+Changing a variable doesn't automatically redeploy - trigger a new deploy from the dashboard or push a commit to apply the change. To delete:
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/variables/<variable_id> \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+## Secrets
+
+Values are encrypted at rest and never returned in plaintext from the API - reads return the key only. Rotate a secret by setting a new value; the old one is overwritten.
+
+<Warning>
+  Avoid logging environment variables in your app. Runtime logs stream to the dashboard, and accidental secret leakage there is easy to do and hard to undo.
+</Warning>
+
+## What's set automatically
+
+Every Frame gets a few values set by Nubo:
+
+| Key          | Description                                              |
+|--------------|----------------------------------------------------------|
+| `PORT`       | The port your app should listen on                       |
+| `NUBO_FRAME_ID` | The Frame's unique ID                                 |
+| `NUBO_SPACE` | The Space name (`dev`, `staging`, `production`, etc.)    |
+
+Don't override these - they're how Nubo routes traffic and identifies your deployment.
