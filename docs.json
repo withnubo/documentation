@@ -46,6 +46,7 @@
                         "pages": [
                             "agents/overview",
                             "agents/quickstart",
+                            "agents/custom-domains",
                             "agents/advanced"
                         ]
                     }

@@ -1,0 +1,106 @@
+---
+title: "Custom domains"
+description: "Serve a Frame under your own hostname"
+---
+
+Every Frame on an agent gets a subdomain under your agent's base domain out of the box (like `abc123.frames.example.com`). If you want to serve it at your own hostname — `shop.mystore.com`, `api.mysite.io`, anything — you can attach a custom domain.
+
+TLS is handled automatically. The agent runs Caddy, so once DNS is in place Caddy requests a Let's Encrypt certificate on its own. You don't upload certs or touch ACME.
+
+## How it works
+
+1. You register the custom hostname through the API (or the dashboard).
+2. Nubo tells the agent to serve that hostname in addition to the Frame's system subdomain.
+3. You point DNS at the agent.
+4. The first HTTPS request to the new hostname triggers Caddy's ACME flow; Let's Encrypt issues a cert and from then on the Frame is live at your custom hostname.
+
+## 1. Add the domain
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains \
+  -H "Authorization: Bearer <your-jwt>" \
+  -H "Content-Type: application/json" \
+  -d '{"hostname": "shop.mystore.com"}'
+```
+
+Response:
+
+```json
+{
+  "hostname": "shop.mystore.com",
+  "dns": {
+    "record_type": "CNAME",
+    "record_name": "shop.mystore.com",
+    "record_value": "abc123.frames.example.com"
+  },
+  "note": "Caddy on the agent will auto-provision TLS via ACME once the CNAME is in place."
+}
+```
+
+The `record_value` is the system subdomain of the Frame you're attaching to. Any name that resolves to the agent's IP works; pointing at the Frame's system subdomain is just the easiest option because you already know it resolves correctly.
+
+## 2. Point DNS at the agent
+
+At your registrar, add a CNAME for the hostname:
+
+```
+CNAME   shop   abc123.frames.example.com.
+```
+
+Or if your DNS provider doesn't allow CNAMEs at apex, add an A record pointing straight to the agent's IP:
+
+```
+A       shop   203.0.113.10
+```
+
+<Note>
+  The agent needs port 80 reachable from the public internet for Caddy's ACME HTTP-01 challenge. If it's firewalled off, TLS provisioning will fail.
+</Note>
+
+## 3. Verify
+
+Once DNS propagates (usually seconds to a few minutes) the first request triggers cert issuance:
+
+```bash
+curl -vI https://shop.mystore.com
+```
+
+You should see a `200` back with a valid Let's Encrypt certificate. If you hit it again a few seconds later, Caddy will serve the cached cert directly.
+
+## Removing a domain
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains/shop.mystore.com \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+This detaches the hostname from the Frame and reloads Caddy. You should also remove the CNAME from your registrar at that point.
+
+## Listing domains
+
+```bash
+curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains \
+  -H "Authorization: Bearer <your-jwt>"
+```
+
+Returns the Frame's system domain(s) plus every custom domain attached, with their current status (`pending`, `active`, or `error`).
+
+## Troubleshooting
+
+### Status stuck on `pending`
+
+Caddy reports back once it's registered the hostname in its config. If the status flips to `pending` and stays there, the agent was probably offline when the domain was added. Restart the agent — the domain will apply on the next reconnect.
+
+### TLS fails with a certificate error
+
+Check:
+
+- **DNS has propagated.** `dig shop.mystore.com` should return the agent's IP.
+- **Port 80 is open.** `curl -I http://shop.mystore.com` should at least connect, even if it redirects.
+- **You're not hitting a rate limit.** Let's Encrypt caps issuance per hostname per week; if you've been retrying a lot, wait an hour and try again.
+
+Agent logs show the ACME interaction — check them with `journalctl -fu nubo-agent` (Linux) or `tail -f ~/Library/Logs/nubo-agent/stderr.log` (macOS).
+
+### Wrong Frame is served
+
+Make sure you attached the domain to the right Frame. Each custom hostname belongs to exactly one Frame at a time; trying to attach a hostname already in use on another Frame returns a `400`.
