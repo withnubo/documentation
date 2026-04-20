@@ -14,24 +14,24 @@ Variables are scoped to either a **Project** or a **Frame**:
 
 If the same key exists at both levels, the Frame value wins.
 
-## Add a variable
+## Add variables
 
-From the dashboard, open the Project or Frame and go to the **Variables** tab. Keys must be valid env var names (`[A-Z_][A-Z0-9_]*`).
+From the dashboard, open the Project or Frame and go to the **Variables** tab. Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`).
 
-Via the API:
+Via the API (note: the body is a JSON **array**, so you can add multiple at once):
 
 ```bash
 # project-scoped
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/variables \
   -H "Authorization: Bearer <your-jwt>" \
   -H "Content-Type: application/json" \
-  -d '{"key": "DATABASE_URL", "value": "postgres://..."}'
+  -d '[{"key": "DATABASE_URL", "value": "postgres://..."}]'
 
 # frame-scoped
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/variables \
   -H "Authorization: Bearer <your-jwt>" \
   -H "Content-Type: application/json" \
-  -d '{"key": "LOG_LEVEL", "value": "debug"}'
+  -d '[{"key": "LOG_LEVEL", "value": "debug"}, {"key": "API_KEY", "value": "..."}]'
 ```
 
 ## Using variables in your app
@@ -74,14 +74,6 @@ Values are encrypted at rest and never returned in plaintext from the API - read
   Avoid logging environment variables in your app. Runtime logs stream to the dashboard, and accidental secret leakage there is easy to do and hard to undo.
 </Warning>
 
-## What's set automatically
+## The port your app should listen on
 
-Every Frame gets a few values set by Nubo:
-
-| Key          | Description                                              |
-|--------------|----------------------------------------------------------|
-| `PORT`       | The port your app should listen on                       |
-| `NUBO_FRAME_ID` | The Frame's unique ID                                 |
-| `NUBO_SPACE` | The Space name (`dev`, `staging`, `production`, etc.)    |
-
-Don't override these - they're how Nubo routes traffic and identifies your deployment.
+Nubo doesn't set `PORT` for you. Pick a port in your Frame's config and have your app listen on that port explicitly, or set a `PORT` variable yourself and read it from your app.

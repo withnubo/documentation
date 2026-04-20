@@ -3,12 +3,12 @@ title: "Deployments"
 description: "How Nubo builds, ships, and rolls back your code"
 ---
 
-A deployment is one build-and-release cycle for a Frame. Every push to a tracked branch triggers one. Deploys are atomic - traffic only cuts over when the new version is ready, and the old one keeps serving until then.
+A deployment is one build-and-release cycle for a Frame. Deploys are atomic - traffic only cuts over when the new version is ready, and the old one keeps serving until then.
 
 ## The deploy flow
 
-1. **Trigger.** A push to your Frame's tracked branch (via GitHub webhook), a manual deploy from the dashboard, or a `POST /deployments` API call.
-2. **Clone.** Nubo (or your agent, if self-hosted) pulls the latest commit.
+1. **Trigger.** A manual deploy from the dashboard, or a `POST /deployments` API call.
+2. **Clone.** Nubo (or your agent, if self-hosted) pulls the current revision of the tracked branch.
 3. **Build.** [Buildpacks](https://buildpacks.io) detect your language and produce a container image. No Dockerfile required.
 4. **Push.** The image goes to our registry (managed cloud) or stays local (self-hosted agents).
 5. **Release.** The new container starts, a health check confirms it's up, and traffic switches over.
@@ -16,13 +16,7 @@ A deployment is one build-and-release cycle for a Frame. Every push to a tracked
 
 ## Triggering a deploy
 
-### On push
-
-Any push to the branch you selected when creating the Frame kicks off a new deploy automatically. This is the default flow - commit, push, watch it go live.
-
-### Manually
-
-From the dashboard, hit **Deploy** on the Frame to rebuild the current branch's `HEAD`. Useful for re-running a build after changing env vars.
+From the dashboard, hit **Deploy** on the Frame to rebuild the current revision of the tracked branch. Useful for re-running a build after changing env vars.
 
 Via API:
 
@@ -31,16 +25,7 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -H "Authorization: Bearer <your-jwt>"
 ```
 
-### From a specific commit
-
-Pass a commit SHA or branch name in the `revision` field to deploy something other than the current `HEAD`:
-
-```bash
-curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments \
-  -H "Authorization: Bearer <your-jwt>" \
-  -H "Content-Type: application/json" \
-  -d '{"revision": "a1b2c3d"}'
-```
+The branch and revision come from the Frame's existing config, so no body is required.
 
 ## Watching a build
 
