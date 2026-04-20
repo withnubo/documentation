@@ -3,7 +3,7 @@ title: "Custom domains"
 description: "Serve a Frame under your own hostname"
 ---
 
-Every Frame gets a Nubo-assigned domain out of the box. When you're ready to go live you can attach a custom domain — anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain — and Nubo will serve the Frame there with HTTPS.
+Every Frame gets a Nubo-assigned domain out of the box. When you're ready to go live you can attach a custom domain - anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain - and Nubo will serve the Frame there with HTTPS.
 
 The exact DNS you'll set up depends on whether the Frame runs on **managed** infrastructure (our cloud) or a **self-hosted agent** (your own server). The API is the same either way.
 
@@ -20,7 +20,7 @@ The response tells you exactly which DNS records to create. The shape differs by
 
 ### Managed Frames
 
-Managed Frames use Cloudflare for SSL for SaaS, so you'll create two records — a CNAME for traffic and a TXT for domain validation:
+Managed Frames use Cloudflare for SSL for SaaS, so you'll create two records - a CNAME for traffic and a TXT for domain validation:
 
 ```json
 {
@@ -49,7 +49,7 @@ If the TXT record is in place, Cloudflare will issue a certificate and Nubo will
 
 ### Self-hosted agent Frames
 
-Agent Frames use the agent's built-in Caddy, which requests a Let's Encrypt cert automatically — no verification step:
+Agent Frames use the agent's built-in Caddy, which requests a Let's Encrypt cert automatically - no verification step:
 
 ```json
 {
@@ -63,7 +63,7 @@ Agent Frames use the agent's built-in Caddy, which requests a Let's Encrypt cert
 }
 ```
 
-Add the single CNAME, pointing at either the Frame's system subdomain or the agent's base domain — any name that resolves to the agent's IP works. The first HTTPS request to the new hostname triggers Caddy's ACME flow; after that, the Frame is live.
+Add the single CNAME, pointing at either the Frame's system subdomain or the agent's base domain - any name that resolves to the agent's IP works. The first HTTPS request to the new hostname triggers Caddy's ACME flow; after that, the Frame is live.
 
 <Note>
   For agent Frames, port 80 must be reachable from the public internet so Caddy can complete the ACME HTTP-01 challenge. If it's firewalled, TLS provisioning will fail.
@@ -102,7 +102,7 @@ Returns the Frame's system domain(s) plus every custom domain attached, with the
 ### Status stuck on `pending`
 
 - **Managed:** the TXT verification record isn't in place or hasn't propagated. Re-check your DNS and call `/verify` again.
-- **Agent:** the agent was offline when the domain was added. Restart the agent — the domain applies on the next reconnect.
+- **Agent:** the agent was offline when the domain was added. Restart the agent - the domain applies on the next reconnect.
 
 ### TLS certificate error
 
@@ -110,7 +110,7 @@ Returns the Frame's system domain(s) plus every custom domain attached, with the
 - **Port 80 reachable?** (Agent Frames only.) Caddy needs an open port 80 for the ACME HTTP-01 challenge.
 - **Rate-limited?** Let's Encrypt caps issuance per hostname per week. If you've retried a lot, wait an hour.
 
-Agent logs show the full ACME exchange — check them with `journalctl -fu nubo-agent` (Linux) or `tail -f ~/Library/Logs/nubo-agent/stderr.log` (macOS).
+Agent logs show the full ACME exchange - check them with `journalctl -fu nubo-agent` (Linux) or `tail -f ~/Library/Logs/nubo-agent/stderr.log` (macOS).
 
 ### Hostname already registered
 

@@ -20,11 +20,10 @@
                 "tab": "Documentation",
                 "groups": [
                     {
-                        "group": "Overview",
+                        "group": "Get Started",
                         "pages": [
                             "index",
-                            "concepts-and-terms",
-                            "custom-domains"
+                            "concepts-and-terms"
                         ]
                     },
                     {
@@ -40,6 +39,12 @@
                             },
                             "deploy-guides/golang",
                             "deploy-guides/static"
+                        ]
+                    },
+                    {
+                        "group": "Platform",
+                        "pages": [
+                            "custom-domains"
                         ]
                     },
                     {
