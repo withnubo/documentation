@@ -1,0 +1,61 @@
+---
+title: "Rollback"
+description: "Revert a Frame to a previous, known-good deploy"
+---
+
+Ship something that broke production? Roll back to the previous working deploy in one click. No rebuild, no waiting, no digging through logs before you can stop the bleeding.
+
+## From the dashboard
+
+1. Open the Frame.
+2. Click **Deployments**.
+3. Find the deployment you want to return to.
+4. Hit **Rollback**.
+
+The Frame is back on the known-good version within seconds. You can look at the logs afterwards to figure out what broke.
+
+## From the API
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments/<source_deployment_id>/rollback \
+  -H "Authorization: Bearer <your-token>"
+```
+
+The response tells you the new deployment's ID:
+
+```json
+{
+  "deployment_id": "69e18178760b571bf8c4c5f1",
+  "status": "queued"
+}
+```
+
+Watch the Frame's [status](/frames#what-a-frames-status-means) or the [deployment list](/deployments#deployment-history) to confirm the rollback finished.
+
+## What rollback does (and doesn't)
+
+**Does:**
+- Re-release the exact version that was running before, without rebuilding.
+- Show up in your deployment history so you have a clear record of what happened.
+- Work the same way on Nubo's cloud and on your own [self-hosted agent](/agents/overview).
+
+**Doesn't:**
+- Roll back environment variables or Frame settings. Those stay as they are. If your bug is in config, update the config and redeploy - no rollback needed.
+- Go backwards past a failed build. You can only roll back to deploys that succeeded.
+
+## A common flow
+
+1. Push a commit that breaks production.
+2. Roll back from the dashboard - Frame is healthy again within seconds.
+3. Check the [build logs](/build-logs) or the running logs to figure out what went wrong.
+4. Fix the code, push again, and let the new deploy take over when it's ready.
+
+## Related
+
+<Card title="Deployments" icon="rocket" href="/deployments">
+  Trigger and inspect deploys
+</Card>
+
+<Card title="Build logs" icon="file-lines" href="/build-logs">
+  See what happened during any recent build
+</Card>

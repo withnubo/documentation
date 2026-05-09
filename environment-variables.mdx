@@ -23,13 +23,13 @@ Via the API (note: the body is a JSON **array**, so you can add multiple at once
 ```bash
 # project-scoped
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/variables \
-  -H "Authorization: Bearer <your-jwt>" \
+  -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '[{"key": "DATABASE_URL", "value": "postgres://..."}]'
 
 # frame-scoped
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/variables \
-  -H "Authorization: Bearer <your-jwt>" \
+  -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '[{"key": "LOG_LEVEL", "value": "debug"}, {"key": "API_KEY", "value": "..."}]'
 ```
@@ -63,12 +63,19 @@ Changing a variable doesn't automatically redeploy - trigger a new deploy from t
 
 ```bash
 curl -X DELETE https://shuttle.withnubo.com/v2/variables/<variable_id> \
-  -H "Authorization: Bearer <your-jwt>"
+  -H "Authorization: Bearer <your-token>"
 ```
 
 ## Secrets
 
-Values are encrypted at rest and never returned in plaintext from the API - reads return the key only. Rotate a secret by setting a new value; the old one is overwritten.
+Values are encrypted at rest. Listing variables on a Project or Frame returns the keys and metadata only. To see a single value, use the reveal endpoint (or click the **Reveal** button next to a variable in the dashboard):
+
+```bash
+curl https://shuttle.withnubo.com/v2/variables/<variable_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Rotate a secret by setting a new value; the old one is overwritten.
 
 <Warning>
   Avoid logging environment variables in your app. Runtime logs stream to the dashboard, and accidental secret leakage there is easy to do and hard to undo.

@@ -11,7 +11,7 @@ The exact DNS you'll set up depends on whether the Frame runs on **managed** inf
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains \
-  -H "Authorization: Bearer <your-jwt>" \
+  -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '{"hostname": "shop.mystore.com"}'
 ```
@@ -42,7 +42,7 @@ Add both to your registrar. Then tell Nubo to verify:
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains/shop.mystore.com/verify \
-  -H "Authorization: Bearer <your-jwt>"
+  -H "Authorization: Bearer <your-token>"
 ```
 
 Once verification succeeds, Nubo issues a certificate and routes traffic to your Frame. You can call `/verify` again any time to re-poll.
@@ -82,7 +82,7 @@ You should get a `200` back with a valid certificate. `dig shop.mystore.com` sho
 
 ```bash
 curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains/shop.mystore.com \
-  -H "Authorization: Bearer <your-jwt>"
+  -H "Authorization: Bearer <your-token>"
 ```
 
 This detaches the hostname from the Frame and stops serving traffic there. Remove the CNAME from your registrar once you're done.
@@ -91,7 +91,7 @@ This detaches the hostname from the Frame and stops serving traffic there. Remov
 
 ```bash
 curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains \
-  -H "Authorization: Bearer <your-jwt>"
+  -H "Authorization: Bearer <your-token>"
 ```
 
 Returns the Frame's system domain(s) plus every custom domain attached, with their current status (`pending`, `active`, or `error`).

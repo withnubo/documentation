@@ -1,0 +1,113 @@
+---
+title: "Frames"
+description: "The unit of deployment in Nubo"
+---
+
+A Frame is one deployable app - your landing page, API, Discord bot, or anything else you'd normally stand up on its own server. Each Frame gets its own domain, its own deploy history, and its own settings. Frames live inside a [Space](/concepts-and-terms#spaces), and Spaces live inside a [Project](/concepts-and-terms#projects).
+
+If you're coming from another platform: a Frame is roughly what other tools call a "service" or "app".
+
+## Create a Frame
+
+The fastest path is the dashboard:
+
+1. Open a Project, pick the Space you want (`dev`, `staging`, or `production`), and hit **New Frame**.
+2. Connect your GitHub repo and pick the branch you want Nubo to watch.
+3. Tell Nubo which port your app listens on.
+4. Hit deploy.
+
+That's it. Nubo takes care of building, running, and giving your Frame a URL.
+
+Prefer the API?
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-app",
+    "owner_id": "<your-user-id>",
+    "git_repository": "my-repo",
+    "git_repository_owner": "my-github-user",
+    "git_repository_branch": "main",
+    "port": 3000
+  }'
+```
+
+To run a Frame on your own server instead of Nubo's cloud, see [Self-hosted agents](/agents/overview).
+
+## What a Frame's status means
+
+Open any Frame in the dashboard and you'll see its current state in real time:
+
+| Status | Meaning |
+|--------|---------|
+| **Starting** | A deploy is in progress or the app is coming up. |
+| **Online** | Healthy and serving traffic. |
+| **Degraded** | Running, but not all replicas are healthy. |
+| **Error** | No healthy replicas. The dashboard will tell you why. |
+| **Stopped** | Scaled to zero or explicitly stopped. |
+
+When a Frame is in **Error**, Nubo surfaces what went wrong (crash, out of memory, health-check failure, etc.) right next to the status so you don't have to go hunting through logs.
+
+If the same Frame keeps failing - five crashes in a row, or stuck pulling its image for more than three minutes - Nubo automatically scales it to zero and shows a `backoff_tripped` reason so you stop seeing the same error toast over and over. The next push (or hitting **Deploy**) scales it back up and clears the trip, so a fresh image automatically recovers a stuck Frame.
+
+## Stop and start a Frame
+
+Need to take a Frame offline without losing it? Hit **Stop** on the Frame to pause it (replicas scale to zero, or for self-hosted Agents the container is stopped). The Frame's config, deploy history, environment variables, and domains are all kept. When you're ready, hit **Start** to bring it back up.
+
+Via API:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/stop \
+  -H "Authorization: Bearer <your-token>"
+
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/start \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Both return `202 Accepted`. The Frame moves through **Stopped** and back to **Online** as the change is applied. If the Frame is on a self-hosted Agent that is currently offline, you'll get back `503 Service Unavailable`.
+
+## Update a Frame's settings
+
+Rename, change the branch, or scale up the replica count from the Frame's **Settings** tab. None of these retriggers a deploy on their own - push a commit or hit **Deploy** when you're ready to roll the change out.
+
+Via API:
+
+```bash
+curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id> \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-app",
+    "git_repository_name": "my-repo",
+    "git_repository_owner": "my-github-user",
+    "git_repository_branch": "main",
+    "replica_count": 2
+  }'
+```
+
+## Delete a Frame
+
+From the dashboard: open the Frame's **Settings** tab and scroll to the danger zone. Via API:
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Any custom domains attached to the Frame are released at the same time.
+
+## Related
+
+<Card title="Deployments" icon="rocket" href="/deployments">
+  How a push turns into a running Frame
+</Card>
+
+<Card title="Environment variables" icon="key" href="/environment-variables">
+  Pass secrets and config into your app
+</Card>
+
+<Card title="Custom domains" icon="globe" href="/custom-domains">
+  Serve a Frame at your own hostname
+</Card>

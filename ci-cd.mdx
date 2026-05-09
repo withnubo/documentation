@@ -1,0 +1,94 @@
+---
+title: "CI/CD"
+description: "Deploy on every push, skip when you want, tailor the build"
+---
+
+Every Frame comes with continuous delivery built in. Push to your tracked branch and Nubo builds and releases the new version automatically. No YAML, no runner setup, no action secrets.
+
+## What happens on every push
+
+When you push to the tracked branch, Nubo:
+
+1. Picks up the new commit from GitHub.
+2. Builds your app.
+3. Runs your release, waits for it to be healthy, and cuts traffic over.
+4. Notifies the dashboard.
+
+No config needed for the default case. Open a Frame, check the **Deployments** tab after pushing, and you'll see the new deploy.
+
+## Connecting your repository
+
+Nubo listens for pushes through the [Nubo GitHub App](https://github.com/apps/nubo-apps). Once it's installed on the account or organization that owns the repo, every Frame that tracks that repo gets push-based deploys out of the box.
+
+If pushes aren't triggering deploys:
+
+- Make sure the Nubo GitHub App is installed and has access to the repo.
+- Check the **CI/CD** tab on the Frame - if auto-deploy is off, turn it back on.
+
+## Skip a deploy on a specific commit
+
+Include one of these tags anywhere in your commit message and Nubo will skip the deploy for that push:
+
+- `[skip ci]`
+- `[ci skip]`
+
+Useful for documentation-only changes, chore commits, or when you want to batch several commits before the next deploy.
+
+You can customize the tags on the Frame's **CI/CD** tab if your team uses a different convention.
+
+## Ignore changes in certain paths
+
+Working on a monorepo or keeping docs in the same repo as your app? Tell Nubo to skip deploys when only certain paths changed:
+
+```
+docs/**
+*.md
+.github/**
+```
+
+If every file in the push matches one of these patterns, Nubo skips the deploy. If anything outside the patterns changed, the deploy runs as usual.
+
+Patterns use shell-style globs. Configure them on the Frame's **CI/CD** tab.
+
+## Override how the build runs
+
+<Note>
+  Root directory, install command, and build command overrides are coming soon. The settings are already in the API and dashboard so you can set your preferences, but the build pipeline honors them in an upcoming release. Today, Nubo auto-detects your language and runs the standard build for you.
+</Note>
+
+Shortly you'll be able to override:
+
+| Setting | When to use it |
+|---------|----------------|
+| **Root directory** | Your app lives in a subfolder of the repo (common in monorepos). |
+| **Install command** | You want a specific install step, e.g. `pnpm install --frozen-lockfile`. |
+| **Build command** | You want a specific build step, e.g. `pnpm build`. |
+
+Leave any of these blank to go back to Nubo's default for your language.
+
+## From the API
+
+Turn auto-deploy off on a Frame:
+
+```bash
+curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/ci \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "auto_deploy": false }'
+```
+
+All the same settings are available - `auto_deploy`, `preview_deploys`, `skip_tags`, `ignored_paths`, `root_directory`, `build_command`, `install_command`. Send only the fields you want to change.
+
+## Related
+
+<Card title="Preview deployments" icon="eye" href="/preview-deployments">
+  A live preview for every pull request
+</Card>
+
+<Card title="Deployments" icon="rocket" href="/deployments">
+  How builds turn into running Frames
+</Card>
+
+<Card title="Environment variables" icon="key" href="/environment-variables">
+  Pass config and secrets into your app
+</Card>

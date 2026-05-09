@@ -1,0 +1,39 @@
+---
+title: "Error codes"
+description: "What every error response looks like"
+---
+
+Every error from the Nubo API follows the same shape:
+
+```json
+{
+  "error": {
+    "internal_code": "D-1h2G29",
+    "message": "frame not found"
+  }
+}
+```
+
+- The HTTP status tells you the broad category (4xx client error, 5xx server error).
+- `internal_code` identifies the specific failure and is stable over time.
+- `message` is a human-readable description. The text may be reworded between releases; your client should not pattern-match on it.
+
+## Using codes in your client
+
+- Branch on `internal_code` only when you need to react to a specific failure (e.g. distinguishing "rate limited" from "invalid token").
+- Use the HTTP status for everything else.
+- Treat unknown codes as the generic category implied by the HTTP status - new codes are added as we add new behavior.
+- Retry `5xx` and `429` with a short backoff. Don't retry `4xx`.
+
+## API version header
+
+| `internal_code` | HTTP | Cause |
+|-----------------|------|-------|
+| `V-Tn4qZ8` | `400` | `Nubo-Version` header isn't an ISO-8601 date (`YYYY-MM-DD`). |
+| `V-Kp7mR2` | `400` | Date is well-formed but not a supported version. |
+
+See [Stability policy](/api-reference/stability) for how versions are cut and retired.
+
+## Stability
+
+Per our [stability policy](/api-reference/stability), the error envelope won't change for a pinned `Nubo-Version`. New codes may be added at any time, but existing codes keep their meaning.

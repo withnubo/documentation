@@ -1,0 +1,88 @@
+---
+title: "Stability policy"
+description: "What we promise not to break, and how versions move"
+---
+
+Good surprises are great. A production script breaking because a field quietly vanished is not one of them. So here's how we handle API changes: you pin your client to a date, we keep that contract steady, and when something really is going to break we give you plenty of notice.
+
+## Pin your client with a header
+
+Send this alongside your token:
+
+```
+Nubo-Version: 2026-05-08
+```
+
+Every response carries a `Nubo-Build` header naming the exact build that served it, so your client can double-check what it actually got.
+
+If you don't send the header, you fall through to the default, which is whatever the **oldest still-supported** version is. New versions never silently upgrade you. Your integration keeps behaving the way it did yesterday until you decide to move.
+
+A good rule of thumb: pin in production, don't bother for one-off scripts or curl sessions.
+
+## Supported versions
+
+| Version | Status | Notes |
+|---------|--------|-------|
+| `2026-05-08` | Current default | First published version. |
+
+## What stays the same when you're pinned
+
+As long as you're pointing at a supported date, the things your client already depends on don't shift. Specifically:
+
+- URLs, path params, and query-string param names keep their shape.
+- Required fields in request bodies stay required, with the same names and types.
+- Fields in 2xx response bodies keep their names, types, and meanings.
+- A `200 OK` endpoint won't start returning `201 Created` tomorrow.
+- Error responses keep the `error.internal_code` / `error.message` envelope.
+- How you present and use your token doesn't change.
+
+## What can quietly improve under you
+
+Some things we change all the time without cutting a new version, because they can't break anyone:
+
+- New endpoints.
+- New optional fields on request bodies.
+- New fields on response bodies. Your client should ignore anything it doesn't recognize.
+- New enum values. Same deal: don't blow up on unknown values.
+- New internal error codes. Key on HTTP status and `internal_code`, and assume the set grows.
+- Looser validation (we accept more of what you were sending).
+- Better rate-limit headroom and longer retention windows.
+
+If you see a new field or endpoint you don't remember, that's why. Nothing you had before has moved.
+
+## What does trigger a new version
+
+We only cut a new date when something would actually break a pinned client. That means:
+
+- A field, endpoint, or enum value gets removed or renamed.
+- An existing field changes type.
+- A response's success status code or error shape changes.
+- Validation tightens on something that used to be accepted.
+- Something about how auth works changes.
+
+When that happens, the new date is the release date of the change, and the old version keeps running alongside for at least one release cycle so you have time to migrate.
+
+## How retirement works
+
+When an old version is on its way out:
+
+1. We announce it in the release notes and name its replacement.
+2. Both versions run in parallel for at least one release cycle. During that window, any response served against the deprecated version includes two extra headers: `Deprecation: true` and `Sunset: <date>` telling your client exactly when it'll stop working. Watch for them in logs, or key on them in code to nudge yourself.
+3. The old one goes away. If you're still pinned to it at that point, you'll get a `400 V-Kp7mR2` back and it's time to bump.
+
+If you were unpinned and riding the default, the default moves up to the next oldest version on the same release, and your client keeps working.
+
+## Errors from the header itself
+
+| HTTP | `internal_code` | What happened |
+|------|-----------------|---------------|
+| `400` | `V-Tn4qZ8` | The header wasn't a valid ISO date (`YYYY-MM-DD`). Typo? |
+| `400` | `V-Kp7mR2` | The date parsed fine, but it's not a version we serve. |
+
+## A few things we don't cover
+
+- Health and telemetry endpoints. They're for us, not for you, and can change shape.
+- The `error.message` text. It's written for humans to read in logs and we reword it occasionally. Pin on `internal_code` instead.
+- Anything not in this API reference.
+
+Spotted something that doesn't match what this page says? [Tell us](mailto:support@withnubo.com).

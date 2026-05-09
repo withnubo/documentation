@@ -20,7 +20,7 @@
                 "tab": "Documentation",
                 "groups": [
                     {
-                        "group": "Get Started",
+                        "group": "Get started",
                         "pages": [
                             "index",
                             "quickstart",
@@ -28,7 +28,7 @@
                         ]
                     },
                     {
-                        "group": "Deployment Guides",
+                        "group": "Deploy guides",
                         "pages": [
                             {
                                 "group": "JavaScript",
@@ -43,19 +43,33 @@
                         ]
                     },
                     {
-                        "group": "Platform",
+                        "group": "Core concepts",
                         "pages": [
+                            "frames",
                             "deployments",
+                            "ci-cd",
+                            "preview-deployments",
+                            "build-logs",
+                            "rollback",
                             "environment-variables",
                             "custom-domains"
                         ]
                     },
                     {
-                        "group": "Self-hosted Agents",
+                        "group": "Self-hosted agents",
                         "pages": [
                             "agents/overview",
                             "agents/quickstart",
                             "agents/advanced"
+                        ]
+                    },
+                    {
+                        "group": "API reference",
+                        "pages": [
+                            "api-reference/authentication",
+                            "api-reference/rate-limits",
+                            "api-reference/error-codes",
+                            "api-reference/stability"
                         ]
                     }
                 ]

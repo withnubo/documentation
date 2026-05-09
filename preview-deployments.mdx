@@ -1,0 +1,56 @@
+---
+title: "Preview deployments"
+description: "A live preview URL for every pull request"
+---
+
+Every pull request gets its own running copy of your app at a unique URL. Share it with your team, click around before you merge, and know that what reviewers see is exactly what will ship.
+
+## How it works
+
+1. A teammate opens a pull request against your tracked branch.
+2. Nubo builds the PR's branch and runs it alongside your production Frame.
+3. The preview gets its own Nubo-assigned subdomain, distinct from the production Frame's URL.
+4. Push a new commit to the PR? Nubo rebuilds the preview.
+5. Merge or close the PR? Nubo tears the preview down.
+
+Production is never affected. Previews run in the same Space and use the same build configuration. [Project-scoped environment variables](/environment-variables) carry over automatically. Frame-scoped variables stay with the production Frame - if you need a secret to be available in previews too, set it at the Project level.
+
+## Enable or disable previews
+
+Open the Frame's **CI/CD** tab. "Preview deployments" is on by default. Turn it off if you don't want previews on a particular Frame.
+
+From the API:
+
+```bash
+curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/ci \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "preview_deploys": false }'
+```
+
+## Finding the preview URL
+
+Check the **Deployments** tab on the Frame; previews show up there labeled with the PR number. Direct link support in the GitHub PR UI (with a comment from Nubo) is on the roadmap.
+
+## What's different from a production deploy
+
+A preview is a separate runtime with its own URL, but otherwise behaves like any other Frame:
+
+- Build steps, language detection, and runtime behavior are identical.
+- Project-scoped [environment variables](/environment-variables) are available in the preview. Frame-scoped ones stay with the production Frame; promote them to the Project level if you need them in previews.
+- [Build logs](/build-logs) are captured the same way.
+- Custom domains are **not** attached to previews - previews use their Nubo-assigned URL only.
+
+## Cleanup
+
+Previews are torn down automatically when the PR is closed (merged or not). If you need to wipe a preview manually before that, delete the corresponding entry from the Deployments tab.
+
+## Related
+
+<Card title="CI/CD" icon="rotate" href="/ci-cd">
+  Tune how Nubo builds on every push
+</Card>
+
+<Card title="Deployments" icon="rocket" href="/deployments">
+  See builds and their status per Frame
+</Card>

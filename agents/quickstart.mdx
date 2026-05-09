@@ -11,7 +11,7 @@ Create an agent from the Nubo dashboard or via the API:
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/agents/register \
-  -H "Authorization: Bearer <your-jwt>" \
+  -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '{"name": "my-server"}'
 ```
@@ -64,7 +64,7 @@ Create a Frame and pass your agent's ID:
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames \
-  -H "Authorization: Bearer <your-jwt>" \
+  -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "my-app",
