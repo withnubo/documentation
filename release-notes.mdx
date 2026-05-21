@@ -2,47 +2,127 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 --- 
+<Update label="May 20th, 2026" tags={["Volumes", "Plans", "Domains", "Frames", "Agents", "Dashboard"]}>
+
+## Storage that sticks around, plans that fit, and a new home at console.withnubo.com
+
+A lot landed since last time. Frames now have storage that lives between deploys, Nubo has real plans you can pick from, custom domains spin up faster with a guided setup, and the dashboard has moved to a new home.
+
+### The dashboard is now at console.withnubo.com
+
+The new address is **[console.withnubo.com](https://console.withnubo.com)**. The old one still works and forwards over, so your bookmarks aren't broken. Update them when you get a chance.
+
+### Volumes
+
+Frames can now keep data between deploys. Attach a volume, give it a mount path, and your files are right there. Redeploy, rollback, restart, doesn't matter: the data stays put.
+
+Sizes go up to 1 TB. You can mount the same volume on more than one Frame in the same Project. Spin one up from the new **Volumes** page on any Project, or from **Quick actions** in the sidebar.
+
+Billing is by the hour for what's attached. Detach or delete and the meter stops.
+
+### Pick a plan that fits
+
+Nubo now has plans. Every new account starts on a **7-day Trial** with full power on us, so you can build something real before you commit.
+
+- **Basic**: side projects and smaller apps.
+- **Platinum**: bigger Frames, faster builds, more storage.
+
+You can pick, change, or cancel a plan any time from the new **Billing** page in your account settings. It's also where you'll find invoices, payment methods, and a running view of your usage.
+
+If a card fails, your Frames keep running for a 7-day grace period while we try again. Sort it out and you're back to normal automatically. No surprises.
+
+### Custom domains, set up in a minute
+
+Adding a custom domain is now a 4-step wizard inside your Frame's settings. Type the hostname, copy the DNS record we give you, and we issue your certificate while you watch. Most domains go live in under a minute. HTTPS is on by default.
+
+### Edit a Frame's port
+
+Switched the port your app listens on? Open Settings, change the number, save. We roll the Frame for you. No more deleting and recreating just because of a port.
+
+### Cleaner Frame settings
+
+The Frame's **Settings** tab got a real rework. Everything sits in clear sections (General, Source, Runtime, Environment variables, Custom domains, Danger zone), with a sticky save bar so you always know if you have unsaved changes. Environment variables now have a reveal toggle, and the Danger zone actually looks like one.
+
+### Agents, smoother all around
+
+Running your own servers? A few things got nicer:
+
+- A new **Agents** page lists every server you've registered, with live status.
+- Registering a new agent walks you through the install command and shows your token once, with a copy button.
+- When you create a Frame, you now explicitly pick **Nubo Cloud** or one of your agents as the deploy target.
+- Delete an agent straight from the row, no extra clicks.
+
+The agents list also moved into your account settings where it belongs.
+
+### Logs that load instantly
+
+Open a Frame's Logs tab and you'll see the last few minutes of output right away, before the live tail kicks in. No more empty pane waiting for the next line.
+
+### In-app announcements
+
+We can now post short updates directly inside the dashboard so you don't have to hunt down release notes to know what's new. Dismiss any one you've already read, and replay them later from your settings if you want.
+
+### A fresh login page
+
+The login screen got a new look with our logo in 3D. There's a small easter egg hidden in there too. Have a click around.
+
+### Smaller things worth mentioning
+
+- Stopped Frames no longer get counted as broken on your dashboard.
+- Runtime logs no longer duplicate themselves when reconnecting.
+- The New Frame modal has a clearer source-and-target flow.
+- New Spaces get a friendly random name instead of "Default" every time.
+- Settings pages are grouped into Account, Developer, and Preferences so they're easier to scan.
+
+### On the security side
+
+GitHub tokens are now encrypted at rest, customer Frames run with tighter sandboxing, and we tightened up a handful of permission checks across the API. Nothing you'll notice day to day. All things worth doing.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
 <Update label="May 9th, 2026" tags={["Agents", "CI/CD", "Previews", "Deployments", "Frames", "Metrics", "Notifications", "Dashboard"]}>
 
 ## Bring your own servers, push to deploy, see what's actually happening, and keep your streak alive
 
-This is the biggest release Nubo has ever shipped, and it changes what the platform is. Self-hosted Agents open the door to running Frames on your own infrastructure, while the managed platform gets real CI/CD, preview URLs for every pull request, one-click rollback, and live visibility into what's running. On top of that, this release adds a metrics tab for every Project, a streak widget that tracks your shipping cadence, transactional email notifications, and a refreshed sidebar built around the work you actually do. No YAML, no runners, no extra services to wire up.
+Big one. Self-hosted Agents let you run Frames on your own servers. The managed platform gets push-to-deploy from GitHub, preview URLs for every pull request, one-click rollback, and status that updates the moment something changes. There's a new metrics tab on every Project, a streak counter in the sidebar, transactional email for the things you'd want to know about, and a sidebar that gets out of your way. No YAML, no runners.
 
 ### Introducing self-hosted Agents
 
 <Frame>
-![Agent setup in the dashboard](/images/release-notes/04-29-2026/agent.png)
+![Agent setup in the dashboard](/images/release-notes/04-29-2026/agent.svg)
 </Frame>
 
-Need to run your workload on specific hardware, keep data on-premise, or use a box you already own? Install the [Nubo Agent](/agents/overview) on your own Linux or macOS server and deploy Frames to it from the dashboard the same way you would to our managed cloud.
+If you want to run on specific hardware, keep data on-premise, or use a server you already own, install the [Nubo Agent](/agents/overview) on Linux or macOS. Deploy Frames to it from the same dashboard you'd use for our managed cloud.
 
-The agent is a lightweight binary that connects back to Nubo and waits for work. One command to install, wildcard DNS to your server, and you're done. Your Frames get their own subdomain on a domain you control, with automatic TLS via ACME.
+The agent is a single binary that connects back to Nubo and waits for work. Install it, point wildcard DNS at your server, and you're set. Your Frames get their own subdomain on a domain you control, with TLS via ACME.
 
-Everything else in this release works the same on self-hosted Agents as it does on managed Frames. Push-to-deploy, preview deployments, live status, deploy history, one-click rollback, project and frame environment variables, custom domains - all of it.
+Everything else in this release works the same on self-hosted Agents as on managed Frames: push-to-deploy, preview deployments, live status, deploy history, one-click rollback, environment variables, custom domains.
 
-See the [Agents overview](/agents/overview) to understand when to reach for one, or jump to [Quickstart](/agents/quickstart) to register and install your first agent.
+See the [Agents overview](/agents/overview) for when to use one, or [Quickstart](/agents/quickstart) to install your first agent.
 
 ### Push to deploy
 
 <Frame>
-![Push-to-deploy flow](/images/release-notes/04-29-2026/push_to_deploy.png)
+![Push-to-deploy flow](/images/release-notes/04-29-2026/push_to_deploy.svg)
 </Frame>
 
-Install the [Nubo GitHub App](https://github.com/apps/nubo-apps) on your repo once and every push to your Frame's tracked branch kicks off a build and release. That's it. Nothing else to configure.
+Install the [Nubo GitHub App](https://github.com/apps/nubo-apps) on your repo. Every push to your Frame's tracked branch triggers a build and release.
 
-Need finer control?
+Three knobs if you need more control:
 
 - `[skip ci]` or `[ci skip]` in a commit message skips that push.
-- **Ignored paths** (e.g. `docs/**`, `*.md`) skip builds when only matching files changed. Great for monorepos or docs-only commits.
+- **Ignored paths** (e.g. `docs/**`, `*.md`) skip builds when only matching files changed. Useful in monorepos or for docs-only commits.
 - **Auto-deploy** can be toggled off if you'd rather trigger builds manually.
 
-Everything is on the Frame's new **CI/CD** tab. See [CI/CD](/ci-cd) for the full tour.
+It all lives on the Frame's new **CI/CD** tab. See [CI/CD](/ci-cd).
 
 ### Personal access tokens for scripted clients
 
-Anything automated that talks to Nubo - a CI runner, a deploy bot, your own scripts - should now use a **personal access token** instead of your login session. Create tokens in **Settings → Developer tokens** with a name and optional expiration, then use them as a `Authorization: Bearer nubo_pat_...` header.
+Anything automated that talks to Nubo (CI runners, deploy bots, your own scripts) should now use a **personal access token** instead of your login session. Create one in **Settings → Developer tokens**, give it a name and an optional expiration, and send it as `Authorization: Bearer nubo_pat_...`.
 
-Tokens are shown exactly once at creation, stored on our side as a hash (never in plaintext), and can be revoked instantly from the same settings page. Give each integration its own token so a leak or team change only affects that one scope of work. See [API authentication](/api-reference/authentication) for the full flow.
+You see the token exactly once at creation. We store it as a hash, never in plaintext, and you can revoke it instantly from the same page. Give each integration its own token so a leak or a team change only affects that scope. See [API authentication](/api-reference/authentication).
 
 ### Date-based API versioning
 
@@ -62,44 +142,44 @@ Production integrations should pin. Scripts and one-offs can skip the header and
 ### Preview deployments for every PR
 
 <Frame>
-![Preview deployment URL in the dashboard](/images/release-notes/04-29-2026/preview_deployments.png)
+![Preview deployment URL in the dashboard](/images/release-notes/04-29-2026/preview_deployments.svg)
 </Frame>
 
-Every pull request opened against your tracked branch now gets its own running copy of the app at a Nubo-assigned URL. Share with teammates, click around, show a customer what's coming, and know that what they see is exactly what will ship.
+Every pull request against your tracked branch now gets its own running copy of the app at a Nubo-assigned URL. Share it with teammates, click around, show a customer what's coming. What they see is what will ship.
 
-Previews rebuild on every push to the PR and tear themselves down automatically when the PR closes. Project-scoped [environment variables](/environment-variables) carry over, so secrets and config work out of the box. See [Preview deployments](/preview-deployments).
+Previews rebuild on every push to the PR and tear themselves down when the PR closes. Project-scoped [environment variables](/environment-variables) carry over, so your secrets and config keep working. See [Preview deployments](/preview-deployments).
 
 ### One-click rollback
 
 <Frame>
-![Rollback button in the dashboard](/images/release-notes/04-29-2026/rollback.png)
+![Rollback button in the dashboard](/images/release-notes/04-29-2026/rollback.svg)
 </Frame>
 
-Shipped a bad commit? Pick any previous working deploy from the Deployments tab and hit **Rollback**. Your Frame is back on the good version within seconds, no rebuild needed. Works identically on our managed cloud and on self-hosted Agents. See [Rollback](/rollback).
+Shipped a bad commit? Open the Deployments tab, pick a previous working deploy, hit **Rollback**. Your Frame is back on that version in seconds, no rebuild. Same on managed cloud and self-hosted Agents. See [Rollback](/rollback).
 
 ### Cancel a deploy in progress
 
-Pushed the wrong commit, or watching a build chew through what you already know is going to fail? Hit **Cancel** on a still-building deploy and Nubo stops it right where it is. Your Frame stays on whatever was already running, so there's no harm in pulling the cord. See [Cancel a deploy](/deployments#cancel-a-deploy-in-progress).
+Pushed the wrong commit, or watching a doomed build run to the end? Hit **Cancel** on a still-building deploy and Nubo stops it. Your Frame stays on whatever was already running, so there's no harm in pulling the cord. See [Cancel a deploy](/deployments#cancel-a-deploy-in-progress).
 
 ### Stop and start a Frame
 
-Need to take a Frame offline for a bit without losing its config, deploy history, or domain? Hit **Stop** to pause it (replicas scale to zero, or the agent container is stopped on a self-hosted setup) and **Start** to bring it back up later. Everything else about the Frame is kept exactly where you left it. See [Stop and start a Frame](/frames#stop-and-start-a-frame).
+Hit **Stop** to take a Frame offline: replicas scale to zero on our cloud, the container stops on a self-hosted agent. Hit **Start** to bring it back. Config, deploy history, and domains stay where they were. See [Stop and start a Frame](/frames#stop-and-start-a-frame).
 
 ### Live Frame status
 
 <Frame>
-![Live Frame status in the dashboard](/images/release-notes/04-29-2026/runtime_status.png)
+![Live Frame status in the dashboard](/images/release-notes/04-29-2026/runtime_status.svg)
 </Frame>
 
-Your Frame's status now updates in the dashboard the moment it changes. No refresh, no five-second poll. If an app crashes, runs out of memory, or fails its health check, the dashboard flips to an error state and surfaces the reason right there. You're not digging through logs just to figure out something's wrong.
+Your Frame's status updates in the dashboard the moment it changes. No refresh, no polling. If an app crashes, runs out of memory, or fails its health check, the dashboard flips to an error state and shows the reason. You shouldn't have to read logs to find out something's wrong.
 
 ### A real deploy history
 
 <Frame>
-![Deployment history](/images/release-notes/04-29-2026/deployment_history.png)
+![Deployment history](/images/release-notes/04-29-2026/deployment_history.svg)
 </Frame>
 
-Every build is now a first-class record. Open the Frame's **Deployments** tab and you'll see the commit, the time, the trigger source, and whether it succeeded. Pull the same data programmatically:
+Every build is now a record you can browse. Open the Frame's **Deployments** tab to see the commit, the time, what triggered the deploy, and whether it succeeded. Pull the same data programmatically:
 
 ```bash
 curl "https://shuttle.withnubo.com/v2/projects/<p>/spaces/<s>/frames/<f>/deployments?limit=20" \
@@ -108,7 +188,7 @@ curl "https://shuttle.withnubo.com/v2/projects/<p>/spaces/<s>/frames/<f>/deploym
 
 ### Build logs, captured on every build
 
-Every build's full output is captured the moment the build finishes, whether it succeeded or failed, so postmortems and flaky-build comparisons just work. Build logs are kept for 7 days, and the latest deploy of each Frame is always kept on top of that, so you'll never lose your most recent log even if the rest of the window has aged out. Past 7 days we return a clear "expired" signal so you can tell aged-out logs apart from a genuine fetch error.
+Every build's full output is captured the moment the build finishes, success or failure. Build logs are kept for 7 days. The latest deploy of each Frame is kept on top of that, so you'll always have the most recent log even if older ones have aged out. Past 7 days, we return an "expired" signal so you can tell aged-out logs from a real fetch error.
 
 ### Live runtime logs
 
@@ -116,23 +196,23 @@ The Frame's Logs tab now streams live lines from your running app, not just buil
 
 ### Custom domains for any Frame
 
-Bring your own hostname. Add a custom domain from the Frame's Domains tab, point your CNAME or A record where Nubo tells you to, and we handle TLS end to end. Domains are managed per-Frame, so the same Project can serve `app.example.com` from production and `staging.example.com` from your staging Space without any config plumbing. Works the same way on self-hosted Agents under the wildcard you configured. See [Custom domains](/custom-domains).
+Bring your own hostname. Add a custom domain from the Frame's Domains tab, point your CNAME or A record at the value Nubo gives you, and we handle TLS. Domains are managed per Frame, so the same Project can serve `app.example.com` from production and `staging.example.com` from your staging Space. Works the same on self-hosted Agents under your wildcard. See [Custom domains](/custom-domains).
 
 ### Auto-pause for crashlooping Frames
 
-If a Frame's container crashes or runs out of memory five times in a row, or stays stuck pulling its image for more than three minutes, Nubo automatically scales it to zero and surfaces a `backoff_tripped` reason on the Frame's status. The next push (or hitting Deploy) scales it back up, so a fresh image automatically clears the trip. You no longer have to babysit a stuck Frame: the platform takes it out of the loop until you ship a fix.
+If a Frame crashes or runs out of memory five times in a row, or stays stuck pulling its image for more than three minutes, Nubo scales it to zero and shows a `backoff_tripped` reason on the status. The next push (or a manual Deploy) scales it back up, so a fresh image clears the trip. The platform takes a stuck Frame out of the loop until you ship a fix.
 
 ### A metrics tab for every Project
 
-Open any Project and you'll find a new **Metrics** tab in the header. It's the answer to "how is this thing actually doing?":
+Open any Project and there's a new **Metrics** tab in the header. It answers the "how is this thing actually doing?" question:
 
 - **Health at a glance**: total Frames, how many are online, how many need attention.
-- **Live CPU and memory**: the last 7 days plotted as smooth area charts so trends are obvious.
-- **Build performance**: p50, p95, and average build time over the last 14 days. Builds creeping up? You'll see it.
-- **Per-Frame breakdown**: replicas, domains, deploy count, failure count, mean time to recover from a bad deploy, and the time of the last deploy. Sort by anything.
-- **A 14-day deploy bar chart** with success and failure layered, so a flaky run sticks out.
+- **CPU and memory**: the last 7 days as area charts.
+- **Build performance**: p50, p95, and average build time over the last 14 days, so you can spot when builds start creeping up.
+- **Per-Frame breakdown**: replicas, domains, deploy count, failure count, mean time to recover from a bad deploy, and the time of the last deploy. Sortable by any column.
+- **A 14-day deploy bar chart** with success and failure layered, so flaky runs stick out.
 
-The Project page also gets a compact preview of the metrics right under the architecture, so you don't have to switch tabs to take the temperature.
+The Project page gets a compact preview of the metrics under the architecture, so you can take the temperature without switching tabs.
 
 ### Build a streak
 
@@ -173,19 +253,19 @@ No more bouncing through Settings to do a redeploy.
 
 ### Pull from your organization repos
 
-If you'd installed the Nubo GitHub App on an organization but only saw your personal repos when creating a Frame, that's fixed. The repo picker now spans every installation you have access to on GitHub - personal account first, then each org you belong to. Repos with the same name across different owners are now keyed by full path, so no more collisions.
+If you installed the Nubo GitHub App on an organization but only saw your personal repos when creating a Frame, that's fixed. The repo picker now spans every installation you have access to on GitHub: personal account first, then each org you belong to. Repos with the same name across different owners are now keyed by full path, so no more collisions.
 
 ### A sidebar that gets out of your way
 
 <Frame>
-![Collapsed sidebar with activity heatmap and account dropdown](/images/release-notes/05-08-2026/collapsed_sidebar.png)
+![Collapsed sidebar with activity heatmap and account dropdown](/images/release-notes/05-08-2026/collapsed_sidebar.svg)
 </Frame>
 
-Hit the new chevron in the sidebar header to collapse it to a thin icon-only strip. Each Project shows up as a colored tile with its initials so you can still pick one without expanding. The notification ping moves onto your avatar at the bottom-left so you don't miss anything. Click the avatar to get a small Profile / Sign out menu in either state.
+Hit the new chevron in the sidebar header to collapse it to a thin icon-only strip. Each Project shows up as a colored tile with its initials, so you can still pick one without expanding. The notification ping moves onto your avatar at the bottom-left. Click the avatar for a small Profile / Sign out menu, in either state.
 
 ### A visual refresh
 
-The architecture canvas, Frame tiles, Frame sidebar, and metrics view have all been pulled into the same console-style design language as the home dashboard - flat surfaces, mono captions, clean status pills. No more status-tinted gradient backgrounds; status now lives in a small dot and a label, so failed Frames stay easy to spot without painting half the sidebar red.
+The architecture canvas, Frame tiles, Frame sidebar, and metrics view now share the same console-style look as the home dashboard: flat surfaces, mono captions, clean status pills. No more status-tinted gradient backgrounds. Status lives in a small dot and a label, so failed Frames stay easy to spot without painting half the sidebar red.
 
 ### Other fixes
 
@@ -197,9 +277,7 @@ The architecture canvas, Frame tiles, Frame sidebar, and metrics view have all b
 - Updating a Frame's settings no longer affects unrelated fields.
 - Fetching a single Frame via the API now works correctly under the full path.
 
-### Conclusion
-
-That's a wrap for this release notes. We hope you enjoyed these new updates. If you have any feedback, feel free to email us at `support@withnubo.com` or join our [Discord](https://discord.com/invite/4SM4faYqWQ)
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
 
 </Update>
 

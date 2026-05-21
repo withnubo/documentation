@@ -52,7 +52,14 @@
                             "build-logs",
                             "rollback",
                             "environment-variables",
-                            "custom-domains"
+                            "custom-domains",
+                            "volumes"
+                        ]
+                    },
+                    {
+                        "group": "Account",
+                        "pages": [
+                            "plans"
                         ]
                     },
                     {
@@ -96,7 +103,7 @@
         "primary": {
             "type": "button",
             "label": "Sign in",
-            "href": "https://apps.withnubo.com/login"
+            "href": "https://console.withnubo.com/login"
         }
     },
     "contextual": {

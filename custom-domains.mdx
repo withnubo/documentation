@@ -3,11 +3,22 @@ title: "Custom domains"
 description: "Serve a Frame under your own hostname"
 ---
 
-Every Frame gets a Nubo-assigned domain out of the box. When you're ready to go live you can attach a custom domain - anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain - and Nubo will serve the Frame there with HTTPS.
+Every Frame gets a Nubo-assigned domain out of the box. When you're ready to go live you can attach a custom domain (anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain) and Nubo will serve the Frame there with HTTPS.
 
 The exact DNS you'll set up depends on whether the Frame runs on **managed** infrastructure (our cloud) or a **self-hosted agent** (your own server). The API is the same either way.
 
-## Add a domain
+## Add a domain from the dashboard
+
+Open the Frame's **Settings** tab and find the **Custom domains** section. Hit **Add domain** and the setup wizard walks you through four steps:
+
+1. **Enter** your hostname.
+2. **Update DNS** with the record we give you.
+3. **Issuing TLS**: we wait for your certificate to be issued and show progress while it happens.
+4. **Live**: the domain is serving traffic.
+
+Most domains go from added to live in under a minute once DNS has propagated. HTTPS is on by default.
+
+## Add a domain via the API
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains \
@@ -20,7 +31,7 @@ The response tells you exactly which DNS records to create. The shape differs by
 
 ### Managed Frames
 
-You'll create two records - a CNAME for traffic and a TXT for domain verification:
+You'll create a single CNAME record pointing at the value Nubo gives you back:
 
 ```json
 {
@@ -29,23 +40,18 @@ You'll create two records - a CNAME for traffic and a TXT for domain verificatio
     "record_type": "CNAME",
     "record_name": "shop.mystore.com",
     "record_value": "<value returned by the API>"
-  },
-  "verification": {
-    "record_type": "TXT",
-    "record_name": "_verify.shop.mystore.com",
-    "record_value": "<value returned by the API>"
   }
 }
 ```
 
-Add both to your registrar. Then tell Nubo to verify:
+Add it to your registrar. Then tell Nubo to verify:
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains/shop.mystore.com/verify \
   -H "Authorization: Bearer <your-token>"
 ```
 
-Once verification succeeds, Nubo issues a certificate and routes traffic to your Frame. You can call `/verify` again any time to re-poll.
+Once DNS resolves to the right target, Nubo issues a free certificate and starts serving traffic at your hostname. You can call `/verify` again any time to re-poll.
 
 ### Self-hosted agent Frames
 
@@ -100,8 +106,8 @@ Returns the Frame's system domain(s) plus every custom domain attached, with the
 
 ### Status stuck on `pending`
 
-- **Managed:** the TXT verification record isn't in place or hasn't propagated. Re-check your DNS and call `/verify` again.
-- **Agent:** the agent was offline when the domain was added. Restart the agent - the domain applies on the next reconnect.
+- **Managed:** your CNAME isn't resolving to the value Nubo handed you yet. Re-check your DNS (`dig shop.mystore.com`) and call `/verify` again.
+- **Agent:** the agent was offline when the domain was added. Restart the agent and the domain will apply on the next reconnect.
 
 ### TLS certificate error
 

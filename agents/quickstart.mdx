@@ -7,7 +7,16 @@ This guide walks you through registering an agent, installing it on your server,
 
 ## 1. Register an agent
 
-Create an agent from the Nubo dashboard or via the API:
+The easiest way is from the dashboard. Open **Settings → Compute → Agents** and hit **Register agent**. Give your server a name and Nubo hands you back two things:
+
+- An **install command** you can paste straight into your server's terminal.
+- A **registration token** that's shown exactly once. Click the copy button.
+
+<Note>
+  Tokens are shown one time only. If you lose it, register a new agent.
+</Note>
+
+Prefer the API?
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/agents/register \
@@ -16,7 +25,7 @@ curl -X POST https://shuttle.withnubo.com/v2/agents/register \
   -d '{"name": "my-server"}'
 ```
 
-You'll get back an agent ID and a token:
+You'll get back:
 
 ```json
 {
@@ -25,10 +34,6 @@ You'll get back an agent ID and a token:
   "token": "agt_xK9mR2..."
 }
 ```
-
-<Note>
-  Save the token. It's only shown once, and if you lose it you'll need to register a new agent.
-</Note>
 
 ## 2. Install the agent
 
@@ -60,7 +65,9 @@ If you're using Cloudflare, create an A record for `*.frames` pointing to your s
 
 ## 4. Deploy a Frame
 
-Create a Frame and pass your agent's ID:
+In the dashboard, click **New Frame**. After picking your repo, you'll see a **Deploy target** picker: choose your agent from the list instead of Nubo Cloud.
+
+Prefer the API? Pass the agent's ID when you create the Frame:
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames \

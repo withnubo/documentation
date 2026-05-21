@@ -70,7 +70,18 @@ Both return `202 Accepted`. The Frame moves through **Stopped** and back to **On
 
 ## Update a Frame's settings
 
-Rename, change the branch, or scale up the replica count from the Frame's **Settings** tab. None of these retriggers a deploy on their own - push a commit or hit **Deploy** when you're ready to roll the change out.
+The Frame's **Settings** tab groups everything you can change into clear sections (General, Source, Runtime, Environment variables, Custom domains, Danger zone). A sticky save bar at the bottom tracks unsaved changes so you always know if something is pending.
+
+You can:
+
+- Rename the Frame.
+- Switch the branch Nubo watches.
+- Change the port your app listens on.
+- Scale the replica count up or down.
+- Update environment variables.
+- Attach or remove [custom domains](/custom-domains) and [volumes](/volumes).
+
+Renaming, changing branches, or editing env variables doesn't redeploy by itself. Push a commit or hit **Deploy** when you're ready.
 
 Via API:
 
@@ -83,9 +94,14 @@ curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<spac
     "git_repository_name": "my-repo",
     "git_repository_owner": "my-github-user",
     "git_repository_branch": "main",
+    "port": 3000,
     "replica_count": 2
   }'
 ```
+
+<Note>
+  Changing the port re-rolls the Frame so the new value takes effect. Picks must be between 1024 and 65535.
+</Note>
 
 ## Delete a Frame
 
@@ -110,4 +126,8 @@ Any custom domains attached to the Frame are released at the same time.
 
 <Card title="Custom domains" icon="globe" href="/custom-domains">
   Serve a Frame at your own hostname
+</Card>
+
+<Card title="Volumes" icon="database" href="/volumes">
+  Add persistent storage to a Frame
 </Card>
