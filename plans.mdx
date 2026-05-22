@@ -1,0 +1,67 @@
+---
+title: "Plans and billing"
+description: "What each plan includes and how billing works"
+---
+
+Nubo has three plans: **Trial**, **Basic**, and **Platinum**. Pick one from the **Billing** page in your account settings.
+
+## What each plan includes
+
+| | Trial | Basic | Platinum |
+|---|---|---|---|
+| Duration | 7 days | Monthly | Monthly |
+| Build power | Full | Standard | Faster (more CPU and memory) |
+| Frame size | Full | Smaller containers | Larger containers |
+| Volumes | Yes | Lower caps | Higher caps |
+| Custom domains | Yes | Yes | Yes |
+| Build priority | Standard | Standard | Priority queue |
+| Support | Community + email | Community + email | Priority email |
+
+Every new account starts on the Trial with full Platinum-tier power, so you can build something real before you commit. When the 7 days are up, pick a paid plan to keep deploying.
+
+## The Billing page
+
+The **Billing** page (under your account settings) is where you'll find:
+
+- Your current plan and renewal date.
+- Buttons to upgrade, downgrade, or cancel.
+- Invoice history and payment methods.
+- A live view of your usage (build minutes, GB-hours of storage).
+
+Plan changes happen through Stripe. Cards, invoices, and receipts are managed there too.
+
+## What happens if a payment fails
+
+We don't pull the rug. If a charge doesn't go through, your account moves into a **7-day grace period**. Your Frames keep running and you'll see a banner in the dashboard.
+
+If you sort the payment out during grace, everything goes back to normal automatically. If grace expires without a successful charge, the account moves to **suspended**: your Frames are paused and deploys are blocked until you update your payment method or pick a new plan.
+
+You won't lose data. Volumes, environment variables, custom domains, deploy history, and your repos all stay where they are. Resume the account and the Frames come back online on the next reconcile.
+
+## Switching plans
+
+You can upgrade or downgrade at any time. Upgrades take effect immediately; downgrades take effect at the end of your current billing cycle. Cancellations stop renewal at the end of the cycle and keep your account on the free trial limits afterward.
+
+## FAQ
+
+**Can I change plans mid-cycle?**
+Yes. Upgrades are prorated and applied immediately. Downgrades take effect at the next renewal.
+
+**Do unused build minutes roll over?**
+No, they reset each cycle.
+
+**What happens to my volumes if I downgrade?**
+Existing volumes keep working. If you go below your new plan's caps, you won't be able to create new volumes until you're under the limit.
+
+**How do I cancel?**
+Open the **Billing** page and click **Cancel plan**. You'll keep access until the end of the cycle.
+
+## Related
+
+<Card title="Volumes" icon="database" href="/volumes">
+  Storage limits per plan
+</Card>
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  What you can run on each plan
+</Card>

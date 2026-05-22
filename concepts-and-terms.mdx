@@ -36,3 +36,11 @@ Use case: Spaces allow for previewing or testing changes before hitting producti
 ### Frames
 
 Frames represent the actual resource that is running and they exist on a Project’s Space. Frames are connected to a git repository and are assigned a domain upon their creation. Deployment triggers can be setup for CI/CD.
+
+### Volumes
+
+Volumes are blocks of persistent storage attached to one or more Frames in a Project. Files written into a volume's mount path stick around across redeploys, rollbacks, and restarts. See [Volumes](/volumes).
+
+### Plans
+
+Plans set what you can do on Nubo: how much compute your Frames get, how much storage you can hold, and how fast your builds run. Every account starts on a 7-day Trial. See [Plans and billing](/plans).

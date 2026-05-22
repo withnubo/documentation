@@ -1,0 +1,124 @@
+---
+title: "Advanced"
+description: "Configuration, service management, and troubleshooting"
+---
+
+## Installer options
+
+The installer accepts flags to skip prompts or customize the installation:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-agent/install.sh | bash -s -- [OPTIONS]
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--token` | Agent token | prompted |
+| `--domain` | Base domain for Frame subdomains | prompted |
+| `--shuttle-url` | Shuttle API URL | `wss://shuttle.withnubo.com` |
+| `--state-dir` | Where the agent keeps its state | `/var/lib/nubo-agent` |
+| `--install-dir` | Where to install the binary | `/usr/local/bin` |
+| `--version` | Agent version to install | `latest` |
+| `--skip-deps` | Don't install dependencies | |
+| `--skip-service` | Don't create a background service | |
+
+## Running manually
+
+If you skipped the service setup or want to run the agent in the foreground:
+
+```bash
+nubo-agent \
+  --token agt_xK9mR2... \
+  --domain frames.example.com \
+  --shuttle-url wss://shuttle.withnubo.com \
+  --state-dir /var/lib/nubo-agent
+```
+
+You can also use environment variables instead of flags:
+
+```bash
+export NUBO_AGENT_TOKEN=agt_xK9mR2...
+export NUBO_BASE_DOMAIN=frames.example.com
+export NUBO_SHUTTLE_URL=wss://shuttle.withnubo.com
+export NUBO_STATE_DIR=/var/lib/nubo-agent
+nubo-agent
+```
+
+Set `RUST_LOG=debug` for verbose logging.
+
+## Managing the service
+
+<CodeGroup>
+
+```bash Linux
+# Start
+sudo systemctl start nubo-agent
+
+# Stop
+sudo systemctl stop nubo-agent
+
+# Restart
+sudo systemctl restart nubo-agent
+
+# View logs
+journalctl -fu nubo-agent
+
+# Check status
+sudo systemctl status nubo-agent
+```
+
+```bash macOS
+# Start
+launchctl load ~/Library/LaunchAgents/com.withnubo.agent.plist
+
+# Stop
+launchctl unload ~/Library/LaunchAgents/com.withnubo.agent.plist
+
+# View logs
+tail -f ~/Library/Logs/nubo-agent/stdout.log
+tail -f ~/Library/Logs/nubo-agent/stderr.log
+```
+
+</CodeGroup>
+
+## Resetting state
+
+The agent keeps its state in the state directory (default `/var/lib/nubo-agent`). If you need a clean slate, stop the agent and clear that directory.
+
+## Private repositories
+
+Private GitHub repositories work automatically, as long as the [Nubo GitHub App](https://github.com/apps/nubo-apps) is installed on the account with access to the repo.
+
+## Network requirements
+
+The agent needs:
+
+- **Outbound** to `shuttle.withnubo.com` (or your custom Shuttle URL)
+- **Outbound HTTPS** to `github.com` for cloning repos
+- **Inbound HTTP/HTTPS** on your domain for serving Frames (ports 80 and 443)
+
+The agent opens the connection to Nubo itself, so you don't need to expose any inbound ports for the control plane.
+
+## Troubleshooting
+
+### Agent won't connect
+
+Check that the token is correct and the agent can reach the Shuttle URL:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" https://shuttle.withnubo.com/v2/agents/connect
+```
+
+If you get `401`, the token is invalid. Register a new agent to get a fresh token.
+
+### Build fails
+
+Check the agent logs for the full error output. Common causes:
+
+- **Docker isn't running.** Start it with `sudo systemctl start docker`.
+- **Out of disk space.** Builds can take up a lot of space over time. Run `docker system prune` to clean up.
+
+### Frame not accessible
+
+- Verify your wildcard DNS record resolves: `dig <frame-id>.frames.example.com`
+- Check the agent logs for errors from the most recent build

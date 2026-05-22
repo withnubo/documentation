@@ -1,0 +1,91 @@
+---
+title: "Deployments"
+description: "How Nubo turns a git push into a running app"
+---
+
+A deployment is one build-and-release of a [Frame](/frames). Nubo builds the new version, waits for it to be healthy, and only then cuts traffic over. If anything goes wrong, the previous version keeps serving.
+
+## Deploy your app
+
+Three ways to kick off a deploy:
+
+- **Push.** Every push to the tracked branch triggers a build automatically. You can turn this off or add skip rules from the Frame's [CI/CD](/ci-cd) tab.
+- **Pull request.** Opening or updating a PR against the tracked branch creates a [preview deployment](/preview-deployments) with its own URL.
+- **Manual.** From the dashboard, hit **Deploy** on the Frame to rebuild the current revision. Handy after changing env vars or if GitHub webhooks are ever delayed.
+
+From the API:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments \
+  -H "Authorization: Bearer <your-token>"
+```
+
+## The five steps of a deploy
+
+1. **Trigger.** Push or manual. The deploy shows as **Queued** until a builder picks it up.
+2. **Clone.** Nubo pulls the current revision of the tracked branch.
+3. **Build.** Nubo detects your language and produces a deployable artifact. No Dockerfile required.
+4. **Release.** The new version starts. Nubo waits for it to be healthy, then cuts traffic over.
+5. **Done.** The Frame shows as **Online** in the dashboard and the previous version is retired.
+
+If anything fails, the Frame stays on the previous version and the error is waiting for you in the [build logs](/build-logs).
+
+## Cancel a deploy in progress
+
+Pushed the wrong commit, or want to stop a long build before it finishes? Hit **Cancel** on a deploy that's still building from the **Deployments** tab, or:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments/<deployment_id>/cancel \
+  -H "Authorization: Bearer <your-token>"
+```
+
+The deploy moves to **Canceled** and the Frame stays on whatever was already running. Already-succeeded deploys can't be cancelled; use [Rollback](/rollback) to revert to a previous version instead.
+
+## Deployment history
+
+Every deploy - successful or failed - is recorded. Open the **Deployments** tab on a Frame to see the commit, the time, and what happened.
+
+From the API:
+
+```bash
+curl "https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments?limit=20" \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Add `?latest=true` to just get the current one.
+
+## What counts as a successful build
+
+By default: the build finishes without error, the app starts, and your process doesn't crash within the first 10 seconds. Anything stricter - health checks, smoke tests - is on your app to expose.
+
+## Branches and Spaces
+
+Spaces let you run the same app in different environments. A typical setup is:
+
+- `dev` Frame tracks `develop`
+- `staging` Frame tracks a release branch
+- `production` Frame tracks `main`
+
+Each Space has its own variables, its own domain, and its own deploy history, so you can try things in `dev` without affecting production. See [Environment variables](/environment-variables) for how to give each Space its own secrets.
+
+## Related
+
+<Card title="Build logs" icon="file-lines" href="/build-logs">
+  See what happened during any recent build
+</Card>
+
+<Card title="Rollback" icon="rotate-left" href="/rollback">
+  Revert to a previous deploy in one click
+</Card>
+
+<Card title="Frames" icon="cube" href="/frames">
+  Runtime status, replicas, and Frame settings
+</Card>
+
+<Card title="CI/CD" icon="rotate" href="/ci-cd">
+  Tune how Nubo builds on every push
+</Card>
+
+<Card title="Preview deployments" icon="eye" href="/preview-deployments">
+  A preview URL for every pull request
+</Card>

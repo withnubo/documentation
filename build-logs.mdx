@@ -1,0 +1,54 @@
+---
+title: "Build logs"
+description: "See what happened during any recent build"
+---
+
+Every time Nubo builds your app, it captures the full output - what was installed, what compiled, what started. Logs are kept long enough that you can look back at a build that succeeded last Tuesday or the one that failed five deploys ago.
+
+## From the dashboard
+
+Open your Frame and click **Deployments**. Pick any deployment from the list to see its logs. Builds that are in progress stream live; older ones load from the archive.
+
+If a deploy fails, the logs are the first place to look - Nubo highlights the error line to save you scrolling.
+
+## From the API
+
+```bash
+curl "https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments/<deployment_id>/logs" \
+  -H "Authorization: Bearer <your-token>"
+```
+
+The response is the raw build output as plain text.
+
+## What you'll see
+
+For most apps, the logs walk through:
+
+1. **Clone.** The commit Nubo checked out.
+2. **Detect.** The language and framework Nubo picked up on.
+3. **Install.** Dependencies being pulled in.
+4. **Build.** Asset compilation or production bundling.
+5. **Start.** Your app's entry point running, and the health check result.
+
+If a step fails, the logs stop there and the error message is the last thing printed.
+
+## How long logs stick around
+
+Build logs are kept for **7 days**. The latest deploy of each Frame is always kept on top of that, so you'll never lose your most recent log even if the rest of the window has aged out.
+
+After the window:
+
+- The dashboard marks the deployment's logs as expired.
+- The API returns `410 Gone` when you ask for them.
+
+If you need long-term retention (for compliance, for your own debugging archive, etc.), pull the logs before they expire and store them wherever you store your own data.
+
+## Related
+
+<Card title="Deployments" icon="rocket" href="/deployments">
+  Trigger a deploy and see its history
+</Card>
+
+<Card title="Rollback" icon="rotate-left" href="/rollback">
+  Quickly revert to a known-good deploy
+</Card>

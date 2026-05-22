@@ -1,0 +1,47 @@
+---
+title: "What are Agents?"
+description: "Deploy Frames on your own infrastructure with Nubo Agents"
+---
+
+Nubo Agents let you run your applications on your own machines instead of our managed cloud. You get the same deployment experience (git push, build, deploy) but the workload runs on hardware you control.
+
+## How it works
+
+An agent is a lightweight binary that runs on your server. It connects back to Nubo and waits for work. When you deploy a Frame to an agent, the build and the runtime both happen on your machine.
+
+<Frame>
+  <img src="/images/agent-architecture.png" alt="Agent architecture diagram" />
+</Frame>
+
+Here's what happens when you deploy:
+
+1. You create a Frame in Nubo and pick which agent should run it
+2. Nubo sends the work down to your agent
+3. The agent builds your app and starts it on your server
+4. Your Frame is served at its own subdomain on your domain, or at a [custom domain](/custom-domains) you attach
+5. Build logs stream back to the Nubo dashboard in real time
+
+## When to use agents
+
+Agents are a good fit when you:
+
+- Need to run workloads on specific hardware (GPUs, high memory, etc.)
+- Want to keep data on-premise for compliance reasons
+- Already have servers and want to use them
+- Want more control over the runtime environment
+
+If none of that applies, our managed infrastructure works out of the box with no setup.
+
+## What you'll need
+
+- A Linux or macOS machine with Docker installed
+- A domain with a wildcard DNS record pointing to your server (for Frame subdomains)
+- A Nubo account
+
+<Card title="Get started" icon="rocket" href="/agents/quickstart">
+  Set up your first agent in a few minutes
+</Card>
+
+<Card title="Custom domains" icon="globe" href="/custom-domains">
+  Serve a Frame at your own hostname
+</Card>

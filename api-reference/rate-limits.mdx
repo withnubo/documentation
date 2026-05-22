@@ -1,0 +1,35 @@
+---
+title: "Rate limits"
+description: "Per-user limits on API write calls"
+---
+
+Nubo applies per-user rate limits to prevent runaway scripts from swamping the API. Normal dashboard use never hits them. Scripted clients should just handle `429` gracefully.
+
+## What's limited
+
+Write calls (create, update, delete, rollback) are limited. Read calls (`GET`) are not. You can poll your deployments or your Frame status as often as you like.
+
+Limits are per-user, counted over a 60-second window. Writes are limited conservatively; the exact thresholds are tuned over time based on usage patterns and aren't part of our stability contract.
+
+## If you hit the limit
+
+You'll get back:
+
+```json
+{
+  "error": {
+    "internal_code": "Q-9pRt2M",
+    "message": "too many requests"
+  }
+}
+```
+
+Wait up to 60 seconds and retry, and you'll be back in business.
+
+## Handling rate limits in your client
+
+A well-behaved client:
+
+- Backs off on `429` with a short exponential delay (e.g. 2s, 4s, 8s, capped at 60s).
+- Shares one token across one client, not per-request - running many workers behind the same token multiplies your write rate.
+- Logs the `internal_code` so rate-limit rejections are easy to tell apart from other failures.

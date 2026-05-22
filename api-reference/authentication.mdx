@@ -1,0 +1,63 @@
+---
+title: "Authentication"
+description: "How to authenticate against the Nubo API"
+---
+
+Every API call needs a personal access token in the `Authorization` header.
+
+```bash
+curl https://shuttle.withnubo.com/v2/projects \
+  -H "Authorization: Bearer nubo_pat_..." \
+  -H "Nubo-Version: 2026-05-08"
+```
+
+<Tip>
+  The `Nubo-Version` header pins your client to a specific contract. Production integrations should always pin. See [Stability policy](/api-reference/stability) for how versions are cut and retired.
+</Tip>
+
+## Create a token
+
+1. Open the [Nubo dashboard](https://console.withnubo.com).
+2. Go to **Settings → Developer tokens**.
+3. Click **New token**, give it a name (e.g. "ci-runner", "deploy-bot", "local-dev"), optionally pick an expiration, and create it.
+4. Copy the token immediately. It starts with `nubo_pat_` and it's shown exactly once.
+
+<Warning>
+  The raw token is displayed **once** at creation. If you lose it, create a new one - Nubo cannot recover the original.
+</Warning>
+
+## What a token can do
+
+A token inherits your account's permissions. With it you can:
+
+- Manage your Projects, Spaces, and Frames.
+- Create, update, and delete environment variables.
+- Trigger deploys and rollbacks.
+- Attach and verify custom domains.
+
+Give each integration its own token. That way a leak or team change only invalidates one scope of work, not your whole account.
+
+## Rotate or revoke a token
+
+From **Settings → Developer tokens**, hit **Revoke** next to any token. Revoked tokens stop working immediately on the next request.
+
+To rotate, create a new token, update whatever's using the old one, and revoke the old one.
+
+## Expiration
+
+Tokens can be created with or without an expiration. If you set one, the token stops working at that time without any extra action. If you don't, it works until you revoke it.
+
+Short expirations (7 or 30 days) are a good fit for tokens that live on shared machines or in cloud builders. Longer-lived tokens are fine for your own laptop or a machine you fully control.
+
+## If a token is invalid
+
+```json
+{
+  "error": {
+    "internal_code": "A-2g9kwl",
+    "message": "missing or invalid auth credentials"
+  }
+}
+```
+
+See [Error codes](/api-reference/error-codes) for the shape of every error response.

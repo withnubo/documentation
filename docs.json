@@ -20,14 +20,15 @@
                 "tab": "Documentation",
                 "groups": [
                     {
-                        "group": "Overview",
+                        "group": "Get started",
                         "pages": [
                             "index",
+                            "quickstart",
                             "concepts-and-terms"
                         ]
                     },
                     {
-                        "group": "Deployment Guides",
+                        "group": "Deploy guides",
                         "pages": [
                             {
                                 "group": "JavaScript",
@@ -39,6 +40,43 @@
                             },
                             "deploy-guides/golang",
                             "deploy-guides/static"
+                        ]
+                    },
+                    {
+                        "group": "Core concepts",
+                        "pages": [
+                            "frames",
+                            "deployments",
+                            "ci-cd",
+                            "preview-deployments",
+                            "build-logs",
+                            "rollback",
+                            "environment-variables",
+                            "custom-domains",
+                            "volumes"
+                        ]
+                    },
+                    {
+                        "group": "Account",
+                        "pages": [
+                            "plans"
+                        ]
+                    },
+                    {
+                        "group": "Self-hosted agents",
+                        "pages": [
+                            "agents/overview",
+                            "agents/quickstart",
+                            "agents/advanced"
+                        ]
+                    },
+                    {
+                        "group": "API reference",
+                        "pages": [
+                            "api-reference/authentication",
+                            "api-reference/rate-limits",
+                            "api-reference/error-codes",
+                            "api-reference/stability"
                         ]
                     }
                 ]
@@ -65,7 +103,7 @@
         "primary": {
             "type": "button",
             "label": "Sign in",
-            "href": "https://apps.withnubo.com/login"
+            "href": "https://console.withnubo.com/login"
         }
     },
     "contextual": {

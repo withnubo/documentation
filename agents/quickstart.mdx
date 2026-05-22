@@ -1,0 +1,98 @@
+---
+title: "Quickstart"
+description: "Get an agent running and deploy your first Frame to it"
+---
+
+This guide walks you through registering an agent, installing it on your server, and deploying a Frame to it.
+
+## 1. Register an agent
+
+The easiest way is from the dashboard. Open **Settings → Compute → Agents** and hit **Register agent**. Give your server a name and Nubo hands you back two things:
+
+- An **install command** you can paste straight into your server's terminal.
+- A **registration token** that's shown exactly once. Click the copy button.
+
+<Note>
+  Tokens are shown one time only. If you lose it, register a new agent.
+</Note>
+
+Prefer the API?
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/agents/register \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "my-server"}'
+```
+
+You'll get back:
+
+```json
+{
+  "id": "69e18178760b571bf8c4c5f1",
+  "name": "my-server",
+  "token": "agt_xK9mR2..."
+}
+```
+
+## 2. Install the agent
+
+Run the installer on your server:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-agent/install.sh | bash
+```
+
+The installer will prompt you for your token, domain, and other settings. Or pass everything directly:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-agent/install.sh | bash -s -- \
+  --token agt_xK9mR2... \
+  --domain frames.example.com
+```
+
+This installs the agent along with the tools it needs to build and serve your apps, and sets it up as a background service that starts automatically.
+
+## 3. Set up DNS
+
+Point a wildcard DNS record at your server so each Frame gets its own subdomain:
+
+```
+*.frames.example.com → your-server-ip
+```
+
+If you're using Cloudflare, create an A record for `*.frames` pointing to your server's IP.
+
+## 4. Deploy a Frame
+
+In the dashboard, click **New Frame**. After picking your repo, you'll see a **Deploy target** picker: choose your agent from the list instead of Nubo Cloud.
+
+Prefer the API? Pass the agent's ID when you create the Frame:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "my-app",
+    "owner_id": "<your-user-id>",
+    "git_repository": "my-repo",
+    "git_repository_owner": "my-github-user",
+    "port": 3000,
+    "agent_id": "69e18178760b571bf8c4c5f1"
+  }'
+```
+
+The agent will build your app and start it up. You can follow the build logs live from the Nubo dashboard.
+
+Once the build finishes, your Frame will be available at `<frame-id>.frames.example.com`.
+
+## Next steps
+
+<Card title="Custom domains" icon="globe" href="/custom-domains">
+  Serve your Frame under a hostname of your choice
+</Card>
+
+<Card title="Advanced configuration" icon="gear" href="/agents/advanced">
+  Customize the agent's behavior, manage services, and troubleshoot
+</Card>

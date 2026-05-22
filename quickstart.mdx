@@ -1,5 +1,54 @@
 ---
 title: "Quickstart"
-description: "A guide to quickly get an application launched"
+description: "Deploy your first app to Nubo in under five minutes"
 ---
 
+This guide takes you from a fresh Nubo account to a running app served over HTTPS.
+
+## Before you start
+
+You'll need:
+
+- A [Nubo account](https://console.withnubo.com/signup)
+- The [Nubo GitHub App](https://github.com/apps/nubo-apps) installed on the repo you want to deploy
+
+That's it - no CLI, no Dockerfile, no config file.
+
+## 1. Create a Project
+
+A Project is the top-level container for your app. Create one from the dashboard and give it a name.
+
+<Tip>
+  If you're not sure how Nubo organizes things, read [Concepts and terminology](/concepts-and-terms). The short version: a Project holds one or more Spaces (environments like dev/prod), and each Space holds Frames (the actual running workloads).
+</Tip>
+
+## 2. Deploy a Frame
+
+Inside your Project, click **New Frame**. Pick the repo you want to deploy and the branch to track, then set the port your app listens on.
+
+Nubo detects your language automatically, so you don't need a Dockerfile. If your app starts with `npm start`, `python manage.py runserver`, `go run`, or anything similar, it'll just work.
+
+The build kicks off immediately. You can follow along in real time from the Frame's log panel.
+
+## 3. Open your app
+
+Once the build finishes, your Frame is live at its auto-assigned subdomain (something like `my-app-a3f2.nubo.onl`). Click the URL in the dashboard to open it.
+
+To redeploy, trigger a new build from the dashboard or via the API.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Environment variables" icon="key" href="/environment-variables">
+    Inject config at build and runtime
+  </Card>
+  <Card title="Custom domains" icon="globe" href="/custom-domains">
+    Serve your Frame at your own hostname
+  </Card>
+  <Card title="Deployments" icon="rocket" href="/deployments">
+    How Nubo builds, deploys, and rolls back
+  </Card>
+  <Card title="Deployment guides" icon="book" href="/deploy-guides/javascript/react">
+    Framework-specific walkthroughs
+  </Card>
+</CardGroup>
