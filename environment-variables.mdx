@@ -1,9 +1,9 @@
 ---
 title: "Environment variables"
-description: "Inject config and secrets into your app at build and runtime"
+description: "Inject config and secrets into your app at runtime"
 ---
 
-Environment variables are how you feed config into your app - API keys, database URLs, feature flags, anything that shouldn't be hardcoded. Nubo encrypts variables at rest and injects them into both the build and runtime environments.
+Environment variables are how you feed config into your app - API keys, database URLs, feature flags, anything that shouldn't be hardcoded. Nubo encrypts variables at rest and injects them into your app's runtime environment. They are not available during the build step.
 
 ## Where variables live
 
@@ -16,7 +16,7 @@ If the same key exists at both levels, the Frame value wins.
 
 ## Add variables
 
-From the dashboard, open the Project or Frame and go to the **Variables** tab. Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`).
+From the dashboard, open the Frame and go to **Frame Settings** to manage its variables. The dashboard manages variables at the Frame level only; to set project-scoped variables, use the API (`POST /v2/projects/<id>/variables`). Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`).
 
 Via the API (note: the body is a JSON **array**, so you can add multiple at once):
 
@@ -55,7 +55,7 @@ import "os"
 dbURL := os.Getenv("DATABASE_URL")
 ```
 
-They're available at both build time and runtime. Build-time values let you use things like `npm install` against a private registry; runtime values handle the usual connection strings and secrets.
+They're injected into your app's runtime environment and handle the usual connection strings and secrets. They are not available during the build step.
 
 ## Update or remove
 
@@ -68,7 +68,7 @@ curl -X DELETE https://shuttle.withnubo.com/v2/variables/<variable_id> \
 
 ## Secrets
 
-Values are encrypted at rest. Listing variables on a Project or Frame returns the keys and metadata only. To see a single value, use the reveal endpoint (or click the **Reveal** button next to a variable in the dashboard):
+Values are encrypted at rest. Listing variables on a Project or Frame returns the keys and metadata only. To see a single value, use the reveal endpoint:
 
 ```bash
 curl https://shuttle.withnubo.com/v2/variables/<variable_id> \

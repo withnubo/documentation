@@ -9,7 +9,7 @@ Every time Nubo builds your app, it captures the full output - what was installe
 
 Open your Frame and click **Deployments**. Pick any deployment from the list to see its logs. Builds that are in progress stream live; older ones load from the archive.
 
-If a deploy fails, the logs are the first place to look - Nubo highlights the error line to save you scrolling.
+If a deploy fails, the logs are the first place to look. The failing step is the last thing printed, so scroll to the bottom.
 
 ## From the API
 
@@ -22,19 +22,13 @@ The response is the raw build output as plain text.
 
 ## What you'll see
 
-For most apps, the logs walk through:
-
-1. **Clone.** The commit Nubo checked out.
-2. **Detect.** The language and framework Nubo picked up on.
-3. **Install.** Dependencies being pulled in.
-4. **Build.** Asset compilation or production bundling.
-5. **Start.** Your app's entry point running, and the health check result.
+For most apps, the logs walk through cloning the commit Nubo checked out, the buildpack detecting your language and installing dependencies, building (asset compilation or production bundling), and the container starting up. The exact phase labels come from the buildpack output, so the wording you see depends on the buildpack that ran.
 
 If a step fails, the logs stop there and the error message is the last thing printed.
 
 ## How long logs stick around
 
-Build logs are kept for **7 days**. The latest deploy of each Frame is always kept on top of that, so you'll never lose your most recent log even if the rest of the window has aged out.
+On the free plan, build logs are kept for **7 days**. Paid plans keep them longer (up to about 30 days). The latest finished deploy of each Frame is always kept regardless of plan, so you'll never lose your most recent log even if the rest of the window has aged out.
 
 After the window:
 

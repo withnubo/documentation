@@ -2,6 +2,36 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 --- 
+<Update label="May 28th, 2026" tags={["Databases", "CLI"]}>
+
+## Managed Postgres, and a CLI for your terminal
+
+Two things this time: you can spin up a managed Postgres database right next to your apps, and there's now an official command-line tool for checking on your account without opening the dashboard.
+
+### Managed Postgres databases
+
+You don't have to run your own database anymore. Create a managed **Postgres** from a Project, pick a size, and Nubo hands you a connection string. It shows up alongside your apps as a Frame, so it starts, stops, and appears in your lists like everything else, and its data sticks around between deploys.
+
+Wiring it into an app is one step: point the database at the Frame that needs it and Nubo drops the connection string in as an environment variable (`DATABASE_URL` by default). Your app picks it up on its next deploy.
+
+More engines are on the way. For now it's Postgres, which covers most of what people reach for. See [Databases](/databases).
+
+### A command-line tool
+
+There's now an official CLI. Install it with one line:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-cli/install.sh | bash
+```
+
+Sign in with `nubo login`, then browse your projects, Frames, databases, volumes, and agents straight from the terminal, either with quick `ls` commands or a full-screen interactive view with live logs and metrics. Add `--json` to anything to pipe it into a script.
+
+This first version is read-only: it's for looking, scripting, and keeping an eye on things, not yet for deploying or editing. Those come next. See the [CLI guide](/cli).
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
 <Update label="May 20th, 2026" tags={["Volumes", "Plans", "Domains", "Frames", "Agents", "Dashboard"]}>
 
 ## Storage that sticks around, plans that fit, and a new home at console.withnubo.com
@@ -16,13 +46,13 @@ The new address is **[console.withnubo.com](https://console.withnubo.com)**. The
 
 Frames can now keep data between deploys. Attach a volume, give it a mount path, and your files are right there. Redeploy, rollback, restart, doesn't matter: the data stays put.
 
-Sizes go up to 1 TB. You can mount the same volume on more than one Frame in the same Project. Spin one up from the new **Volumes** page on any Project, or from **Quick actions** in the sidebar.
+Sizes go up to 1 TB. Each volume attaches to one Frame at a time. To move it to another Frame, detach it first. Spin one up from the new **Volumes** page on any Project, or from **Quick actions** in the sidebar.
 
-Billing is by the hour for what's attached. Detach or delete and the meter stops.
+Billing runs by the hour for every volume you've provisioned, whether or not it's attached. Detaching doesn't stop the meter. Delete the volume to stop it.
 
 ### Pick a plan that fits
 
-Nubo now has plans. Every new account starts on a **7-day Trial** with full power on us, so you can build something real before you commit.
+Nubo now has plans. Every new account starts on a **7-day Trial** on us, so you can build something real before you commit. The Trial runs at standard Basic-level compute.
 
 - **Basic**: side projects and smaller apps.
 - **Platinum**: bigger Frames, faster builds, more storage.
@@ -108,7 +138,7 @@ See the [Agents overview](/agents/overview) for when to use one, or [Quickstart]
 ![Push-to-deploy flow](/images/release-notes/04-29-2026/push_to_deploy.svg)
 </Frame>
 
-Install the [Nubo GitHub App](https://github.com/apps/nubo-apps) on your repo. Every push to your Frame's tracked branch triggers a build and release.
+Install the [Nubo GitHub App](https://github.com/apps/nubo-application) on your repo. Every push to your Frame's tracked branch triggers a build and release.
 
 Three knobs if you need more control:
 
@@ -188,7 +218,7 @@ curl "https://shuttle.withnubo.com/v2/projects/<p>/spaces/<s>/frames/<f>/deploym
 
 ### Build logs, captured on every build
 
-Every build's full output is captured the moment the build finishes, success or failure. Build logs are kept for 7 days. The latest deploy of each Frame is kept on top of that, so you'll always have the most recent log even if older ones have aged out. Past 7 days, we return an "expired" signal so you can tell aged-out logs from a real fetch error.
+Every build's full output is captured the moment the build finishes, success or failure. Build logs are kept for 7 days. The latest deploy of each Frame is kept on top of that, so you'll always have the most recent log even if older ones have aged out. Past 30 days, we return an "expired" signal so you can tell aged-out logs from a real fetch error.
 
 ### Live runtime logs
 

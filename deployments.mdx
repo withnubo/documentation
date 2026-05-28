@@ -56,7 +56,7 @@ Add `?latest=true` to just get the current one.
 
 ## What counts as a successful build
 
-By default: the build finishes without error, the app starts, and your process doesn't crash within the first 10 seconds. Anything stricter - health checks, smoke tests - is on your app to expose.
+By default: the build finishes without error, and the container becomes ready (Nubo waits a few seconds after the rollout and checks the pod is running). Anything stricter - health checks, smoke tests - is on your app to expose.
 
 ## Branches and Spaces
 

@@ -7,13 +7,10 @@ This guide walks you through registering an agent, installing it on your server,
 
 ## 1. Register an agent
 
-The easiest way is from the dashboard. Open **Settings → Compute → Agents** and hit **Register agent**. Give your server a name and Nubo hands you back two things:
-
-- An **install command** you can paste straight into your server's terminal.
-- A **registration token** that's shown exactly once. Click the copy button.
+The easiest way is from the dashboard. Open the account menu, go to **Settings**, scroll to the **Agents** section, and click **Connect agent**. Give your server a name. There's also an optional **Base domain** field: setting it pre-fills the `--domain` flag in the generated install command. Nubo then reveals a single **install command** with the token already embedded: copy it and run it on your server.
 
 <Note>
-  Tokens are shown one time only. If you lose it, register a new agent.
+  The install command is shown exactly once, because only its hash is stored. If you lose it, register a new agent.
 </Note>
 
 Prefer the API?
@@ -65,7 +62,7 @@ If you're using Cloudflare, create an A record for `*.frames` pointing to your s
 
 ## 4. Deploy a Frame
 
-In the dashboard, click **New Frame**. After picking your repo, you'll see a **Deploy target** picker: choose your agent from the list instead of Nubo Cloud.
+In the dashboard, click **New Frame**. After picking your repo, you'll see a **Target** picker (Nubo Cloud plus a pill per connected agent): choose your agent instead of Nubo Cloud.
 
 Prefer the API? Pass the agent's ID when you create the Frame:
 

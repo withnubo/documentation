@@ -18,12 +18,12 @@ No config needed for the default case. Open a Frame, check the **Deployments** t
 
 ## Connecting your repository
 
-Nubo listens for pushes through the [Nubo GitHub App](https://github.com/apps/nubo-apps). Once it's installed on the account or organization that owns the repo, every Frame that tracks that repo gets push-based deploys out of the box.
+Nubo listens for pushes through the [Nubo GitHub App](https://github.com/apps/nubo-application). Once it's installed on the account or organization that owns the repo, every Frame that tracks that repo gets push-based deploys out of the box.
 
 If pushes aren't triggering deploys:
 
 - Make sure the Nubo GitHub App is installed and has access to the repo.
-- Check the **CI/CD** tab on the Frame - if auto-deploy is off, turn it back on.
+- Check the **Settings** tab on the Frame - if auto-deploy is off, turn it back on.
 
 ## Skip a deploy on a specific commit
 
@@ -34,7 +34,7 @@ Include one of these tags anywhere in your commit message and Nubo will skip the
 
 Useful for documentation-only changes, chore commits, or when you want to batch several commits before the next deploy.
 
-You can customize the tags on the Frame's **CI/CD** tab if your team uses a different convention.
+You can customize the tags on the Frame's **Settings** tab if your team uses a different convention.
 
 ## Ignore changes in certain paths
 
@@ -48,7 +48,7 @@ docs/**
 
 If every file in the push matches one of these patterns, Nubo skips the deploy. If anything outside the patterns changed, the deploy runs as usual.
 
-Patterns use shell-style globs. Configure them on the Frame's **CI/CD** tab.
+Patterns use shell-style globs. Configure them on the Frame's **Settings** tab.
 
 ## Override how the build runs
 
@@ -74,10 +74,10 @@ Turn auto-deploy off on a Frame:
 curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/ci \
   -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
-  -d '{ "auto_deploy": false }'
+  -d '{ "auto_deploy_primary": false }'
 ```
 
-All the same settings are available - `auto_deploy`, `preview_deploys`, `skip_tags`, `ignored_paths`, `root_directory`, `build_command`, `install_command`. Send only the fields you want to change.
+All the same settings are available - `auto_deploy_primary` (the legacy `auto_deploy` alias is still accepted on input), `preview_deploys`, `skip_tags`, `ignored_paths`, `root_directory`, `build_command`, `install_command`. Send only the fields you want to change.
 
 ## Related
 

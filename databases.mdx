@@ -1,33 +1,22 @@
 ---
 title: "Databases"
-description: "Managed Postgres, MySQL, MongoDB, and Redis that Nubo runs for you"
+description: "Managed PostgreSQL that Nubo runs for you"
 ---
 
-A managed database is a database we run and keep alive for you. You pick the engine and a size, and Nubo hands back a connection string. No servers to set up, no backups script to babysit, no version to compile. It shows up next to your apps as a [Frame](/frames), so it starts, stops, and shows logs like everything else.
+A managed database is a database we run and keep alive for you. You pick a size, and Nubo hands back a connection string. No server to set up, no backups script to babysit, no version to compile. It shows up next to your apps as a [Frame](/frames), so it starts, stops, and shows logs like everything else.
+
+Today Nubo runs managed **PostgreSQL**. More engines are on the way. Postgres handles most jobs well, so it's a good default even if you're not sure yet.
 
 Each database gets its own storage that sticks around. Restart it, redeploy your app, roll back: the data stays put.
-
-## Pick an engine
-
-Four engines are available today. If you don't pass a version, you get a sensible recent default.
-
-| Engine | Good for | Default version |
-| --- | --- | --- |
-| **PostgreSQL** | The all-rounder. Relational data, JSON, full-text search. | 16 |
-| **MySQL** | Relational data, if your stack or ORM expects MySQL. | 8 |
-| **MongoDB** | Document data, flexible schemas. | 7 |
-| **Redis** | Caching, sessions, queues, anything you want fast and in memory. | 7 |
-
-Not sure? Start with PostgreSQL. It handles most jobs well and you can always add another later.
 
 ## Create a database
 
 From the dashboard:
 
 1. Open a Project and pick the Space you want the database in.
-2. Hit **New database**.
-3. Choose an engine, give it a name, and set a size between 1 GB and 1024 GB.
-4. Click **Create**.
+2. Hit **New Frame** and choose **Database**.
+3. Give it a name, pick a Postgres version, and set a size between 1 GB and 1024 GB.
+4. Click **Deploy**.
 
 It provisions in the background and flips to **online** once it's ready, usually in under a minute.
 
@@ -39,12 +28,11 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -H "Content-Type: application/json" \
   -d '{
     "name": "primary",
-    "engine": "postgres",
     "storage_gb": 10
   }'
 ```
 
-`engine` is one of `postgres`, `mysql`, `mongodb`, or `redis`. Leave it out and you get Postgres. You can also pass a `version` (like `"15"`) if you need a specific one.
+`engine` accepts `postgres` (the default if you leave it out). You can also pass a `version` like `"15"` if you need a specific one; the default is `16`.
 
 ## Get your connection details
 
@@ -57,30 +45,18 @@ curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/fra
   -H "Authorization: Bearer <your-token>"
 ```
 
-You get back the engine, the username, password, database name, and a full connection string:
+You get back the username, password, database name, and a full connection string:
 
 ```json
 {
-  "engine": "postgres",
   "user": "nubo",
   "password": "••••••••",
   "database": "nubo",
-  "database_url": "postgres://nubo:••••••••@primary.svc.cluster.local:5432/nubo"
+  "database_url": "postgres://nubo:••••••••@db-<frame_id>-svc.<space_id>.svc.cluster.local:5432/nubo"
 }
 ```
 
-The connection string is the quickest way in. It looks a little different per engine:
-
-- **PostgreSQL** `postgres://user:password@host:5432/nubo`
-- **MySQL** `mysql://user:password@host:3306/nubo`
-- **MongoDB** `mongodb://user:password@host:27017/nubo?authSource=admin`
-- **Redis** `redis://:password@host:6379`
-
-<Note>
-  Redis doesn't use a username or a named database, so those fields come back empty. Just use the password and the connection string.
-</Note>
-
-A database is reachable from your apps in the same Project over the private network. It isn't exposed to the public internet, which is what you want for a database.
+The connection string is the quickest way in. A database is reachable from your apps in the same Project over the private network. It isn't exposed to the public internet, which is what you want for a database.
 
 ## Use it from your app
 
@@ -106,22 +82,22 @@ Every database is backed by a [volume](/volumes), which is the part that makes y
 
 ## Delete a database
 
-Deleting a database removes it and the storage behind it, and stops the billing for it. This erases the data, so take a dump first if you want to keep anything.
+Deleting a database removes it and the storage behind it. This erases the data, so take a dump first if you want to keep anything.
 
 ```bash
 curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id> \
   -H "Authorization: Bearer <your-token>"
 ```
 
-If you injected the connection string into an app, Nubo clears that variable out for you when the database goes away, so a later deploy won't try to reach a database that no longer exists.
+If you injected the connection string into an app, remember to remove that variable from the app afterward so a later deploy doesn't try to reach a database that's gone.
 
-## Pricing
+## Plans and limits
 
-You pay for the storage a database uses, billed by the GB-hour, the same way [volumes](/volumes) are. Delete the database to stop the meter. Your plan sets how much storage you can have in total. See [Plans](/plans) for the current limits.
+A database's size can be anywhere from 1 GB to 1024 GB. How much total storage you can use depends on your plan. See [Plans](/plans) for the current limits.
 
 ## Managed Nubo vs self-hosted agents
 
-- **Managed Nubo**: managed databases work as described here. We run the engine, the storage is on replicated block storage, and you just use the connection string.
+- **Managed Nubo**: managed PostgreSQL works as described here. We run the engine and the storage, and you just use the connection string.
 - **Self-hosted agents**: there's no managed database, but you can run your own. Deploy the database as a Frame and attach a [volume](/volumes) for its data. It lives on your hardware, so remember to back it up.
 
 ## Related

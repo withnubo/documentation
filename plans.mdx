@@ -3,21 +3,21 @@ title: "Plans and billing"
 description: "What each plan includes and how billing works"
 ---
 
-Nubo has three plans: **Trial**, **Basic**, and **Platinum**. Pick one from the **Billing** page in your account settings.
+Every new account starts on the **Trial** for 7 days. The Trial isn't a plan you pick; it's the default starting state. From the **Billing** page in your account settings you can switch to **Basic** or **Platinum**.
 
 ## What each plan includes
 
 | | Trial | Basic | Platinum |
 |---|---|---|---|
 | Duration | 7 days | Monthly | Monthly |
-| Build power | Full | Standard | Faster (more CPU and memory) |
-| Frame size | Full | Smaller containers | Larger containers |
-| Volumes | Yes | Lower caps | Higher caps |
+| Build power | Standard | Standard | Faster (2 vCPU / 4Gi build vs 500m / 1Gi) |
+| Frame size | 1 vCPU / 1Gi | 1 vCPU / 1Gi | 4 vCPU / 8Gi |
+| Volumes | 1 volume, 50 GB each, 50 GB total | 3 volumes, 100 GB each, 200 GB total | 50 volumes, 1024 GB each, 10240 GB total |
 | Custom domains | Yes | Yes | Yes |
 | Build priority | Standard | Standard | Priority queue |
-| Support | Community + email | Community + email | Priority email |
+| Support | Community | Community | Priority email |
 
-Every new account starts on the Trial with full Platinum-tier power, so you can build something real before you commit. When the 7 days are up, pick a paid plan to keep deploying.
+Every new account starts on the Trial, which uses the same per-container limits as Basic (1 vCPU / 1Gi), so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
 
 ## The Billing page
 
@@ -26,7 +26,7 @@ The **Billing** page (under your account settings) is where you'll find:
 - Your current plan and renewal date.
 - Buttons to upgrade, downgrade, or cancel.
 - Invoice history and payment methods.
-- A live view of your usage (build minutes, GB-hours of storage).
+- A live view of your usage (vCPU-hours, memory GB-hours, egress, and storage).
 
 Plan changes happen through Stripe. Cards, invoices, and receipts are managed there too.
 
@@ -40,21 +40,21 @@ You won't lose data. Volumes, environment variables, custom domains, deploy hist
 
 ## Switching plans
 
-You can upgrade or downgrade at any time. Upgrades take effect immediately; downgrades take effect at the end of your current billing cycle. Cancellations stop renewal at the end of the cycle and keep your account on the free trial limits afterward.
+You can upgrade or downgrade at any time. Upgrades take effect immediately; downgrades also take effect immediately and are prorated on your next invoice. Cancellation stops renewal at the end of the cycle, and you keep full access until then. Once the cycle ends, the account is canceled: your Frames are paused, deploys are blocked, and your data is preserved for 30 days.
 
 ## FAQ
 
 **Can I change plans mid-cycle?**
-Yes. Upgrades are prorated and applied immediately. Downgrades take effect at the next renewal.
+Yes. Upgrades are prorated and applied immediately. Downgrades also take effect immediately and are prorated on your next invoice.
 
-**Do unused build minutes roll over?**
-No, they reset each cycle.
+**Does the monthly usage credit roll over?**
+No. Each plan includes a monthly usage credit that resets each cycle and does not roll over.
 
 **What happens to my volumes if I downgrade?**
 Existing volumes keep working. If you go below your new plan's caps, you won't be able to create new volumes until you're under the limit.
 
 **How do I cancel?**
-Open the **Billing** page and click **Cancel plan**. You'll keep access until the end of the cycle.
+Open the **Billing** page and click **Cancel plan**. Renewal stops at the end of the cycle and you keep full access until then. After the cycle ends the account is canceled: Frames are paused, deploys are blocked, and your data is preserved for 30 days.
 
 ## Related
 

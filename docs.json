@@ -58,6 +58,12 @@
                         ]
                     },
                     {
+                        "group": "Command line",
+                        "pages": [
+                            "cli"
+                        ]
+                    },
+                    {
                         "group": "Account",
                         "pages": [
                             "plans"

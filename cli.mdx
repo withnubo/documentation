@@ -1,0 +1,102 @@
+---
+title: "CLI"
+description: "Sign in and browse your account from the terminal with the nubo command-line tool"
+---
+
+`nubo` is the Nubo command-line tool. Sign in once, then look at your projects, Frames, databases, volumes, and agents without leaving the terminal, either with quick `ls` commands or a full-screen interactive view.
+
+Today it's read-only. It's built for checking on things and for scripting (it can print raw JSON), not yet for deploying or editing. Those are coming.
+
+## Install
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-cli/install.sh | bash
+```
+
+That grabs the right `nubo` binary for your machine (macOS or Linux, Intel or ARM) and drops it on your PATH. A couple of knobs if you need them:
+
+- `NUBO_VERSION=v0.1.0` pins a specific release instead of the latest.
+- `NUBO_INSTALL_DIR=$HOME/.local/bin` changes where the binary lands.
+
+If you'd rather build it yourself:
+
+```bash
+cargo install --path .
+```
+
+## Sign in
+
+```bash
+nubo login                 # opens your browser and signs in with GitHub
+nubo login --with-token    # paste a token instead of using the browser
+nubo logout
+nubo whoami                # shows who you're signed in as
+```
+
+`nubo login` opens your browser, you sign in with GitHub, and the CLI saves a long-lived token to `~/.config/nubo/credentials.json` (readable only by you). From then on every command uses it.
+
+<Note>
+  Prefer not to use the browser, or on a headless box like a CI runner? Create a personal access token in the dashboard (**Settings → Personal access tokens**) and use `nubo login --with-token`, or pipe it in with `nubo login --token-stdin`. See [API authentication](/api-reference/authentication) for more on tokens.
+</Note>
+
+## Browse your stuff
+
+Run `nubo` with no arguments to open the interactive view, or use the `ls` commands to print to the terminal:
+
+```bash
+nubo                                          # launch the interactive view
+nubo projects ls
+nubo spaces ls   --project <project_id>
+nubo frames ls   --project <project_id> --space <space_id>
+nubo volumes ls  --project <project_id>
+nubo agents ls
+```
+
+Add `--json` to any command to get the raw API response, which is handy for piping into `jq` or a script.
+
+## The interactive view
+
+Running `nubo` on its own opens a clean, keyboard-driven view. Walk from projects into spaces into Frames, then open a Frame for a tabbed look at it:
+
+- **Overview**: status, what kind of Frame it is, its domains, and the latest deployment.
+- **Logs**: a live tail of the running Frame's logs (press `f` to follow).
+- **Metrics**: CPU, memory, and network for the last 7 days, drawn inline.
+
+Getting around:
+
+| Key | Does |
+| --- | --- |
+| `↑` `↓` or `j` `k` | move or scroll |
+| `Enter` or `l` | open the selected item |
+| `Esc` or `h` | go back |
+| `Tab` | switch the Frame view |
+| `1` `2` `3` | jump to a Frame's Overview / Logs / Metrics |
+| `f` | follow logs |
+| `g` / `G` | jump to top / bottom |
+| `r` | refresh |
+| `/` | filter the list |
+| `?` | help |
+| `q` | quit |
+
+## Configuration
+
+By default the CLI talks to `https://shuttle.withnubo.com` using your saved login. You can override either one per command or with an environment variable:
+
+| Setting | Flag | Environment variable | Default |
+| --- | --- | --- | --- |
+| API URL | `--api-url` | `NUBO_API_URL` | `https://shuttle.withnubo.com` |
+| Token | `--token` | `NUBO_TOKEN` | your saved login |
+
+## What it can't do yet
+
+This first version is read-only on purpose. It can't create, update, or delete anything, kick off deploys, run a shell, manage environment variables, or stream build logs. The plumbing for those is in place, so they'll show up in later versions.
+
+## Related
+
+<Card title="API authentication" icon="key" href="/api-reference/authentication">
+  Create the personal access token the CLI can sign in with
+</Card>
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  What the projects, spaces, and Frames you're browsing actually are
+</Card>

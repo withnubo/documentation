@@ -71,7 +71,7 @@ Agent Frames provision TLS automatically - no verification step:
 Add the single CNAME, pointing at either the Frame's system subdomain or the agent's base domain - any name that resolves to the agent's IP works. The first HTTPS request to the new hostname triggers cert issuance; after that, the Frame is live.
 
 <Note>
-  For agent Frames, port 80 must be reachable from the public internet for automatic TLS issuance to work. If it's firewalled, TLS provisioning will fail.
+  For agent Frames, ACME needs at least one of port 80 (HTTP-01) or port 443 (TLS-ALPN-01) reachable from the public internet for automatic TLS issuance to work. Caddy tries both, and if both are firewalled, TLS provisioning will fail.
 </Note>
 
 ## Verify it's working
@@ -100,7 +100,7 @@ curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/fra
   -H "Authorization: Bearer <your-token>"
 ```
 
-Returns the Frame's system domain(s) plus every custom domain attached, with their current status (`pending`, `active`, or `error`).
+Returns the Frame's system domain(s) plus every custom domain attached, with their current status (`pending`, `provisioning`, `active`, or `error`). A domain shows `provisioning` while its certificate is being issued.
 
 ## Troubleshooting
 
@@ -112,7 +112,7 @@ Returns the Frame's system domain(s) plus every custom domain attached, with the
 ### TLS certificate error
 
 - **DNS propagated?** `dig shop.mystore.com` should return the expected target.
-- **Port 80 reachable?** (Agent Frames only.) Port 80 needs to be open to the public internet for automatic TLS issuance.
+- **Port 80 or 443 reachable?** (Agent Frames only.) ACME needs at least one of port 80 (HTTP-01) or port 443 (TLS-ALPN-01) open to the public internet for automatic TLS issuance. Caddy tries both, and if both are firewalled, provisioning fails.
 - **Rate-limited?** Certificate authorities cap issuance per hostname per week. If you've retried a lot, wait an hour.
 
 For agent Frames, check the agent logs for TLS issuance details: `journalctl -fu nubo-agent` (Linux) or `tail -f ~/Library/Logs/nubo-agent/stderr.log` (macOS).

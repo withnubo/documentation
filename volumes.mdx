@@ -7,7 +7,7 @@ A volume is a chunk of disk that lives outside any one Frame. Attach it, give it
 
 Without a volume, a Frame's disk is temporary: it resets to a clean slate on every deploy. That's fine for the app's code, but not for anything you need to keep. A volume is where the stuff that should outlive a deploy goes.
 
-Volumes are scoped to a Project, so you can mount the same one across Frames in the same Project (for example, the same uploads folder on production and staging).
+A volume attaches to one Frame at a time, so to move data between Frames you detach it from one and attach it to another.
 
 <Note>
   If all you need is a database, you probably don't need to set up a volume yourself. A [managed database](/databases) comes with its own storage built in.
@@ -30,14 +30,16 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes \
   -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
   -d '{
+    "space_id": "<space_id>",
     "name": "uploads",
-    "size_gb": 20
+    "size_gb": 20,
+    "region": "us-east-01"
   }'
 ```
 
 ## Attach a volume to a Frame
 
-Open the Frame's sidebar, scroll to the **Volumes** panel, and pick a volume from the list. Set the mount path your app expects (e.g. `/data`, `/var/lib/postgres`, `/app/uploads`) and save. The Frame rolls with the volume mounted on the next deploy.
+Open the Frame's sidebar, scroll to the **Volumes** panel, and pick a volume from the list. Set the mount path your app expects (e.g. `/data`, `/app/uploads`, `/srv/data`) and save. The Frame rolls with the volume mounted on the next deploy.
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/attach \
@@ -50,7 +52,7 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volu
 ```
 
 <Note>
-  Mount paths are validated. You can't mount on `/`, `/etc`, `/proc`, or anywhere else that would shadow a system directory.
+  Mount paths are validated. You can't mount on a reserved system root or any of its subdirectories: `/`, `/bin`, `/boot`, `/dev`, `/etc`, `/lib`, `/proc`, `/root`, `/run`, `/sbin`, `/sys`, `/usr`, and `/var`.
 </Note>
 
 ## Detach a volume
@@ -58,13 +60,13 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volu
 Detaching unmounts the volume from the Frame on the next reconcile. The data stays on the volume, so you can re-attach it later or move it to another Frame.
 
 ```bash
-curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/attach/<frame_id> \
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/detach \
   -H "Authorization: Bearer <your-token>"
 ```
 
 ## Resize a volume
 
-Running low on space? You can grow a volume to a bigger size without losing what's on it. Resizing only goes up, never down, and the volume needs to be idle (not mid-attach or mid-resize) when you do it.
+Running low on space? You can grow a volume to a bigger size without losing what's on it. Resizing only goes up, never down, and the volume must be in the Ready state (not currently provisioning, resizing, detaching, or errored) when you do it. An attached, Ready volume can be resized.
 
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/resize \
@@ -97,13 +99,13 @@ Anything that needs to stick around between deploys:
 
 ## Pricing
 
-You pay by the **GB-hour** of attached storage, not provisioned size. A 50 GiB volume attached for the whole month costs the same as a 100 GiB volume attached for half of it. Detach or delete to stop the meter.
+You pay by the provisioned size of a managed volume for as long as it exists, whether it's attached or not. A 50 GiB volume costs half what a 100 GiB one does. Detaching does not stop the meter; delete the volume to stop the meter.
 
 Your plan caps the max size per volume, the total GiB you can hold, and how many volumes you can have at once. See [Plans](/plans) for the current limits.
 
 ## Managed Nubo vs self-hosted agents
 
-- **Managed Nubo**: volumes are backed by replicated block storage. Pay-by-the-hour billing applies as above.
+- **Managed Nubo**: volumes are backed by replicated block storage. Provisioned-size billing applies as above.
 - **Self-hosted agents**: volumes are files on the agent's own disk, attached as a loopback mount. There's no extra charge from us, but the data lives on your hardware, so back it up.
 
 ## Related
