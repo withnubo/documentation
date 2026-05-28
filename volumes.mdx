@@ -5,7 +5,13 @@ description: "Persistent storage you can attach to a Frame"
 
 A volume is a chunk of disk that lives outside any one Frame. Attach it, give it a mount path, and your app sees a normal folder there. Stop, redeploy, or rollback the Frame and the data stays exactly where you left it.
 
+Without a volume, a Frame's disk is temporary: it resets to a clean slate on every deploy. That's fine for the app's code, but not for anything you need to keep. A volume is where the stuff that should outlive a deploy goes.
+
 Volumes are scoped to a Project, so you can mount the same one across Frames in the same Project (for example, the same uploads folder on production and staging).
+
+<Note>
+  If all you need is a database, you probably don't need to set up a volume yourself. A [managed database](/databases) comes with its own storage built in.
+</Note>
 
 ## Create a volume
 
@@ -56,6 +62,21 @@ curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<vo
   -H "Authorization: Bearer <your-token>"
 ```
 
+## Resize a volume
+
+Running low on space? You can grow a volume to a bigger size without losing what's on it. Resizing only goes up, never down, and the volume needs to be idle (not mid-attach or mid-resize) when you do it.
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/resize \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "size_gb": 50
+  }'
+```
+
+The new space is available the next time the Frame rolls. Resizing applies to managed Nubo volumes; volumes on self-hosted agents stay at their original size for now.
+
 ## Delete a volume
 
 Deleting a volume erases its data. Detach it from every Frame first.
@@ -69,8 +90,8 @@ curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<vo
 
 Anything that needs to stick around between deploys:
 
-- Databases you run yourself (Postgres, Redis, SQLite files).
 - User uploads, generated assets, image caches.
+- A SQLite file or a database you're running yourself in a Frame. (For Postgres, MySQL, MongoDB, or Redis, a [managed database](/databases) is usually less work.)
 - Long-running queues or job state.
 - Anything you'd normally put on a server's disk.
 
@@ -89,6 +110,10 @@ Your plan caps the max size per volume, the total GiB you can hold, and how many
 
 <Card title="Frames" icon="square-dashed" href="/frames">
   Attach a volume from a Frame's sidebar
+</Card>
+
+<Card title="Databases" icon="database" href="/databases">
+  Managed databases with storage built in
 </Card>
 
 <Card title="Plans" icon="credit-card" href="/plans">

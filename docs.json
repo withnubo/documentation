@@ -53,7 +53,8 @@
                             "rollback",
                             "environment-variables",
                             "custom-domains",
-                            "volumes"
+                            "volumes",
+                            "databases"
                         ]
                     },
                     {

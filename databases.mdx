@@ -1,0 +1,139 @@
+---
+title: "Databases"
+description: "Managed Postgres, MySQL, MongoDB, and Redis that Nubo runs for you"
+---
+
+A managed database is a database we run and keep alive for you. You pick the engine and a size, and Nubo hands back a connection string. No servers to set up, no backups script to babysit, no version to compile. It shows up next to your apps as a [Frame](/frames), so it starts, stops, and shows logs like everything else.
+
+Each database gets its own storage that sticks around. Restart it, redeploy your app, roll back: the data stays put.
+
+## Pick an engine
+
+Four engines are available today. If you don't pass a version, you get a sensible recent default.
+
+| Engine | Good for | Default version |
+| --- | --- | --- |
+| **PostgreSQL** | The all-rounder. Relational data, JSON, full-text search. | 16 |
+| **MySQL** | Relational data, if your stack or ORM expects MySQL. | 8 |
+| **MongoDB** | Document data, flexible schemas. | 7 |
+| **Redis** | Caching, sessions, queues, anything you want fast and in memory. | 7 |
+
+Not sure? Start with PostgreSQL. It handles most jobs well and you can always add another later.
+
+## Create a database
+
+From the dashboard:
+
+1. Open a Project and pick the Space you want the database in.
+2. Hit **New database**.
+3. Choose an engine, give it a name, and set a size between 1 GB and 1024 GB.
+4. Click **Create**.
+
+It provisions in the background and flips to **online** once it's ready, usually in under a minute.
+
+Via API:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/databases \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "primary",
+    "engine": "postgres",
+    "storage_gb": 10
+  }'
+```
+
+`engine` is one of `postgres`, `mysql`, `mongodb`, or `redis`. Leave it out and you get Postgres. You can also pass a `version` (like `"15"`) if you need a specific one.
+
+## Get your connection details
+
+Once the database is online, open it in the dashboard and you'll see its credentials and a ready-to-paste connection string. There's a copy button on each field, and the password stays hidden until you ask for it.
+
+Via API:
+
+```bash
+curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/connection \
+  -H "Authorization: Bearer <your-token>"
+```
+
+You get back the engine, the username, password, database name, and a full connection string:
+
+```json
+{
+  "engine": "postgres",
+  "user": "nubo",
+  "password": "••••••••",
+  "database": "nubo",
+  "database_url": "postgres://nubo:••••••••@primary.svc.cluster.local:5432/nubo"
+}
+```
+
+The connection string is the quickest way in. It looks a little different per engine:
+
+- **PostgreSQL** `postgres://user:password@host:5432/nubo`
+- **MySQL** `mysql://user:password@host:3306/nubo`
+- **MongoDB** `mongodb://user:password@host:27017/nubo?authSource=admin`
+- **Redis** `redis://:password@host:6379`
+
+<Note>
+  Redis doesn't use a username or a named database, so those fields come back empty. Just use the password and the connection string.
+</Note>
+
+A database is reachable from your apps in the same Project over the private network. It isn't exposed to the public internet, which is what you want for a database.
+
+## Use it from your app
+
+Most libraries take a single connection string, so the easiest path is to drop the database's URL into an [environment variable](/environment-variables) on the app that needs it.
+
+Nubo can wire that up for you. From the database, point it at the app Frame and Nubo copies the connection string in as a variable (it uses `DATABASE_URL` unless you pick another name):
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<db_frame_id>/inject \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target_frame_id": "<app_frame_id>",
+    "env_key": "DATABASE_URL"
+  }'
+```
+
+The next time the app deploys, it picks up the variable and connects. Prefer to do it by hand? Copy the connection string and add it as a variable yourself.
+
+## Storage
+
+Every database is backed by a [volume](/volumes), which is the part that makes your data survive restarts and redeploys. You set the size when you create the database. The data is yours and it stays on that volume until you delete the database.
+
+## Delete a database
+
+Deleting a database removes it and the storage behind it, and stops the billing for it. This erases the data, so take a dump first if you want to keep anything.
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+If you injected the connection string into an app, Nubo clears that variable out for you when the database goes away, so a later deploy won't try to reach a database that no longer exists.
+
+## Pricing
+
+You pay for the storage a database uses, billed by the GB-hour, the same way [volumes](/volumes) are. Delete the database to stop the meter. Your plan sets how much storage you can have in total. See [Plans](/plans) for the current limits.
+
+## Managed Nubo vs self-hosted agents
+
+- **Managed Nubo**: managed databases work as described here. We run the engine, the storage is on replicated block storage, and you just use the connection string.
+- **Self-hosted agents**: there's no managed database, but you can run your own. Deploy the database as a Frame and attach a [volume](/volumes) for its data. It lives on your hardware, so remember to back it up.
+
+## Related
+
+<Card title="Volumes" icon="hard-drive" href="/volumes">
+  The persistent storage behind every database
+</Card>
+
+<Card title="Environment variables" icon="key" href="/environment-variables">
+  Where your connection string lives in your app
+</Card>
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  Databases run as Frames, like your apps
+</Card>
