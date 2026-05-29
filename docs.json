@@ -39,6 +39,8 @@
                                 ]
                             },
                             "deploy-guides/golang",
+                            "deploy-guides/python",
+                            "deploy-guides/php",
                             "deploy-guides/static"
                         ]
                     },

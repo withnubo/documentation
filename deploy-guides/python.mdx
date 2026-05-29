@@ -1,7 +1,93 @@
 ---
 title: "Python"
 description: "Deploying a Python application"
-icon: "./icons/django.svg"
+icon: "python"
 ---
 
-python
+## Creating a basic Python web app
+
+In this demonstration we'll build a small Flask app and serve it with Gunicorn. If you already have a Python application, skip to the "Going live with Nubo" section below.
+
+### Setting up the project
+
+```shell
+mkdir python-with-nubo
+cd python-with-nubo
+git init
+```
+
+### Writing the app (`app.py`)
+
+```python app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def root():
+    return "Hello from Python! Powered by Nubo"
+```
+
+### Listing your dependencies (`requirements.txt`)
+
+Nubo spots a Python app from your `requirements.txt` (Pipenv and Poetry projects work too) and installs what you list.
+
+```text requirements.txt
+flask
+gunicorn
+```
+
+### Telling Nubo how to start (`Procfile`)
+
+Add a `Procfile` in the project root with a `web` process. We'll run Gunicorn and bind it to port `8080`:
+
+```text Procfile
+web: gunicorn --bind 0.0.0.0:8080 app:app
+```
+
+<Note>Pick a port, make your app listen on it, and use that same number as the Frame's **Port** when you deploy. We use `8080` here.</Note>
+
+### Git operations
+
+Commit your changes and push them to your repository.
+
+```shell
+git add .
+git commit -m "initial commit"
+git push
+```
+
+## Going live with Nubo
+
+Python is supported with Nubo out of the box. Nubo installs your dependencies and runs the `web` process from your `Procfile`.
+
+<Steps>
+    <Step title="Open the new Frame modal">
+        Click on the "+ Frame" button
+        <Frame>
+            ![Frame button section of dashboard](/images/create-frame.png)
+        </Frame>
+    </Step>
+    <Step title="Choose repository and configure port">
+        Select your repository from the list of repos that are displayed. Then set the **Port** to match the port your app listens on (`8080` in this guide).
+        <Frame>
+            ![Select repository section](/images/select-repository.png)
+        </Frame>
+    </Step>
+</Steps>
+
+## Setting a custom Python version
+
+By default Nubo picks a recent Python for you. To pin a specific version, add a `project.toml` to your project root:
+
+```toml project.toml
+[project]
+id = "python-starter"
+name = "Python Starter"
+version = "1.0.0"
+
+[[build.env]]
+name = "BP_CPYTHON_VERSION"
+value = "3.12.*"
+```

@@ -4,4 +4,86 @@ description: "Deploying a PHP application"
 icon: "php"
 ---
 
-PHP
+## Creating a basic PHP app
+
+We'll serve a single PHP page with PHP's built-in web server. If you already have a PHP application, skip to the "Going live with Nubo" section below.
+
+### Setting up the project
+
+```shell
+mkdir php-with-nubo
+cd php-with-nubo
+mkdir htdocs
+git init
+```
+
+### Writing the page (`htdocs/index.php`)
+
+```php htdocs/index.php
+<?php
+echo "Hello from PHP! Powered by Nubo";
+```
+
+### Configuring the build (`project.toml`)
+
+Nubo builds PHP with Cloud Native Buildpacks. A `project.toml` in your project root tells the buildpack which web server to run, where your web root is, and which port to serve on.
+
+```toml project.toml
+[project]
+id = "php-starter"
+name = "PHP Starter"
+version = "1.0.0"
+
+[[build.env]]
+name = "BP_PHP_SERVER"
+value = "php-server"
+
+[[build.env]]
+name = "BP_PHP_WEB_DIR"
+value = "htdocs"
+
+[[build.env]]
+name = "BPE_PORT"
+value = "8080"
+```
+
+<Note>`BP_PHP_WEB_DIR` should point to the folder that holds your `index.php`. `BPE_PORT` sets the port your app serves on; use that same number as the Frame's **Port** when you deploy.</Note>
+
+<Note>Got a `composer.json`? Nubo installs your Composer dependencies automatically during the build.</Note>
+
+### Git operations
+
+Commit your changes and push them to your repository.
+
+```shell
+git add .
+git commit -m "initial commit"
+git push
+```
+
+## Going live with Nubo
+
+<Steps>
+    <Step title="Open the new Frame modal">
+        Click on the "+ Frame" button
+        <Frame>
+            ![Frame button section of dashboard](/images/create-frame.png)
+        </Frame>
+    </Step>
+    <Step title="Choose repository and configure port">
+        Select your repository from the list of repos that are displayed. Then set the **Port** to match the port your app serves on (`8080` in this guide).
+        <Frame>
+            ![Select repository section](/images/select-repository.png)
+        </Frame>
+    </Step>
+</Steps>
+
+## Setting a custom PHP version
+
+By default Nubo picks a recent PHP for you. To pin a specific version, add a `BP_PHP_VERSION` build variable to your `project.toml`:
+
+```toml project.toml
+[[build.env]]
+name = "BP_PHP_VERSION"
+value = "8.3.*"
+```
