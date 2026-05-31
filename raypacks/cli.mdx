@@ -9,19 +9,47 @@ You don't need `rp` to deploy on Nubo. Pushing to your tracked branch is enough.
 
 ## Install
 
-The CLI ships in the same image Nubo uses for cloud builds:
+One line:
 
 ```bash
-docker pull registry.withnubo.com/raypacks/builder:latest
+curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
 ```
 
-Or wrap it in an alias so you can run it like a local binary:
+The script detects your OS and CPU, downloads the right `rp` binary, and drops it in `/usr/local/bin` (or `~/.local/bin` if it can't get write access). Linux x86_64 and macOS arm64 (Apple Silicon) are published today.
+
+### Customizing the install
+
+The installer reads a few env vars:
 
 ```bash
-alias rp='docker run --rm -v "$PWD:/workspace" registry.withnubo.com/raypacks/builder:latest rp'
+# Pin a specific version
+RAYPACKS_VERSION=v0.1.0 curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
+
+# Install somewhere other than /usr/local/bin
+RAYPACKS_INSTALL_DIR="$HOME/.local/bin" curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
 ```
 
-A standalone binary is on the roadmap.
+### Manual download
+
+If you'd rather grab the binary directly:
+
+```bash
+# macOS Apple Silicon
+curl -fSL -o /usr/local/bin/rp https://dl.withnubo.com/raypacks/latest/rp-darwin-arm64
+chmod +x /usr/local/bin/rp
+
+# Linux x86_64
+curl -fSL -o /usr/local/bin/rp https://dl.withnubo.com/raypacks/latest/rp-linux-amd64
+chmod +x /usr/local/bin/rp
+```
+
+Tagged releases are at `https://dl.withnubo.com/raypacks/<version>/rp-<os>-<arch>`.
+
+### Verify
+
+```bash
+rp --version
+```
 
 ## Commands
 
