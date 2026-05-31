@@ -1,0 +1,37 @@
+---
+title: "Dockerfile pack"
+description: "An escape hatch for the local rp CLI"
+---
+
+The Dockerfile pack hands off to `docker build`. It's an escape hatch for the [local `rp` CLI](/raypacks/cli) when none of the other packs fit and you already have a working `Dockerfile`.
+
+<Warning>
+  This pack does not run on Nubo's managed builders today. Build pods don't have a Docker daemon. Use this only with the local `rp` CLI.
+</Warning>
+
+## When it runs
+
+There's a `Dockerfile` at the repo root.
+
+Detection runs top to bottom, and Dockerfile is the last in the list. If you have a `Dockerfile` and a `go.mod`, the Go pack still wins. If you genuinely want the Dockerfile path, delete the other markers or pick the builder explicitly with `rp build --pack dockerfile` (coming soon).
+
+## What it does
+
+The local `rp build` shells out to:
+
+```
+docker build -t <tag> <repo-root>
+docker push <tag>   # only with --push
+```
+
+That's the entire pack. Whatever's in your `Dockerfile` is what ships.
+
+## When to expect a managed Dockerfile path
+
+Daemonless Dockerfile execution (kaniko-style) is on the roadmap. We'll announce it on the [release notes](/release-notes) page when it lands.
+
+In the meantime, if you have a Dockerfile-only repo and need it on managed Nubo:
+
+1. Migrate to one of the auto-detected packs (Go, Node, Static) where possible.
+2. Or use the Paketo builder, which has its own Dockerfile-like flexibility through buildpacks.
+3. Or run on a [self-hosted agent](/agents/overview) where you control the build environment.

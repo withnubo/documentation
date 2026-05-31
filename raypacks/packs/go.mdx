@@ -1,0 +1,87 @@
+---
+title: "Go pack"
+description: "How Raypacks builds Go services"
+---
+
+The Go pack builds a static Linux binary from your `go.mod` and serves it on a scratch base image. No runtime dependencies, fast cold starts, small images.
+
+## When it runs
+
+Raypacks picks the Go pack when both are true:
+
+1. There's a `go.mod` at the repo root.
+2. There's a `main.go` either at the root or under `cmd/<name>/main.go`.
+
+Library-only repos (no `main.go` anywhere) fall through detection. They're not deployable as a Frame.
+
+## Entrypoint resolution
+
+Raypacks figures out what to build, in this order:
+
+1. `[build].entrypoint` in [`nubo.toml`](/raypacks/nubo-toml)
+2. `--entrypoint` passed at build time
+3. Auto-detection: `./main.go` at the root, then the first `cmd/<name>/main.go` (alphabetical)
+
+The plan table shows which won:
+
+```
+decision  entrypoint = ./cmd/api (nubo.toml)
+```
+
+If you have multiple `cmd/*/main.go` and don't pin a choice, the alphabetically first one wins. Pin the right one with `nubo.toml`:
+
+```toml nubo.toml
+[build]
+entrypoint = "./cmd/api"
+```
+
+## What the build does
+
+```
+go build -o /tmp/server <entrypoint>
+```
+
+Environment baked in:
+
+- `CGO_ENABLED=0`
+- `GOOS=linux`
+- `GOARCH=amd64`
+
+The resulting binary lands at `/app/server` in the final image with mode `0755`.
+
+## Runtime
+
+| Field | Value |
+|---|---|
+| Base image | scratch |
+| Entrypoint | `/app/server` |
+| Working dir | `/app` |
+| Port | from Frame settings, default 8080 |
+| Env | `PORT` is set to your port |
+
+Your binary should listen on `:$PORT` and `0.0.0.0`. The default `net/http` listener `http.ListenAndServe(":8080", nil)` works as long as the Frame's configured port matches `8080`.
+
+## Go version
+
+The builder image pins Go `1.25`. That's currently fixed; we don't yet read `go 1.x` directives from your `go.mod`.
+
+## Limits today
+
+- `linux/amd64` only. No ARM yet.
+- No `vendor/` mode. Run `go mod tidy` and check `go.mod`/`go.sum` into the repo.
+- No `go.work` workspaces.
+- No build tags or `-ldflags` customization.
+
+If any of these block you, switch the Frame's **Builder** to **Paketo** for now and tell us what you need: [support@withnubo.com](mailto:support@withnubo.com).
+
+## Common errors
+
+**`go.mod detected but no main.go found at root or under cmd/*`**: your repo is a library, or `main.go` lives somewhere Raypacks doesn't look. Add a `nubo.toml` entry pointing at the right directory.
+
+**`go build` fails with "package . is not a main package"**: you set an entrypoint to a directory that has Go code but no `package main` in it. Point at the directory that actually contains the `main()` function.
+
+## Examples
+
+A single-binary repo with `main.go` at the root: no config needed.
+
+A monorepo with `cmd/api/main.go` and `cmd/worker/main.go`: one Frame per binary, each with its own `nubo.toml` (or use the dashboard's entrypoint override).

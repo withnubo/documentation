@@ -1,0 +1,66 @@
+---
+title: "nubo.toml"
+description: "The one config file Raypacks reads"
+---
+
+Raypacks works without any config for most apps. When you need to override a default (a build entrypoint Raypacks can't guess, for example), drop a `nubo.toml` at the root of your repo.
+
+## Anatomy
+
+```toml nubo.toml
+[build]
+entrypoint = "./cmd/server"
+```
+
+That's the whole file format today. More keys land as packs grow.
+
+## `[build]`
+
+### `entrypoint`
+
+The path Raypacks builds from. Defaults to auto-detect.
+
+- For [Go](/raypacks/packs/go): the directory containing your `main.go`. Auto-detected from repo-root `main.go`, then the first `cmd/*/main.go` alphabetically.
+- Other packs ignore this field today.
+
+Accepts `.`, `./path`, or `path/to/dir`. Absolute paths and `..` segments are rejected. The directory must contain a `main.go`.
+
+```toml nubo.toml
+[build]
+entrypoint = "./cmd/api"
+```
+
+If you don't set it, Raypacks finds the entrypoint on its own. You only need this when you have multiple binaries and want to pick a specific one, or when your layout doesn't match what auto-detection looks for.
+
+## Precedence
+
+Settings can come from three places. Higher beats lower:
+
+1. **`nubo.toml`** (committed to your repo)
+2. **Dashboard / API** overrides (per-Frame, set in the UI or via `PATCH`)
+3. **Raypacks auto-detection**
+
+This matches what most people expect: a `nubo.toml` checked into the repo is the source of truth. Dashboard tweaks fill in the gaps. Auto-detection is the fallback.
+
+## Validation
+
+Raypacks rejects bad config at plan time, before the build runs. You'll see a clear error in the build logs ("`nubo.toml: build.entrypoint './cmd/missing' has no main.go`") rather than a confusing `go build` failure ten minutes later.
+
+## Inspecting the resolved plan
+
+Every build prints a plan table that shows the final values and where each came from:
+
+```
+detect          go · github.com/you/your-app
+╭───────────── plan ──────────────╮
+│ pack             go              │
+│ base             scratch         │
+│ step (go build)  go build -o … ./cmd/api │
+│ runtime          /app/server     │
+│ workdir          /app            │
+│ port             8080            │
+╰──────────────────────────────────╯
+decision        entrypoint = ./cmd/api (nubo.toml)
+```
+
+If the `decision` line shows `(auto)` and you wanted something different, set the value in `nubo.toml` and redeploy.

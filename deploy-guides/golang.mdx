@@ -1,165 +1,103 @@
 ---
-title: "Golang"
-description: "Deploying a Golang application"
+title: "Go"
+description: "Ship a Go service to Nubo"
 icon: "golang"
 ---
 
-## Creating a basic Go HTTP server
+If you already have a Go app, you only need three things to deploy:
 
-In this demonstration, we will be creating a very basic Golang HTTP server. If you already have a Golang application, simply head to the "Going live with Nubo" section below.
+1. A `go.mod` at the repo root.
+2. A `main.go` (at the root, or under `cmd/<name>/main.go` for monorepos).
+3. Your server listens on `:$PORT` and `0.0.0.0`.
 
-### Setting up the project
+That's it. Skip to [Deploy](#deploy) below.
 
-Let's first get our workspace configured. We will create a new folder and initialize a new go module.
+## Starting from scratch
 
-```shell
-mkdir go-with-nubo
-cd go-with-nubo
-go mod init go-with-nubo
+If you don't have a Go app yet, here's the smallest possible one:
+
+```bash
+mkdir hello-go && cd hello-go
+go mod init github.com/yourname/hello-go
 ```
 
-After running the `go mod init` command we should a new `go.mod` file. This file will look like:
-
-```go-module go.mod
-module go-with-nubo
-
-go 1.25.1
-```
-
-Let's also create a `main.go` file which will store the logic for our server.
-
-```shell
-touch main.go
-```
-
-Finally, lets initialize a new Git repository.
-
-```shell
-git init
-```
-
-### Writing the server (`main.go`)
-
-First we need to initialize our package and define our imports.
+`main.go`:
 
 ```go main.go
 package main
 
 import (
     "fmt"
-    "log"
     "net/http"
-)
-```
-
-Then we can implement the main function. This is the entrypoint for our program.
-
-```go main.go
-func main() {
-    http.HandleFunc("/", rootHandleFunc)
-    log.Fatal(http.ListenAndServe(":8080", nil))
-    log.Println("Listening on port 8080...")
-}
-```
-
-This code maps out one route, the "/" or root route. It then also starts the server, listening on port `8080`. If the server fails to start our app will panic.
-
-We will now need to define the logic for the "/" endpoint. We will do this by creating our `rootHandleFunc` function.
-
-```go main.go
-func rootHandleFunc(writer http.ResponseWriter, request *http.Request) {
-    if request.Method != "GET" {
-        http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
-        return
-    }
-
-    writer.Header().Set("Content-Type", "text/plain")
-    fmt.Fprint(writer, "Hello from Golang! Powered by Nubo")
-}
-```
-
-All handle functions take in a response writer (for sending back responses) and a pointer to the HTTP request.
-
-Our code is checking the HTTP method to ensure that only the `GET` method is accepted. We are then sending a simple plaintext message back to the user.
-
-### Running the server
-
-We are now ready to test our server! Head to a terminal and run the following:
-
-```shell
-go run main.go
-```
-
-Now if you head to your web browser and go to `localhost:8080` you should receive our message back from the server!
-
-### Full `main.go` file
-
-```go main.go
-package main
-
-import (
-    "fmt"
-    "log"
-    "net/http"
+    "os"
 )
 
 func main() {
-    http.HandleFunc("/", rootHandleFunc)
-    log.Fatal(http.ListenAndServe(":8080", nil))
-    log.Println("Listening on port 8080...")
-}
-
-func rootHandleFunc(writer http.ResponseWriter, request *http.Request) {
-    if request.Method != "GET" {
-        http.Error(writer, "Method not allowed", http.StatusMethodNotAllowed)
-        return
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
     }
-
-    writer.Header().Set("Content-Type", "text/plain")
-    fmt.Fprint(writer, "Hello from Golang! Powered by Nubo")
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprintln(w, "Hello from Go on Nubo!")
+    })
+    http.ListenAndServe(":"+port, nil)
 }
 ```
 
-### Git operations
+Test it locally:
 
-To update our repository we can commit our changes and push to our remote repository.
-
-```shell
-git add .
-git commit -m "initial commit"
-git push
+```bash
+PORT=8080 go run .
+# open http://localhost:8080
 ```
 
-## Going live with Nubo
+Commit and push to GitHub:
 
-Golang is support with Nubo out of the box, with no configuration necessarily required.
+```bash
+git init && git add . && git commit -m "init"
+git remote add origin git@github.com:yourname/hello-go.git
+git push -u origin main
+```
+
+## Deploy
 
 <Steps>
-    <Step title="Open the new Frame modal">
-        Click on the "+ Frame" butotn
-        <Frame>
-            ![Frame button section of dashboard](/images/create-frame.png)
-        </Frame>
-    </Step>
-    <Step title="Choose repository and configure port">
-        Select your repository from the list of repos that are displayed. Then, if applicable, configure your port to match the port that your server is listening on.
-        <Frame>
-            ![Select repository section](/images/select-repository.png)
-        </Frame>
-    </Step>
+  <Step title="Open the New Frame modal">
+    In your Nubo dashboard, open the Project and Space you want, then hit **+ Frame**.
+  </Step>
+  <Step title="Pick the repo and branch">
+    Connect your GitHub repo. The branch you pick is the one Nubo watches for pushes.
+  </Step>
+  <Step title="Confirm the port">
+    Should match the port your app actually listens on (`8080` for the example above).
+  </Step>
+  <Step title="Deploy">
+    Hit deploy. The first build takes 30–60 seconds. You can follow it in the Logs tab.
+  </Step>
 </Steps>
 
-## Setting a custom Go version
+Once the build finishes, your app is live at a `*.nubo.onl` URL shown in the dashboard. To redeploy, push to your tracked branch.
 
-By default, Nubo will determine the version of Golang to use based on your `go.mod` file. But, in the event that you need to manually specify the version. Create `project.toml` file like below:
+## Monorepos and multiple binaries
 
-```toml
-[project]
-id = "go-starter"
-name = "Go Starter"
-version = "1.0.0"
+If your repo has more than one binary (`cmd/api/main.go`, `cmd/worker/main.go`), Raypacks picks the alphabetically first one by default. Pin a specific binary with `nubo.toml`:
 
-[[ build.env ]]
-  name = "BP_GO_VERSION"
-  value = "1.14.1" # CUSTOM VERSION HERE
+```toml nubo.toml
+[build]
+entrypoint = "./cmd/api"
 ```
+
+Deploy each binary as a separate Frame. They get their own URLs, env vars, and deploy history.
+
+## Things that trip people up
+
+- **Hardcoded port.** `http.ListenAndServe(":8080", nil)` works only if your Frame's port is also `8080`. Read `os.Getenv("PORT")` to be safe.
+- **Binding to `localhost`.** Listen on `0.0.0.0` (or empty host like `":8080"`), not `127.0.0.1`. Nothing outside the container can reach `localhost`.
+- **Library repos.** If your repo has no `main.go` anywhere, Raypacks won't pick it up. You need a `package main` somewhere with a `main()`.
+- **CGO.** The Go pack builds with `CGO_ENABLED=0`. If you depend on a C library, switch the Frame's Builder to **Paketo** for now.
+
+## How the build works
+
+This guide uses the [Go pack](/raypacks/packs/go) of [Raypacks](/raypacks/overview), Nubo's default builder. It produces a static binary on a scratch image. No Dockerfile, no `go.mod` version pinning, no `BP_*` env vars.
+
+If you need something the Go pack doesn't support yet (ARM, custom `-ldflags`, CGO), switch the Frame's Builder to **Paketo** in **Frame Settings**.

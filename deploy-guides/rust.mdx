@@ -1,16 +1,18 @@
 ---
 title: "Rust"
-description: "Deploying a Rust application"
+description: "Rust on Nubo"
 icon: "rust"
 ---
 
 Rust isn't supported on managed Nubo yet.
 
-Nubo builds your app with Cloud Native Buildpacks, and the current builder doesn't include a Rust buildpack. There also isn't a Dockerfile or pre-built-image option yet, so there's no way to ship a Rust binary on the managed platform today.
+[Raypacks](/raypacks/overview) doesn't have a Rust pack, and the classic Paketo builder doesn't either. There's no managed Dockerfile path either, so Rust apps have nowhere to land on managed builders today.
 
-We're working on wider build support. In the meantime:
+## Options today
 
-- Reach out at `support@withnubo.com` or on [Discord](https://discord.com/invite/4SM4faYqWQ) and we'll tell you where Rust support stands.
-- For anything you deploy on Nubo right now, use one of the [supported languages](/deploy-guides/golang).
+- **Self-hosted agents.** Run a [self-hosted agent](/agents/overview) on your own machine. Agents support custom Dockerfiles, so a Rust binary deploys exactly like anywhere else.
+- **Wait for it.** A Rust pack is on the Raypacks roadmap (the engine itself is written in Rust, so we're motivated). Watch the [release notes](/release-notes).
 
-We'll replace this page with a real walkthrough as soon as Rust builds land.
+## Want to help us prioritize?
+
+Tell us your Rust use case at [support@withnubo.com](mailto:support@withnubo.com) or on [Discord](https://discord.com/invite/4SM4faYqWQ). Concrete examples (Axum API, Actix server, an existing binary you'd like to expose as a service) help us scope the pack.

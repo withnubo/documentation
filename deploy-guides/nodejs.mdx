@@ -1,0 +1,125 @@
+---
+title: "Node.js"
+description: "Ship a Node.js app to Nubo"
+icon: "node-js"
+---
+
+For any Node app (Express API, Discord bot, Next.js, plain TypeScript service), Nubo needs three things:
+
+1. A `package.json` at the repo root.
+2. A `start` script that boots your server.
+3. Your server reads the port from `process.env.PORT`.
+
+If those are in place, [skip to Deploy](#deploy).
+
+## Quick start
+
+```bash
+mkdir hello-node && cd hello-node
+npm init -y
+npm install express
+```
+
+`server.js`:
+
+```js server.js
+import express from "express";
+
+const app = express();
+app.get("/", (_, res) => res.send("Hello from Node on Nubo!"));
+
+const port = process.env.PORT ?? 3000;
+app.listen(port, () => console.log(`listening on :${port}`));
+```
+
+Add `"type": "module"` and a `start` script to `package.json`:
+
+```json package.json
+{
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
+```
+
+Local test, then push:
+
+```bash
+PORT=3000 npm start
+git init && git add . && git commit -m "init"
+git remote add origin git@github.com:yourname/hello-node.git
+git push -u origin main
+```
+
+## Deploy
+
+<Steps>
+  <Step title="Open the New Frame modal">
+    In your Nubo dashboard, open the Project and Space you want, then hit **+ Frame**.
+  </Step>
+  <Step title="Pick the repo and branch">
+    Connect your GitHub repo and choose the branch Nubo should watch.
+  </Step>
+  <Step title="Confirm the port">
+    The port your app listens on. Matches the `PORT` value you read in code.
+  </Step>
+  <Step title="Deploy">
+    Hit deploy. Watch the build in the Logs tab.
+  </Step>
+</Steps>
+
+## Package managers
+
+Nubo auto-picks based on your lockfile:
+
+| Commit this lockfile | Get this manager |
+|---|---|
+| `package-lock.json` | npm |
+| `pnpm-lock.yaml` | pnpm |
+| `yarn.lock` | yarn |
+| `bun.lockb` or `bun.lock` | bun |
+
+Commit your lockfile. Without one, Nubo falls back to npm. This isn't fatal but builds are slower and less deterministic.
+
+## TypeScript apps
+
+Add a `build` script that produces JavaScript and a `start` script that runs it:
+
+```json package.json
+{
+  "scripts": {
+    "build": "tsc -p .",
+    "start": "node dist/server.js"
+  }
+}
+```
+
+Nubo runs `npm run build` automatically when a `build` script exists.
+
+## Things that trip people up
+
+- **No `start` script.** Nubo will try `node index.js` as a fallback. If your entry isn't `index.js`, set `"main"` in `package.json` or add a `start` script.
+- **Hardcoded port.** Read `process.env.PORT`, don't write `3000` directly.
+- **Listening on `localhost`.** Use the default Express behavior (`app.listen(port)`) or bind explicitly to `0.0.0.0`.
+- **Native modules.** `node:22-slim` doesn't ship build toolchains. Prefer packages with prebuilt binaries, or switch to the Paketo builder.
+
+## Framework guides
+
+<CardGroup cols={2}>
+  <Card title="React (Vite)" icon="react" href="/deploy-guides/javascript/react">
+    Single-page app with a Vite build
+  </Card>
+  <Card title="Discord.js" icon="/icons/discordjs.svg" href="/deploy-guides/javascript/discordjs">
+    Long-running bot, no HTTP listener
+  </Card>
+</CardGroup>
+
+## How the build works
+
+This guide uses the [Node.js pack](/raypacks/packs/node) of [Raypacks](/raypacks/overview), Nubo's default builder. It installs your deps, runs your `build` script if you have one, and ships on `node:22-slim` (or `oven/bun:slim` for bun).
+
+For control beyond what the pack offers, switch the Frame's Builder to **Paketo** in **Frame Settings**.

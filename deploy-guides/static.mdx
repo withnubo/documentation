@@ -1,85 +1,78 @@
 ---
 title: "Static sites"
-description: "Deploying a static web site"
+description: "Serve HTML, CSS, and JS on Nubo"
 icon: "html5"
 ---
 
-First, let's define a static site. A static site is a website made up of pre-built HTML, CSS, and JavaScript. They are served directly to the end user's browser. There is no server-side processing, the content served is the same on every request.
+A static site is plain HTML, CSS, and JavaScript with no server-side code. Landing pages, portfolios, marketing pages, prebuilt SPAs.
 
-Some examples of static sites would include blogs, docs, landing pages, or portfolio sites. On another note, if you are using React or another reactive framework, excluding the ones with SSR (like Next.js or SvelteKit), the output of the build is a static site. Though for those cases, we recommend following our dedicated framework guides.
+Nubo has two paths for static sites:
 
-In order to deploy a static site with Nubo, we must configure an HTTP server that will serve our static assets to the end user. To do this, we can either use Apache or Nginx. Below will illustrate the process for both.
+| If your repo has... | Use |
+|---|---|
+| Just an `index.html` (no `package.json`) | [Raypacks static pack](#raypacks-static-pack) (this guide) |
+| A `package.json` (React, Vite, Astro, etc.) | [React guide](/deploy-guides/javascript/react) or [Node.js guide](/deploy-guides/nodejs) |
+| A custom nginx config you want to keep | [Paketo static path](#paketo-with-custom-config) below |
 
-## Using Apache
+## Raypacks static pack
 
-Nubo will detect that you'd like to use Apache if either of the following is true:
+The Raypacks static pack ships your files behind nginx. No config, no build step.
 
-- There exists a `httpd.conf` file in the root directory
-- There is a `BP_WEB_SERVER` build variable that is set to `httpd`
+### What you need
 
-In this guide we will be using the second option as we don't need fine-grained control over the configuration.
+- `index.html` at the repo root **or** under `public/index.html`.
+- No `package.json` at the root (that triggers the Node pack instead).
 
-By setting this environment variable, it will automatically generate a default `httpd.conf` for us.
+### Deploy
 
-### Setting up a `project.toml`
-
-A `project.toml` file in the project's root directory allows us to configure information about our application and also configure the build process.
-
-In this case we would like to set a few environment variables that trigger and setup an Apache web server.
-
-```toml
-[project]
-id = "httpd-starter"
-name = "Httpd Starter"
-version = "1.0.0"
-
-[build]
-exclude = ["README.md"]
-
-[[build.env]]
-name = "BP_WEB_SERVER"
-value = "httpd"
-
-[[build.env]]
-name = "BP_WEB_SERVER_ROOT"
-value = "."
-
-[[build.env]]
-name = "BPE_PORT"
-value = "8080"
+```bash
+mkdir my-site && cd my-site
+cat > index.html <<'EOF'
+<!doctype html>
+<title>My site</title>
+<h1>Hello from Nubo</h1>
+EOF
+git init && git add . && git commit -m "init"
+# push to GitHub, then in Nubo:
 ```
 
-<Warning>Note that the `BP_WEB_SERVER_ROOT` variable should match the location of where your `index.html` file is</Warning>
+<Steps>
+  <Step title="New Frame">
+    Open your Project, hit **+ Frame**, pick the repo.
+  </Step>
+  <Step title="Set the port to 80">
+    The static pack serves on port 80.
+  </Step>
+  <Step title="Deploy">
+    Build takes a few seconds. Once it's live, visit the Frame's URL.
+  </Step>
+</Steps>
 
-<Note>Take note at the `BPE_PORT` variable, this makes the `PORT` environment variable available at runtime. This port will be required when deploying the Frame in the Nubo dashboard.</Note>
+### What gets served
 
-Be sure to commit your changes and push them to your GitHub repository. You are now ready to deploy on Nubo. See the section below, named _Going live with Nubo_, for steps in navigating the Nubo dashboard.
+The entire matching directory (the repo root, or `public/`) is served as-is. CSS files, images, subdirectories — they all work.
 
-## Using Nginx
+### Limits
 
-Nubo will detect that you'd like to use Nginx if either of the following is true:
+- No control over nginx (rewrites, redirects, cache headers).
+- No directory listings.
+- No custom 404 page.
 
-- There exists a `nginx.conf` file in the root directory
-- There is a `BP_WEB_SERVER` build variable that is set to `nginx`
+If you need any of that, use the Paketo path below.
 
-In this guide we will be using the second option as we don't need fine-grained control over the configuration.
+## Paketo with custom config
 
-By setting this environment variable, it will automatically generate a default `nginx.conf` for us.
+For SPAs that need URL rewrites, sites that need cache headers, or anything that requires nginx/Apache config tuning, switch the Frame's **Builder** to **Paketo** in **Frame Settings**.
 
-### Setting up a `project.toml`
+### nginx config
 
-A `project.toml` file in the project's root directory allows us to configure information about our application and also configure the build process.
+Drop a `nginx.conf` or set `BP_WEB_SERVER=nginx` via `project.toml`:
 
-In this case we would like to set a few environment variables that trigger and setup a Nginx web server.
-
-```toml
+```toml project.toml
 [project]
-id = "nginx-starter"
-name = "Nginx Starter"
+id = "static-site"
+name = "Static site"
 version = "1.0.0"
-
-[build]
-exclude = ["README.md"]
 
 [[build.env]]
 name = "BP_WEB_SERVER"
@@ -94,25 +87,27 @@ name = "BPE_PORT"
 value = "8080"
 ```
 
-<Warning>Note that the `BP_WEB_SERVER_ROOT` variable should match the location of where your `index.html` file is</Warning>
+`BP_WEB_SERVER_ROOT` should match the directory containing your `index.html`. `BPE_PORT` sets the runtime port (and the `PORT` env var); use the same value as the Frame's port.
 
-<Note>Take note at the `BPE_PORT` variable, this makes the `PORT` environment variable available at runtime. This port will be required when deploying the Frame in the Nubo dashboard.</Note>
+### Apache config
 
-Be sure to commit your changes and push them to your GitHub repository. You are now ready to deploy on Nubo. See the section below, named _Going live with Nubo_, for steps in navigating the Nubo dashboard.
+Same shape, but set `BP_WEB_SERVER=httpd`:
 
-## Going live with Nubo
+```toml project.toml
+[[build.env]]
+name = "BP_WEB_SERVER"
+value = "httpd"
+```
 
-<Steps>
-    <Step title="Open the new Frame modal">
-        Click on the "+ Frame" butotn
-        <Frame>
-            ![Frame button section of dashboard](/images/create-frame.png)
-        </Frame>
-    </Step>
-    <Step title="Choose repository and configure port">
-        Select your repository from the list of repos that are displayed. Then, if applicable, configure your port to match the port that your server is listening on.
-        <Frame>
-            ![Select repository section](/images/select-repository.png)
-        </Frame>
-    </Step>
-</Steps>
+### Custom configs
+
+If you have your own `nginx.conf` or `httpd.conf` at the repo root, Paketo detects it automatically and uses it instead of the generated default. Just drop the file in.
+
+## SPAs (React, Vite, Astro)
+
+If your repo has a `package.json`, the Raypacks static pack won't pick it up. Two options:
+
+1. **Build locally, ship the output as a static site.** Run `npm run build`, then commit the output directory under `public/` (rename if needed). Now the repo has no `package.json` at the root (move it into a subfolder) and the static pack picks it up.
+2. **Let Nubo build and serve.** Use the [React guide](/deploy-guides/javascript/react) which runs `npm run build` then `serve` against the output. Keeps git pushes as the deploy mechanism.
+
+For most apps, option 2 is the right call.

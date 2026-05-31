@@ -30,18 +30,20 @@
                     {
                         "group": "Deploy guides",
                         "pages": [
+                            "deploy-guides/golang",
                             {
-                                "group": "JavaScript",
-                                "icon": "square-js",
+                                "group": "Node.js",
+                                "icon": "node-js",
                                 "pages": [
+                                    "deploy-guides/nodejs",
                                     "deploy-guides/javascript/react",
                                     "deploy-guides/javascript/discordjs"
                                 ]
                             },
-                            "deploy-guides/golang",
                             "deploy-guides/python",
                             "deploy-guides/php",
-                            "deploy-guides/static"
+                            "deploy-guides/static",
+                            "deploy-guides/rust"
                         ]
                     },
                     {
@@ -55,14 +57,7 @@
                             "rollback",
                             "environment-variables",
                             "custom-domains",
-                            "volumes",
-                            "databases"
-                        ]
-                    },
-                    {
-                        "group": "Command line",
-                        "pages": [
-                            "cli"
+                            "volumes"
                         ]
                     },
                     {
@@ -86,6 +81,39 @@
                             "api-reference/rate-limits",
                             "api-reference/error-codes",
                             "api-reference/stability"
+                        ]
+                    }
+                ]
+            },
+            {
+                "tab": "Raypacks",
+                "groups": [
+                    {
+                        "group": "About",
+                        "pages": [
+                            "raypacks/overview"
+                        ]
+                    },
+                    {
+                        "group": "Packs",
+                        "pages": [
+                            "raypacks/packs/go",
+                            "raypacks/packs/node",
+                            "raypacks/packs/static",
+                            "raypacks/packs/dockerfile"
+                        ]
+                    },
+                    {
+                        "group": "Configuration",
+                        "pages": [
+                            "raypacks/nubo-toml",
+                            "raypacks/build-cache"
+                        ]
+                    },
+                    {
+                        "group": "Reference",
+                        "pages": [
+                            "raypacks/cli"
                         ]
                     }
                 ]

@@ -1,46 +1,60 @@
 ---
-title: "Key concepts and terminology"
-description: "This article will discuss some key concepts and terminology that Nubo uses"
+title: "Concepts and terminology"
+description: "The Nubo vocabulary in one place"
 ---
 
-## Key concepts
+A quick tour of the words you'll see across the dashboard and these docs.
 
-The fundementals
+## Project
 
-### DevOps
+The top-level container for your app and everything around it: landing page, API, dashboard, database. One Project usually corresponds to one product or side project. Projects have shared variables and settings that flow down to everything inside.
 
-DevOps combines Software Development and IT Operations to streamline and automate the software delivery process, enabling a consistent, fast, and reliable development cycle. Nubo provides built-in CI/CD pipelines and monitoring solutions to simplify software deployment.
+## Space
 
-### Cloud infrastructure
+An environment inside a Project. Most people run `dev`, `staging`, and `production` Spaces.
 
-Cloud infrastructure consists of hardware and services enabling on-demand cloud computing, using virtualized servers managed by a cloud provider. Nubo offers flexible, on-demand compute managed and hosted in our data centers.
+Each Space has its own variables, its own deploy history, and its own URLs. You can break things in `dev` without touching `production`.
 
-### Containerization
+## Frame
 
-Containerization involves packaging software applications and their dependencies into containers to ensure consistency across different systems and environments. Nubo transforms applications into OCI-compliant images deployable virtually anywhere.
+A running app. Your landing page is a Frame. Your API is a Frame. Your Discord bot is a Frame. Each Frame:
 
-## Terminology
+- Watches one branch of a GitHub repo
+- Has its own port and runtime settings
+- Gets its own `*.nubo.onl` URL (and any custom domains you attach)
+- Tracks its own deploy history
 
-The phrases and terms that Nubo use in hierarchical order
+Other platforms call this a "service" or "app". On Nubo it's a Frame.
 
-### Projects
+## Deployment
 
-Projects are the initial starting place for that next big idea. It includes everything that makes your application - think landing pages, dashboards, APIs, and databases.
+One build-and-release of a Frame. Pushed code? That's a deployment. Hit "Deploy" in the dashboard? Also a deployment. Each one has a build log, a status (Queued, Building, Online, Failed), and a commit it was built from. See [Deployments](/deployments).
 
-### Spaces
+## Builder
 
-Spaces represent different development environments aligning with the development lifecycle. One may create a development, staging, and production Space that have independent resources running on them.
+The thing that turns your code into a container image. Two are available:
 
-Use case: Spaces allow for previewing or testing changes before hitting production.
+- **[Raypacks (Beta)](/raypacks/overview)** is the default. Fast, daemonless, four packs covering Go, Node, static, and Dockerfile.
+- **Paketo** is the classic option. Slower but covers more languages (Python, PHP, etc.) and exposes finer-grained config through `BP_*` env vars.
 
-### Frames
+Pick per-Frame in **Frame Settings → Builder**.
 
-Frames represent the actual resource that is running and they exist on a Project’s Space. Frames are connected to a git repository and are assigned a domain upon their creation. Deployment triggers can be setup for CI/CD.
+## Volume
 
-### Volumes
+A block of persistent storage you can attach to one or more Frames. Files written to a volume's mount path survive redeploys, rollbacks, and restarts. See [Volumes](/volumes).
 
-Volumes are blocks of persistent storage attached to a single Frame in a Project. Files written into a volume's mount path stick around across redeploys, rollbacks, and restarts. See [Volumes](/volumes).
+## Variable
 
-### Plans
+A key-value pair fed into your app at build and runtime. Scoped to a Project (shared across Frames) or a Frame (just that one). See [Environment variables](/environment-variables).
 
-Plans set what you can do on Nubo: how much compute your Frames get, how much storage you can hold, and how fast your builds run. Every account starts on a 7-day Trial. See [Plans and billing](/plans).
+## Custom domain
+
+Your own hostname (`app.example.com`) pointing at a Frame, with HTTPS handled automatically. See [Custom domains](/custom-domains).
+
+## Plan
+
+Your account tier. Sets how much compute Frames can request, storage limits, and how long build logs are kept. See [Plans and billing](/plans).
+
+## Self-hosted agent
+
+A Nubo runtime you install on your own machine, instead of running on Nubo's cloud. Same dashboard, same deploy flow, your hardware. See [Self-hosted agents](/agents/overview).

@@ -1,85 +1,83 @@
 ---
 title: "Python"
-description: "Deploying a Python application"
+description: "Ship a Python app to Nubo"
 icon: "python"
 ---
 
-## Creating a basic Python web app
+Python isn't covered by [Raypacks](/raypacks/overview) yet, so Python Frames use the classic Paketo builder. Switch the Frame's **Builder** to **Paketo** in **Frame Settings** if it's not already.
 
-In this demonstration we'll build a small Flask app and serve it with Gunicorn. If you already have a Python application, skip to the "Going live with Nubo" section below.
+What Paketo needs from you:
 
-### Setting up the project
+1. A `requirements.txt` (or `Pipfile` / `pyproject.toml`).
+2. A `Procfile` with a `web:` line that boots your server.
+3. Your server binds to `0.0.0.0` on the port you set in the Frame.
 
-```shell
-mkdir python-with-nubo
-cd python-with-nubo
-git init
+If those are in place, [skip to Deploy](#deploy).
+
+## Quick start (Flask + Gunicorn)
+
+```bash
+mkdir hello-py && cd hello-py
 ```
 
-### Writing the app (`app.py`)
+`app.py`:
 
 ```python app.py
+import os
 from flask import Flask
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def root():
-    return "Hello from Python! Powered by Nubo"
+    return "Hello from Python on Nubo!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
 ```
 
-### Listing your dependencies (`requirements.txt`)
-
-Nubo spots a Python app from your `requirements.txt` (Pipenv and Poetry projects work too) and installs what you list.
+`requirements.txt`:
 
 ```text requirements.txt
 flask
 gunicorn
 ```
 
-### Telling Nubo how to start (`Procfile`)
-
-Add a `Procfile` in the project root with a `web` process. We'll run Gunicorn and bind it to port `8080`:
+`Procfile`:
 
 ```text Procfile
-web: gunicorn --bind 0.0.0.0:8080 app:app
+web: gunicorn --bind 0.0.0.0:${PORT:-8080} app:app
 ```
 
-<Note>Pick a port, make your app listen on it, and use that same number as the Frame's **Port** when you deploy. We use `8080` here.</Note>
+The `${PORT:-8080}` lets the Frame's port setting flow through to Gunicorn.
 
-### Git operations
+Test locally:
 
-Commit your changes and push them to your repository.
-
-```shell
-git add .
-git commit -m "initial commit"
-git push
+```bash
+pip install -r requirements.txt
+PORT=8080 gunicorn --bind 0.0.0.0:$PORT app:app
 ```
 
-## Going live with Nubo
-
-Python is supported with Nubo out of the box. Nubo installs your dependencies and runs the `web` process from your `Procfile`.
+## Deploy
 
 <Steps>
-    <Step title="Open the new Frame modal">
-        Click on the "+ Frame" button
-        <Frame>
-            ![Frame button section of dashboard](/images/create-frame.png)
-        </Frame>
-    </Step>
-    <Step title="Choose repository and configure port">
-        Select your repository from the list of repos that are displayed. Then set the **Port** to match the port your app listens on (`8080` in this guide).
-        <Frame>
-            ![Select repository section](/images/select-repository.png)
-        </Frame>
-    </Step>
+  <Step title="Push to GitHub">
+    Commit `app.py`, `requirements.txt`, and `Procfile`. Push.
+  </Step>
+  <Step title="New Frame on Nubo">
+    Hit **+ Frame** in your Project, connect the repo.
+  </Step>
+  <Step title="Confirm the port">
+    Match what your Procfile binds to.
+  </Step>
+  <Step title="Deploy">
+    First build takes a minute or two while Paketo resolves dependencies.
+  </Step>
 </Steps>
 
-## Setting a custom Python version
+## Pinning a Python version
 
-By default Nubo picks a recent Python for you. To pin a specific version, add a `project.toml` to your project root:
+Paketo picks a recent Python by default. To pin a version, add `project.toml`:
 
 ```toml project.toml
 [project]
@@ -91,3 +89,25 @@ version = "1.0.0"
 name = "BP_CPYTHON_VERSION"
 value = "3.12.*"
 ```
+
+## Framework guides
+
+<CardGroup cols={2}>
+  <Card title="Django" icon="python" href="/deploy-guides/python/django">
+    Full-stack web framework
+  </Card>
+  <Card title="discord.py" icon="discord" href="/deploy-guides/python/discordpy">
+    Long-running Discord bot
+  </Card>
+</CardGroup>
+
+## Things that trip people up
+
+- **`flask run` in your Procfile.** That's the dev server. Use Gunicorn (or Uvicorn for async apps).
+- **Binding to `127.0.0.1`.** Bind to `0.0.0.0` so nginx ingress can reach you.
+- **Hardcoded port.** Read `PORT` from the environment so the Frame's setting actually takes effect.
+- **No `Procfile`.** Paketo needs a `web:` line to know what to launch.
+
+## Raypacks support
+
+Python is on the Raypacks roadmap. We'll add a Python pack once we're confident the build flow is fast and predictable. For now, Paketo is the path.

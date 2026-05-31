@@ -1,0 +1,52 @@
+---
+title: "Static pack"
+description: "Pre-built HTML, CSS, and JS served on nginx"
+---
+
+The Static pack ships your raw HTML files behind nginx. It's for sites that don't need a build step: landing pages, portfolios, plain HTML.
+
+If your site uses React, Vite, Astro, or anything that produces a `dist/` directory at build time, use the [Node.js pack](/raypacks/packs/node) instead. That pack runs the build first; this pack assumes everything's already built.
+
+## When it runs
+
+Two conditions, both required:
+
+1. There's an `index.html` at the repo root or under `public/index.html`.
+2. There's **no** `package.json` at the root.
+
+The `package.json` check is what makes a React app go to the Node pack, not here.
+
+## What gets shipped
+
+| Source | Lands at |
+|---|---|
+| `index.html` at root | `/usr/share/nginx/html` |
+| `public/index.html` | `/usr/share/nginx/html` from `public/` |
+
+The entire matching directory is copied. So if you have `index.html`, `style.css`, and `images/`, they all get served.
+
+## Runtime
+
+| Field | Value |
+|---|---|
+| Base image | `nginx:alpine` |
+| Cmd | `nginx -g "daemon off;"` |
+| Port | 80 |
+| Working dir | (nginx default) |
+
+The Frame's port should be set to **80** for this pack.
+
+## Limits today
+
+- No control over nginx config. Need rewrites, caching headers, or compression? Switch to the Paketo builder, which supports a custom `nginx.conf` and `BP_WEB_SERVER` knobs.
+- No directory listings, no custom 404 pages.
+- HTTPS is handled by Nubo at the edge; nginx itself serves plain HTTP inside the container.
+
+## When to use a different pack
+
+| You have... | Use |
+|---|---|
+| Just HTML/CSS/JS files | Static (this pack) |
+| A React/Vite/Svelte/Next project | Node.js pack |
+| A `dist/` folder you built locally | Static pack, but commit `dist/` and put your `index.html` inside it (rename to `public/`) |
+| An existing nginx config | Paketo builder, with [the static guide](/deploy-guides/static) |

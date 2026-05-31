@@ -1,0 +1,131 @@
+---
+title: "rp CLI"
+description: "Run Raypacks builds on your laptop"
+---
+
+The `rp` command-line tool runs the same Raypacks engine that builds your apps on Nubo, but locally. Useful for previewing a build, debugging detection, or producing an OCI image without pushing.
+
+You don't need `rp` to deploy on Nubo. Pushing to your tracked branch is enough. Use `rp` when you want to inspect what Raypacks is about to do, or build a one-off image for somewhere else.
+
+## Install
+
+One line:
+
+```bash
+curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
+```
+
+The script detects your OS and CPU, downloads the right `rp` binary, and drops it in `/usr/local/bin` (or `~/.local/bin` if it can't get write access). Linux x86_64 and macOS arm64 (Apple Silicon) are published today.
+
+### Customizing the install
+
+The installer reads a few env vars:
+
+```bash
+# Pin a specific version
+RAYPACKS_VERSION=v0.1.0 curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
+
+# Install somewhere other than /usr/local/bin
+RAYPACKS_INSTALL_DIR="$HOME/.local/bin" curl -fsSL https://dl.withnubo.com/raypacks/install.sh | bash
+```
+
+### Manual download
+
+If you'd rather grab the binary directly:
+
+```bash
+# macOS Apple Silicon
+curl -fSL -o /usr/local/bin/rp https://dl.withnubo.com/raypacks/latest/rp-darwin-arm64
+chmod +x /usr/local/bin/rp
+
+# Linux x86_64
+curl -fSL -o /usr/local/bin/rp https://dl.withnubo.com/raypacks/latest/rp-linux-amd64
+chmod +x /usr/local/bin/rp
+```
+
+Tagged releases are at `https://dl.withnubo.com/raypacks/<version>/rp-<os>-<arch>`.
+
+### Verify
+
+```bash
+rp --version
+```
+
+## Commands
+
+### `rp detect`
+
+Print which pack matches a project.
+
+```bash
+rp detect .
+# go: go.mod (github.com/you/app) -> static binary on scratch (entrypoint ./cmd/server)
+```
+
+Useful when you're not sure which pack Raypacks will pick. The summary names the detected stack and the entrypoint it'll build.
+
+### `rp plan`
+
+Show the full build plan without building.
+
+```bash
+rp plan .
+```
+
+You get the same plan table Nubo prints at the start of every cloud build:
+
+```
+detect          go · github.com/you/app
+╭───────────── plan ──────────────╮
+│ pack             go              │
+│ base             scratch         │
+│ step (go build)  go build -o … . │
+│ runtime          /app/server     │
+│ workdir          /app            │
+│ port             8080            │
+╰──────────────────────────────────╯
+decision        entrypoint = . (auto)
+```
+
+The `decision` line shows where each setting came from: `nubo.toml`, `--entrypoint`, or `auto`.
+
+Flags:
+
+- `--port <n>`: override the runtime port
+- `--entrypoint <path>`: override the build entrypoint (Go pack only). `nubo.toml` still wins if it's set.
+
+### `rp build`
+
+Build an OCI image and write it to a tar (for local `docker load`) or push it to a registry.
+
+```bash
+# build to image.tar in the current directory
+rp build .
+
+# push directly to a registry
+rp build . \
+  --push registry.example.com/my/app:v1 \
+  --registry-user $USER \
+  --registry-pass $TOKEN
+```
+
+Common flags:
+
+- `--push <reference>`: push to a registry instead of writing a tar
+- `--tag <reference>`: override the local tag (default `raypacks-app:latest`)
+- `--output <path>`: tar output path (default `image.tar`)
+- `--port <n>`: runtime port
+- `--entrypoint <path>`: override build entrypoint
+- `--verbose`: stream build step output instead of only on failure
+
+`RAYPACKS_REGISTRY_USER` and `RAYPACKS_REGISTRY_PASS` work as env-var equivalents of the registry flags.
+
+## Loading a built image into Docker
+
+```bash
+rp build .
+docker load -i image.tar
+docker run -p 8080:8080 raypacks-app:latest
+```
+
+You'll have the same image Nubo would have built and deployed.
