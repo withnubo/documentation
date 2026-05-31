@@ -1,0 +1,35 @@
+---
+title: "Build cache"
+description: "What Raypacks remembers between builds"
+---
+
+Every Frame gets its own build cache that survives between deploys. It's how a rebuild of an app you tweaked one line of finishes in seconds instead of starting from scratch.
+
+## What's cached
+
+| Cache | Path inside the build | What it holds |
+|---|---|---|
+| Go modules | `/raypacks-cache/go-mod` | `GOMODCACHE`: downloaded module sources |
+| Go build | `/raypacks-cache/go-build` | `GOCACHE`: compiled package objects |
+| npm | `/raypacks-cache/npm` | `npm`'s download cache (covers pnpm and yarn install layers too) |
+| OCI layers | `/raypacks-cache/layers` | Per-layer digest map so unchanged layers skip gzip + upload |
+
+The cache is a single Kubernetes `PersistentVolumeClaim` per Frame, mounted into the build pod. You don't manage it; Nubo creates it on first deploy.
+
+## Cache hits in the wild
+
+A cold build of a simple Go service: 30 to 60 seconds.
+
+A warm rebuild of the same service after a one-line change: usually under 15 seconds, often single-digit. Go modules don't re-download, packages don't re-compile from source, and unchanged image layers don't re-upload to the registry.
+
+## When the cache misses
+
+A cache miss is fine; the build still works. Common reasons it happens:
+
+- **First build.** The cache is empty.
+- **Lockfile changed.** Added a new dependency? Its sources need to be fetched once.
+- **Manual reset.** Delete the Frame and start over and you get a fresh cache.
+
+## Custom caching needs
+
+You can't configure the cache today (size, paths, etc. are fixed). If you have a use case that doesn't fit the defaults, let us know at [support@withnubo.com](mailto:support@withnubo.com).

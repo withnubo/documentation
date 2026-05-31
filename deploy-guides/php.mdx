@@ -1,32 +1,31 @@
 ---
 title: "PHP"
-description: "Deploying a PHP application"
+description: "Ship a PHP app to Nubo"
 icon: "php"
 ---
 
-## Creating a basic PHP app
+PHP isn't covered by [Raypacks](/raypacks/overview) yet, so PHP Frames use the classic Paketo builder. Switch the Frame's **Builder** to **Paketo** in **Frame Settings** if it's not already.
 
-We'll serve a single PHP page with PHP's built-in web server. If you already have a PHP application, skip to the "Going live with Nubo" section below.
+What Paketo needs from you:
 
-### Setting up the project
+1. A `project.toml` that sets a web server, a web root, and a port.
+2. PHP source files (and optionally a `composer.json`).
 
-```shell
-mkdir php-with-nubo
-cd php-with-nubo
+## Quick start
+
+```bash
+mkdir hello-php && cd hello-php
 mkdir htdocs
-git init
 ```
 
-### Writing the page (`htdocs/index.php`)
+`htdocs/index.php`:
 
 ```php htdocs/index.php
 <?php
-echo "Hello from PHP! Powered by Nubo";
+echo "Hello from PHP on Nubo!";
 ```
 
-### Configuring the build (`project.toml`)
-
-Nubo builds PHP with Cloud Native Buildpacks. A `project.toml` in your project root tells the buildpack which web server to run, where your web root is, and which port to serve on.
+`project.toml` at the repo root:
 
 ```toml project.toml
 [project]
@@ -47,43 +46,37 @@ name = "BPE_PORT"
 value = "8080"
 ```
 
-<Note>`BP_PHP_WEB_DIR` should point to the folder that holds your `index.php`. `BPE_PORT` sets the port your app serves on; use that same number as the Frame's **Port** when you deploy.</Note>
+`BP_PHP_WEB_DIR` is the folder that holds `index.php`. `BPE_PORT` sets the runtime port (and `PORT` env var). The Frame's port setting should match.
 
-<Note>Got a `composer.json`? Nubo installs your Composer dependencies automatically during the build.</Note>
-
-### Git operations
-
-Commit your changes and push them to your repository.
-
-```shell
-git add .
-git commit -m "initial commit"
-git push
-```
-
-## Going live with Nubo
+## Deploy
 
 <Steps>
-    <Step title="Open the new Frame modal">
-        Click on the "+ Frame" button
-        <Frame>
-            ![Frame button section of dashboard](/images/create-frame.png)
-        </Frame>
-    </Step>
-    <Step title="Choose repository and configure port">
-        Select your repository from the list of repos that are displayed. Then set the **Port** to match the port your app serves on (`8080` in this guide).
-        <Frame>
-            ![Select repository section](/images/select-repository.png)
-        </Frame>
-    </Step>
+  <Step title="Push to GitHub">
+    Commit and push.
+  </Step>
+  <Step title="New Frame on Nubo">
+    Hit **+ Frame**, connect the repo.
+  </Step>
+  <Step title="Confirm the port">
+    Match what `BPE_PORT` is set to (8080 here).
+  </Step>
+  <Step title="Deploy">
+    Paketo installs Composer deps if you have a `composer.json`, then starts PHP's web server.
+  </Step>
 </Steps>
 
-## Setting a custom PHP version
-
-By default Nubo picks a recent PHP for you. To pin a specific version, add a `BP_PHP_VERSION` build variable to your `project.toml`:
+## Pinning a PHP version
 
 ```toml project.toml
 [[build.env]]
 name = "BP_PHP_VERSION"
 value = "8.3.*"
 ```
+
+## Composer
+
+If your repo has a `composer.json`, dependencies are installed automatically. Commit your `composer.lock` for reproducible builds.
+
+## Raypacks support
+
+PHP is on the Raypacks roadmap. We'll add a PHP pack once we've nailed the simple-deployment story. For now, Paketo is the path.

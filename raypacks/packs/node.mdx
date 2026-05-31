@@ -1,0 +1,72 @@
+---
+title: "Node.js pack"
+description: "How Raypacks builds Node apps and bots"
+---
+
+The Node pack covers anything driven by a `package.json`: REST APIs, Discord bots, Express servers, Next.js (non-SSR builds), the lot. It auto-picks your package manager from the lockfile.
+
+## When it runs
+
+There's a `package.json` at the repo root.
+
+## Package manager detection
+
+Raypacks reads your lockfile to decide what to install with:
+
+| Lockfile | Manager | Base image |
+|---|---|---|
+| `bun.lockb` or `bun.lock` | bun | `oven/bun:slim` |
+| `pnpm-lock.yaml` | pnpm | `node:22-slim` |
+| `yarn.lock` | yarn | `node:22-slim` |
+| (none of the above) | npm | `node:22-slim` |
+
+Commit your lockfile. Without it Raypacks falls back to npm.
+
+## Build steps
+
+For every Node project:
+
+```
+<pm> install           # ci for npm, --frozen-lockfile for pnpm/yarn
+<pm> run build         # only if package.json has a "build" script
+```
+
+If you don't have a `build` script (a bare API or bot), only the install step runs.
+
+## Runtime
+
+| pm | Entrypoint |
+|---|---|
+| bun | `bun run start` |
+| anything else | `npm start` if you have a `start` script, otherwise `node <package.json#main>`, otherwise `node index.js` |
+
+| Field | Value |
+|---|---|
+| Working dir | `/app` |
+| Port | from Frame settings, default 3000 |
+| Env | `NODE_ENV=production`, `PORT=<your port>` |
+
+Your `start` script is the contract Raypacks expects. Define one and the pack lights up:
+
+```json package.json
+{
+  "scripts": {
+    "start": "node server.js",
+    "build": "tsc -p ."
+  }
+}
+```
+
+## Limits today
+
+- No customization of the install command yet (no per-Frame env vars at install time).
+- No `engines.node` enforcement (we ship `node:22-slim` regardless).
+- Workspaces (`pnpm-workspace.yaml`, npm workspaces) build everything but the root scripts run.
+
+## Common errors
+
+**App starts and exits immediately**: your `start` script ran something that wasn't a long-running server. Make sure it boots an HTTP listener.
+
+**Port mismatch**: your app listens on `process.env.PORT` but you set the Frame port to something else. Read `PORT` from env, don't hardcode.
+
+**Native modules fail to build**: `node:22-slim` doesn't include build toolchains. For now, prefer prebuilt binaries (`better-sqlite3` with prebuilt, etc.) or switch to the Paketo builder.

@@ -1,0 +1,51 @@
+---
+title: "Raypacks (Beta)"
+description: "Nubo's fast, daemonless builder for shipping apps"
+---
+
+Raypacks is the builder that turns your code into a running app on Nubo. Point it at a repo, and it figures out what you're shipping (a Go service, a React app, a static site, a Node bot), runs the right build, and produces a container image. No Dockerfile. No `docker build`. No buildpack stack to learn.
+
+It's the default builder for new Frames.
+
+## Why Raypacks exists
+
+We started with [Paketo (Cloud Native Buildpacks)](https://paketo.io). It works, but builds were slower than we wanted and the configuration knobs (the `BP_*` environment variables) felt like buildpack trivia rather than something you'd reach for. Raypacks is what we built to replace it.
+
+What's different:
+
+- **Daemonless.** No background Docker daemon. Builds run as a single Kubernetes Job and exit when done.
+- **Auto-detection first.** Drop in a `go.mod`, a `package.json`, or an `index.html` and Raypacks picks the right pack. No config required for the common case.
+- **Real config when you need it.** Override anything via `nubo.toml` at the repo root. See [`nubo.toml` reference](/raypacks/nubo-toml).
+- **Cached.** Module downloads (Go modules, `node_modules`, layer digests) persist between builds of the same Frame.
+
+## The four packs
+
+| Pack | Triggers on | Base image | Notes |
+|---|---|---|---|
+| [Go](/raypacks/packs/go) | `go.mod` + a `main.go` | scratch | Static binary, no runtime deps |
+| [Node.js](/raypacks/packs/node) | `package.json` | `node:22-slim` or `oven/bun:slim` | Auto-picks npm / pnpm / yarn / bun |
+| [Static](/raypacks/packs/static) | `index.html` and no `package.json` | `nginx:alpine` | For pre-built sites |
+| [Dockerfile](/raypacks/packs/dockerfile) | `Dockerfile` at the root | from your Dockerfile | Local-only today |
+
+Detection runs top to bottom. The first pack that matches wins.
+
+## When to use the classic builder (Paketo)
+
+Raypacks is in Beta. If you hit something it doesn't cover yet (a stack that's not in the four packs above, or a niche `BP_*` knob you relied on), switch the Frame's **Builder** to **Paketo** in **Frame Settings**. Paketo isn't going anywhere; it's the fallback while Raypacks grows.
+
+## Where to go next
+
+<CardGroup cols={2}>
+  <Card title="nubo.toml reference" icon="file-code" href="/raypacks/nubo-toml">
+    The one config file Raypacks reads
+  </Card>
+  <Card title="rp CLI" icon="terminal" href="/raypacks/cli">
+    Run Raypacks builds on your laptop
+  </Card>
+  <Card title="Build cache" icon="bolt" href="/raypacks/build-cache">
+    What's cached between builds, and how to use it
+  </Card>
+  <Card title="Pack reference" icon="layer-group" href="/raypacks/packs/go">
+    Deep dive on each pack
+  </Card>
+</CardGroup>

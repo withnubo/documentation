@@ -1,54 +1,83 @@
 ---
 title: "Quickstart"
-description: "Deploy your first app to Nubo in under five minutes"
+description: "Deploy your first app in under five minutes"
 ---
 
-This guide takes you from a fresh Nubo account to a running app served over HTTPS.
+This is the fastest path from a fresh Nubo account to a running app served over HTTPS.
 
 ## Before you start
 
 You'll need:
 
-- A [Nubo account](https://console.withnubo.com/auth)
-- The [Nubo GitHub App](https://github.com/apps/nubo-application) installed on the repo you want to deploy
+- A [Nubo account](https://console.withnubo.com/signup)
+- The [Nubo GitHub App](https://github.com/apps/nubo-apps) installed on the repo you want to deploy
+- An app that listens on a port (Go, Node, Python, PHP, or a static `index.html`)
 
-That's it - no CLI, no Dockerfile, no config file.
+No CLI to install. No Dockerfile to write.
 
 ## 1. Create a Project
 
-A Project is the top-level container for your app. Create one from the dashboard and give it a name.
+A Project is the top-level container. Open the dashboard and create one.
 
 <Tip>
-  If you're not sure how Nubo organizes things, read [Concepts and terminology](/concepts-and-terms). The short version: a Project holds one or more Spaces (environments like dev/prod), and each Space holds Frames (the actual running workloads).
+  New to the Project / Space / Frame model? Read [Concepts and terminology](/concepts-and-terms). The short version: a **Project** holds one or more **Spaces** (`dev`, `staging`, `production`), and each Space holds **Frames** (the running apps).
 </Tip>
 
-## 2. Deploy a Frame
+## 2. Create a Frame
 
-Inside your Project, click **New Frame**. Pick the repo you want to deploy and the branch to track, then set the port your app listens on.
+Inside your Project, click **+ Frame**:
 
-Nubo detects your language automatically, so you don't need a Dockerfile. If your app starts with `npm start`, `python manage.py runserver`, `go run`, or anything similar, it'll just work.
+1. Pick the GitHub repo to deploy.
+2. Pick the branch Nubo should watch. Pushes here trigger redeploys.
+3. Set the port your app listens on.
+4. Leave **Builder** on the default ([Raypacks Beta](/raypacks/overview)) for Go, Node, and static sites. Switch to **Paketo** for Python or PHP.
 
-The build kicks off immediately. You can follow along in real time from the Frame's log panel.
+Hit deploy. The build starts immediately. Watch it in the Logs tab.
 
 ## 3. Open your app
 
-Once the build finishes, your Frame is live at its auto-assigned subdomain (something like `my-app-a3f2.nubo.onl`). Click the URL in the dashboard to open it.
+When the build finishes, your Frame is live at an auto-assigned URL (something like `my-app-a3f2.nubo.onl`). Click it from the dashboard.
 
-To redeploy, trigger a new build from the dashboard or via the API.
+To redeploy, push to your tracked branch. Or hit **Deploy** in the dashboard to rebuild the current revision.
+
+## Pick the right deploy guide
+
+The general flow above works for everything, but language-specific guides cover the gotchas:
+
+<CardGroup cols={2}>
+  <Card title="Go" icon="golang" href="/deploy-guides/golang">
+    A static binary on a scratch image
+  </Card>
+  <Card title="Node.js" icon="node-js" href="/deploy-guides/nodejs">
+    Any package.json-driven app or bot
+  </Card>
+  <Card title="Python" icon="python" href="/deploy-guides/python">
+    Flask, Django, Gunicorn, Uvicorn
+  </Card>
+  <Card title="PHP" icon="php" href="/deploy-guides/php">
+    Drop-in PHP, Composer auto-installed
+  </Card>
+  <Card title="Static sites" icon="html5" href="/deploy-guides/static">
+    HTML, CSS, JS served on nginx
+  </Card>
+  <Card title="More languages" icon="square-arrow-up-right" href="/raypacks/overview">
+    What's supported and what's coming
+  </Card>
+</CardGroup>
 
 ## Next steps
 
 <CardGroup cols={2}>
   <Card title="Environment variables" icon="key" href="/environment-variables">
-    Inject config at build and runtime
+    Inject config and secrets
   </Card>
   <Card title="Custom domains" icon="globe" href="/custom-domains">
-    Serve your Frame at your own hostname
+    Serve under your own hostname
   </Card>
   <Card title="Deployments" icon="rocket" href="/deployments">
-    How Nubo builds, deploys, and rolls back
+    Build, deploy, roll back
   </Card>
-  <Card title="Deployment guides" icon="book" href="/deploy-guides/javascript/react">
-    Framework-specific walkthroughs
+  <Card title="Raypacks reference" icon="zap" href="/raypacks/overview">
+    Configure the default builder
   </Card>
 </CardGroup>

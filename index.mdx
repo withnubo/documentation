@@ -1,24 +1,53 @@
 ---
-title: "Introduction"
-description: "Welcome to the best place to publish your code"
+title: "Welcome to Nubo"
+description: "Push your code. Get a URL. That's the deal."
 ---
 
-Nubo was founded to be the go-to place for all things DevOps. A tool to release software fast, iterate faster, and scale effortlessly. Whether you are deploying a small portfolio site or a highly complex micro-service driven platform, Nubo eliminates the bottlenecks.
+Nubo runs your code in the cloud without making you babysit servers.
 
-## Nubo is changing cloud infrastructure
-Changing the way that developers interact with infrastructure is at the core of Nubo’s mission. We believe that current solutions require too much energy and yield unsatisfying results. Results that lead to hours of wasted time in the terminal printing environment variables, or skimming a config file for the 100th time.
+You connect a GitHub repo, pick a branch, and we figure out the rest: language detection, build, container image, HTTPS-ready URL. Push to your tracked branch and the next deploy goes out automatically. No Dockerfile. No YAML manifests. No `ImagePullBackOff` errors at 2am.
 
-We also feel that the market is too fragmented. Nubo offers a platform that encompasses the entire development lifecycle. Instead of using 4+ different types of applications, use one. Go from juggling multiple different applications to one.
+## Who Nubo is for
 
-1. Software deployment (built-in CI/CD pipelines and no Dockerfiles)
-2. Development environments (Dev, Staging, Prod, etc.)
-3. Infrastructure management and security
-4. Logging and monitoring
+Whether you're a:
 
-Focus on what matters - creating and building better software, not on servers, scaling, or `ImagePullBackOff` errors.
+- **Solo dev** spinning up a side project before lunch
+- **Indie hacker** running ten micro-apps without ten different control panels
+- **Student** trying to deploy your first real backend
+- **Startup** that wants production infra without a platform team
+
+If you've got code and a port number, you've got a Nubo deploy.
+
+## What ships out of the box
+
+- **Auto-detected builds.** Go, Node, PHP, Python, and static sites are recognized from your repo. No config required for the common case.
+- **Push-to-deploy.** Every push to your tracked branch triggers a build. Preview deploys for every PR.
+- **HTTPS + a free domain.** Every Frame gets a `*.nubo.onl` URL with HTTPS. Bring your own domain when you're ready.
+- **Environments.** A Project holds multiple Spaces (`dev`, `staging`, `production`), each with their own variables, history, and URL.
+- **Rollback in one click.** Bad deploy? Roll back to a known-good version from the dashboard.
+
+## A note on builders
+
+Two builders ship with Nubo today:
+
+- **[Raypacks (Beta)](/raypacks/overview)** is our new daemonless builder. Fast, opinionated, the default for new Frames. Covers Go, Node, and static sites.
+- **Paketo** is the classic Cloud Native Buildpacks path. Slower but more configurable. Still the right call for Python, PHP, and anything Raypacks doesn't cover yet.
+
+You can switch between them per-Frame in **Frame Settings → Builder**.
 
 <hr />
 
-<Card title="Quickstart" icon="text" horizontal href="/quickstart">
-  View our quickstart guide to launch your app in just a few clicks
-</Card>
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Deploy your first app in under five minutes
+  </Card>
+  <Card title="Pick your language" icon="code" href="/deploy-guides/golang">
+    Language-specific deploy guides
+  </Card>
+  <Card title="Raypacks Beta" icon="zap" href="/raypacks/overview">
+    Our new daemonless builder
+  </Card>
+  <Card title="Concepts" icon="book" href="/concepts-and-terms">
+    How Projects, Spaces, and Frames fit together
+  </Card>
+</CardGroup>

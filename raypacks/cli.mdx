@@ -1,0 +1,103 @@
+---
+title: "rp CLI"
+description: "Run Raypacks builds on your laptop"
+---
+
+The `rp` command-line tool runs the same Raypacks engine that builds your apps on Nubo, but locally. Useful for previewing a build, debugging detection, or producing an OCI image without pushing.
+
+You don't need `rp` to deploy on Nubo. Pushing to your tracked branch is enough. Use `rp` when you want to inspect what Raypacks is about to do, or build a one-off image for somewhere else.
+
+## Install
+
+The CLI ships in the same image Nubo uses for cloud builds:
+
+```bash
+docker pull registry.withnubo.com/raypacks/builder:latest
+```
+
+Or wrap it in an alias so you can run it like a local binary:
+
+```bash
+alias rp='docker run --rm -v "$PWD:/workspace" registry.withnubo.com/raypacks/builder:latest rp'
+```
+
+A standalone binary is on the roadmap.
+
+## Commands
+
+### `rp detect`
+
+Print which pack matches a project.
+
+```bash
+rp detect .
+# go: go.mod (github.com/you/app) -> static binary on scratch (entrypoint ./cmd/server)
+```
+
+Useful when you're not sure which pack Raypacks will pick. The summary names the detected stack and the entrypoint it'll build.
+
+### `rp plan`
+
+Show the full build plan without building.
+
+```bash
+rp plan .
+```
+
+You get the same plan table Nubo prints at the start of every cloud build:
+
+```
+detect          go · github.com/you/app
+╭───────────── plan ──────────────╮
+│ pack             go              │
+│ base             scratch         │
+│ step (go build)  go build -o … . │
+│ runtime          /app/server     │
+│ workdir          /app            │
+│ port             8080            │
+╰──────────────────────────────────╯
+decision        entrypoint = . (auto)
+```
+
+The `decision` line shows where each setting came from: `nubo.toml`, `--entrypoint`, or `auto`.
+
+Flags:
+
+- `--port <n>`: override the runtime port
+- `--entrypoint <path>`: override the build entrypoint (Go pack only). `nubo.toml` still wins if it's set.
+
+### `rp build`
+
+Build an OCI image and write it to a tar (for local `docker load`) or push it to a registry.
+
+```bash
+# build to image.tar in the current directory
+rp build .
+
+# push directly to a registry
+rp build . \
+  --push registry.example.com/my/app:v1 \
+  --registry-user $USER \
+  --registry-pass $TOKEN
+```
+
+Common flags:
+
+- `--push <reference>`: push to a registry instead of writing a tar
+- `--tag <reference>`: override the local tag (default `raypacks-app:latest`)
+- `--output <path>`: tar output path (default `image.tar`)
+- `--port <n>`: runtime port
+- `--entrypoint <path>`: override build entrypoint
+- `--verbose`: stream build step output instead of only on failure
+
+`RAYPACKS_REGISTRY_USER` and `RAYPACKS_REGISTRY_PASS` work as env-var equivalents of the registry flags.
+
+## Loading a built image into Docker
+
+```bash
+rp build .
+docker load -i image.tar
+docker run -p 8080:8080 raypacks-app:latest
+```
+
+You'll have the same image Nubo would have built and deployed.
