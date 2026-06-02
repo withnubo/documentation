@@ -2,6 +2,93 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 --- 
+<Update label="June 1st, 2026" tags={["Teams", "Security", "Databases", "Metrics", "Frames", "CI/CD", "Previews", "Dashboard"]}>
+
+## Teams, a second factor for your account, more database engines, and metrics you can trust
+
+Big release this time. You can now invite people to work on your projects, lock down your account with multi-factor auth, run MySQL, MongoDB, or Redis right next to Postgres, and read a metrics page that finally tells you the truth about your apps. There's also a builder you can choose, deploys from any folder in your repo, and a stack of smaller fixes.
+
+### Teams
+
+You don't have to share a login anymore. Spin up a team, invite people by email, and decide exactly what each person can touch.
+
+- Invite a teammate from the new **Teams** page. They get an email, click to accept, and they're in.
+- Grant access per project, with a role: **viewer** (look, don't touch), **member**, or **admin** (manage people and access).
+- You stay the owner. Projects, billing, and ownership don't move when you add people, so it's always clear who pays and who's in control.
+- Pull someone's access the second you need to. Unaccepted invites expire on their own after 7 days.
+
+### Multi-factor authentication
+
+Add a second factor so a borrowed GitHub session isn't enough to get into your account.
+
+Turn it on in your account settings under **Two-factor authentication**. Your options:
+
+- An **authenticator app** (1Password, Google Authenticator, anything TOTP).
+- **Touch ID, Face ID, Windows Hello, or a hardware security key**, via passkeys.
+- **Recovery codes** for the day you lose your phone. Save them somewhere safe, and regenerate a fresh set whenever you want.
+
+With it on, signing in through GitHub drops you on a quick challenge screen before the dashboard loads. Setup takes about a minute.
+
+### MySQL, MongoDB, and Redis
+
+Last time we said more database engines were on the way. Here they are. Pick your engine when you create a database:
+
+- **PostgreSQL** (16 or 15)
+- **MySQL** (8)
+- **MongoDB** (7 or 6)
+- **Redis** (7)
+
+The database's **Connect** panel shows the right details for whatever you picked: user, password, and database name where they apply, plus a ready-to-use connection string. Wiring it into an app works the same as before: point the app at the database and Nubo drops a `DATABASE_URL` in on the next deploy. See [Databases](/databases).
+
+### A metrics page you can trust
+
+We rebuilt the Project **Metrics** page, and more to the point, we fixed what it was telling you.
+
+- **The numbers are right now.** The old page quietly left push-triggered deploys out of your counts and mis-averaged per-Frame usage. Both fixed, so deploy counts, success rates, and resource usage match what actually happened.
+- **New: network egress.** See how much data your apps are sending out, for the whole project and per Frame.
+- **An easier read.** A six-stat summary up top (CPU, memory, egress, deploys, success rate, deploy speed), a fleet-health bar, usage charts for the last 7 days, and a per-Frame table you can sort.
+- It all streams in with skeletons instead of staring at a blank page while it loads.
+
+### Deploy from a subdirectory
+
+App lives in a subfolder of your repo? Set a **source directory** and Nubo builds from there instead of the root. Handy for monorepos.
+
+Set it when you first create a Frame (in the deploy wizard, quick create, or the new-Frame modal) and change it later in **Frame Settings**. Works on managed cloud and on your own agents.
+
+### Choose your builder
+
+**Frame Settings** has a new **Builder** option:
+
+- **Paketo**: our default, Cloud Native Buildpacks.
+- **Raypacks (Beta)**: our own daemonless builder, built for faster builds. Still in beta, so expect the occasional rough edge.
+
+Pick it per Frame; it kicks in on your next deploy.
+
+### Previews, now fully managed
+
+Preview deployments grew up. Switch them on in **Frame Settings** and every pull request gets its own running copy on an HTTPS `*.nubo.onl` subdomain. You control:
+
+- **What triggers one**: pull requests, branch pushes, or a branch allowlist.
+- **How long it sticks around** before idle cleanup (7 days by default).
+- **Per-preview env overrides**, so a preview can point at staging credentials.
+
+Nubo writes back to GitHub too, with commit status checks and a PR comment carrying the preview link. Close the PR and the preview tears itself down. See [Preview deployments](/preview-deployments).
+
+### Emails got a redesign
+
+Our transactional emails (welcome, build and deploy failures, domain changes, support replies) now wear the Nubo look. Best part: when a build fails, the email shows the actual log inline with the errors highlighted, so you can usually spot what broke without opening the dashboard.
+
+### Smaller things worth mentioning
+
+- **Storage now shows up on your billing page**, next to compute and egress, so nothing about your usage is hidden.
+- **Login and sign-up** moved to one tidy `/auth` page.
+- **Announcement banners** no longer run off the screen: long ones scroll inside the card while the header and dismiss button stay put.
+- The dashboard got a **consistency pass**, with shared components and a cleaner console look across pages.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
 <Update label="May 28th, 2026" tags={["Databases", "CLI"]}>
 
 ## Managed Postgres, and a CLI for your terminal
