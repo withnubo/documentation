@@ -1,7 +1,50 @@
 --- 
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
---- 
+---
+<Update label="June 19th, 2026" tags={["Deployments", "Analytics", "Support", "Raypacks", "Bug-fixes"]}>
+
+## Deploy from a subdirectory, real request analytics, and a faster builder in beta
+
+This release brings subdirectory deploys for monorepos, per-Frame request analytics straight from our edge, in-app support tickets, and a new daemonless builder in beta. Plus a round of bug fixes.
+
+### Deploy from a subdirectory
+
+Got a monorepo where your app lives in a subfolder instead of the root? Now you can set a **source directory** and Nubo builds from exactly that folder.
+
+- Set it when you first create a Frame.
+- Change it anytime in **Frame Settings**.
+- Works on managed cloud and on your own agents.
+
+### Per-Frame request analytics
+
+You can now see real HTTP request traffic for each of your Frames, captured directly from Nubo's own edge, so what you're seeing is what's actually happening.
+
+- View volume, latency, status codes, and egress per Frame.
+- This isn't an estimate scraped from infrastructure metrics; it's real request traffic.
+
+Knowing how your app performs under live traffic is the difference between reacting to problems and preventing them. More depth is on the way, but the core picture is live now.
+
+### In-app support tickets
+
+You can now open and view any support tickets you've opened, right from the dashboard.
+
+### Beta: faster daemonless builds and layer cache
+
+You can now replace your pack/kpack build path with **Raypacks**, a daemonless OCI buildpack system focused on speed and cache efficiency. This feature is still in beta, so we're testing for and addressing bugs as they appear.
+
+### Bug fixes
+
+- Fixed a bug where you couldn't upgrade your account.
+- Fixed a bug where the repo picker would leak another tenant's repos to GitHub collaborators.
+- Fixed a bug where a Frame settings patch would overlay onto unrelated fields.
+- Fixed a bug where an "Invalid request body" error would pop up when submitting a form without first expanding the "General" FAQ dropdown.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
 <Update label="June 1st, 2026" tags={["Teams", "Security", "Databases", "Metrics", "Frames", "CI/CD", "Previews", "Dashboard"]}>
 
 ## Teams, a second factor for your account, more database engines, and metrics you can trust
