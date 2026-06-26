@@ -2,6 +2,28 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 ---
+<Update label="June 26th, 2026" tags={["Deployments", "Raypacks"]}>
+
+## nubo.toml, the one config file Raypacks reads
+
+Raypacks works without any config for most apps. But when you need to step in and tell it something it can't figure out on its own, you can now drop a `nubo.toml` at the root of your repo and take control. Think of it as your single source of truth for how your app gets built.
+
+- **Pick a specific binary** when you have more than one. Set the entry point and Raypacks builds from exactly there.
+- **Don't need it? Don't add it.** Raypacks auto-detects most setups, so the file is completely optional.
+- **Bad config gets caught before the build starts**, so you'll see a clear error in your logs instead of a confusing failure ten minutes in.
+- **Every build shows a plan summary** of the final values and where each one came from, so there's no guessing what Raypacks decided.
+
+Best of all, `nubo.toml` acts like a blueprint for your project: a source of truth you scaffold once, then stand up your entire stack in minutes.
+
+### Smaller things worth mentioning
+
+- The default builder is now Raypacks.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
 <Update label="June 19th, 2026" tags={["Deployments", "Analytics", "Support", "Raypacks", "Bug-fixes"]}>
 
 ## Deploy from a subdirectory, real request analytics, and a faster builder in beta
