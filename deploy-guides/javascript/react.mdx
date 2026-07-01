@@ -54,7 +54,7 @@ Push to GitHub, then in the Nubo dashboard:
     Default 3000. Set it to whatever your `start` script listens on.
   </Step>
   <Step title="Deploy">
-    Hit deploy. Nubo runs `npm install`, `npm run build`, then `npm start`.
+    Hit deploy. Nubo runs `npm ci`, `npm run build`, then `npm start`. (`npm ci` needs a committed `package-lock.json`.)
   </Step>
 </Steps>
 
@@ -70,7 +70,7 @@ Push to GitHub, then in the Nubo dashboard:
 
 ## Going truly static
 
-If you don't need a Node container, build locally and deploy with the [Static pack](/raypacks/packs/static) instead: commit your `dist/` (or rename it to `public/`) and remove `package.json` from the repo. Nubo will then ship the files behind nginx with no Node runtime at all. Useful for cheap landing pages; not useful when you want to redeploy from a git push.
+If you don't need a Node container, build locally and deploy with the [Static pack](/raypacks/packs/static) instead. The Static pack serves on port 80, so set the Frame port to 80. It also looks for `index.html` at the repo root or in `public/`, so committing `dist/` on its own isn't enough: rename `dist/` to `public/` (giving you `public/index.html`) or move the built files to the repo root, then remove `package.json`. Nubo will then ship the files behind nginx with no Node runtime at all. Useful for cheap landing pages; not useful when you want to redeploy from a git push.
 
 ## How the build works
 

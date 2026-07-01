@@ -3,7 +3,7 @@ title: "Deployments"
 description: "How Nubo turns a git push into a running app"
 ---
 
-A deployment is one build-and-release of a [Frame](/frames). Nubo builds the new version, waits for it to be healthy, and only then cuts traffic over. If anything goes wrong, the previous version keeps serving.
+A deployment is one build-and-release of a [Frame](/frames). Nubo builds the new version, waits for the new container to start (become Ready) before cutting traffic over. If the build fails, the previous version keeps serving.
 
 ## Deploy your app
 
@@ -22,10 +22,10 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
 
 ## The five steps of a deploy
 
-1. **Trigger.** Push or manual. The deploy shows as **Queued** until a builder picks it up.
+1. **Trigger.** Push or manual. The deploy shows as **Building** once a builder picks it up.
 2. **Clone.** Nubo pulls the current revision of the tracked branch.
 3. **Build.** Nubo detects your language and produces a deployable artifact. No Dockerfile required.
-4. **Release.** The new version starts. Nubo waits for it to be healthy, then cuts traffic over.
+4. **Release.** The new version starts. Nubo waits for the new container to become Ready, then cuts traffic over. Real health checks (readiness probes, smoke tests) are your app's job to expose.
 5. **Done.** The Frame shows as **Online** in the dashboard and the previous version is retired.
 
 If anything fails, the Frame stays on the previous version and the error is waiting for you in the [build logs](/build-logs).

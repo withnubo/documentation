@@ -57,7 +57,8 @@
                             "rollback",
                             "environment-variables",
                             "custom-domains",
-                            "volumes"
+                            "volumes",
+                            "databases"
                         ]
                     },
                     {
@@ -72,6 +73,12 @@
                             "agents/overview",
                             "agents/quickstart",
                             "agents/advanced"
+                        ]
+                    },
+                    {
+                        "group": "Command line",
+                        "pages": [
+                            "cli"
                         ]
                     },
                     {
@@ -157,9 +164,7 @@
     },
     "footer": {
         "socials": {
-            "x": "https://x.com/mintlify",
-            "github": "https://github.com/mintlify",
-            "linkedin": "https://linkedin.com/company/mintlify"
+            "github": "https://github.com/withnubo"
         }
     }
 }

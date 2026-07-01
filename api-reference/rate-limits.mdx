@@ -9,7 +9,7 @@ Nubo applies per-user rate limits to prevent runaway scripts from swamping the A
 
 Write calls (create, update, delete, rollback) are limited. Read calls (`GET`) are not. You can poll your deployments or your Frame status as often as you like.
 
-Limits are per-user, counted over a 60-second window. Writes are limited conservatively; the exact thresholds are tuned over time based on usage patterns and aren't part of our stability contract.
+Limits are per-user and per-endpoint: each write endpoint has its own 60-second bucket, keyed on your account (not on the token you use). So hitting the limit on one endpoint doesn't block writes to others. Writes are limited conservatively; the exact thresholds are tuned over time based on usage patterns and aren't part of our stability contract.
 
 ## If you hit the limit
 
@@ -31,5 +31,5 @@ Wait up to 60 seconds and retry, and you'll be back in business.
 A well-behaved client:
 
 - Backs off on `429` with a short exponential delay (e.g. 2s, 4s, 8s, capped at 60s).
-- Shares one token across one client, not per-request - running many workers behind the same token multiplies your write rate.
+- Remembers the limit is per-user: all of your tokens count toward the same bucket, so spreading work across multiple Personal Access Tokens won't raise your effective limit. Consolidating workers behind one client just avoids redundant retries.
 - Logs the `internal_code` so rate-limit rejections are easy to tell apart from other failures.

@@ -49,7 +49,7 @@ gunicorn
 web: gunicorn --bind 0.0.0.0:${PORT:-8080} app:app
 ```
 
-The `${PORT:-8080}` lets the Frame's port setting flow through to Gunicorn.
+The `${PORT:-8080}` binds `PORT` if you've set it as a Frame variable, otherwise it falls back to `8080`. Nubo doesn't propagate the Frame's port setting into a `PORT` env var, so to run on a non-`8080` port, add a `PORT` variable in Frame Settings and set the Frame's port to match (or just hardcode the port here).
 
 Test locally:
 
@@ -90,22 +90,11 @@ name = "BP_CPYTHON_VERSION"
 value = "3.12.*"
 ```
 
-## Framework guides
-
-<CardGroup cols={2}>
-  <Card title="Django" icon="python" href="/deploy-guides/python/django">
-    Full-stack web framework
-  </Card>
-  <Card title="discord.py" icon="discord" href="/deploy-guides/python/discordpy">
-    Long-running Discord bot
-  </Card>
-</CardGroup>
-
 ## Things that trip people up
 
 - **`flask run` in your Procfile.** That's the dev server. Use Gunicorn (or Uvicorn for async apps).
-- **Binding to `127.0.0.1`.** Bind to `0.0.0.0` so nginx ingress can reach you.
-- **Hardcoded port.** Read `PORT` from the environment so the Frame's setting actually takes effect.
+- **Binding to `127.0.0.1`.** Bind to `0.0.0.0` so Nubo's router can reach your app.
+- **Port mismatch.** Nubo doesn't inject the Frame's port as `PORT`. Either hardcode the port your app binds or set a `PORT` variable in Frame Settings, and make sure the Frame's port matches what the app binds.
 - **No `Procfile`.** Paketo needs a `web:` line to know what to launch.
 
 ## Raypacks support

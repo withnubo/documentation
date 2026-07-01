@@ -53,7 +53,7 @@ You can now open and view any support tickets you've opened, right from the dash
 
 ### Beta: faster daemonless builds and layer cache
 
-You can now replace your pack/kpack build path with **Raypacks**, a daemonless OCI buildpack system focused on speed and cache efficiency. This feature is still in beta, so we're testing for and addressing bugs as they appear.
+You can now replace your Paketo / Cloud Native Buildpacks build path with **Raypacks**, a daemonless OCI buildpack system focused on speed and cache efficiency. This feature is still in beta, so we're testing for and addressing bugs as they appear.
 
 ### Bug fixes
 
@@ -204,7 +204,7 @@ Billing runs by the hour for every volume you've provisioned, whether or not it'
 
 ### Pick a plan that fits
 
-Nubo now has plans. Every new account starts on a **7-day Trial** on us, so you can build something real before you commit. The Trial runs at standard Basic-level compute.
+Nubo now has plans. Every new account starts on a **7-day Trial** on us, so you can build something real before you commit. The Trial runs at trial-level compute (about half of Basic).
 
 - **Basic**: side projects and smaller apps.
 - **Platinum**: bigger Frames, faster builds, more storage.
@@ -272,10 +272,6 @@ Big one. Self-hosted Agents let you run Frames on your own servers. The managed 
 
 ### Introducing self-hosted Agents
 
-<Frame>
-![Agent setup in the dashboard](/images/release-notes/04-29-2026/agent.svg)
-</Frame>
-
 If you want to run on specific hardware, keep data on-premise, or use a server you already own, install the [Nubo Agent](/agents/overview) on Linux or macOS. Deploy Frames to it from the same dashboard you'd use for our managed cloud.
 
 The agent is a single binary that connects back to Nubo and waits for work. Install it, point wildcard DNS at your server, and you're set. Your Frames get their own subdomain on a domain you control, with TLS via ACME.
@@ -285,10 +281,6 @@ Everything else in this release works the same on self-hosted Agents as on manag
 See the [Agents overview](/agents/overview) for when to use one, or [Quickstart](/agents/quickstart) to install your first agent.
 
 ### Push to deploy
-
-<Frame>
-![Push-to-deploy flow](/images/release-notes/04-29-2026/push_to_deploy.svg)
-</Frame>
 
 Install the [Nubo GitHub App](https://github.com/apps/nubo-application) on your repo. Every push to your Frame's tracked branch triggers a build and release.
 
@@ -311,7 +303,7 @@ You see the token exactly once at creation. We store it as a hash, never in plai
 Pin your API client to a specific contract with the `Nubo-Version` header:
 
 ```
-Nubo-Version: 2026-05-08
+Nubo-Version: 2026-05-24
 ```
 
 - **Most releases ship under the same date.** Bug fixes, new endpoints, and tuning don't move your pin. A new version is only cut when a change would actually break existing clients (field removed, type changed, validation tightened).
@@ -323,19 +315,11 @@ Production integrations should pin. Scripts and one-offs can skip the header and
 
 ### Preview deployments for every PR
 
-<Frame>
-![Preview deployment URL in the dashboard](/images/release-notes/04-29-2026/preview_deployments.svg)
-</Frame>
-
 Every pull request against your tracked branch now gets its own running copy of the app at a Nubo-assigned URL. Share it with teammates, click around, show a customer what's coming. What they see is what will ship.
 
 Previews rebuild on every push to the PR and tear themselves down when the PR closes. Project-scoped [environment variables](/environment-variables) carry over, so your secrets and config keep working. See [Preview deployments](/preview-deployments).
 
 ### One-click rollback
-
-<Frame>
-![Rollback button in the dashboard](/images/release-notes/04-29-2026/rollback.svg)
-</Frame>
 
 Shipped a bad commit? Open the Deployments tab, pick a previous working deploy, hit **Rollback**. Your Frame is back on that version in seconds, no rebuild. Same on managed cloud and self-hosted Agents. See [Rollback](/rollback).
 
@@ -349,17 +333,9 @@ Hit **Stop** to take a Frame offline: replicas scale to zero on our cloud, the c
 
 ### Live Frame status
 
-<Frame>
-![Live Frame status in the dashboard](/images/release-notes/04-29-2026/runtime_status.svg)
-</Frame>
-
 Your Frame's status updates in the dashboard the moment it changes. No refresh, no polling. If an app crashes, runs out of memory, or fails its health check, the dashboard flips to an error state and shows the reason. You shouldn't have to read logs to find out something's wrong.
 
 ### A real deploy history
-
-<Frame>
-![Deployment history](/images/release-notes/04-29-2026/deployment_history.svg)
-</Frame>
 
 Every build is now a record you can browse. Open the Frame's **Deployments** tab to see the commit, the time, what triggered the deploy, and whether it succeeded. Pull the same data programmatically:
 
@@ -439,10 +415,6 @@ If you installed the Nubo GitHub App on an organization but only saw your person
 
 ### A sidebar that gets out of your way
 
-<Frame>
-![Collapsed sidebar with activity heatmap and account dropdown](/images/release-notes/05-08-2026/collapsed_sidebar.svg)
-</Frame>
-
 Hit the new chevron in the sidebar header to collapse it to a thin icon-only strip. Each Project shows up as a colored tile with its initials, so you can still pick one without expanding. The notification ping moves onto your avatar at the bottom-left. Click the avatar for a small Profile / Sign out menu, in either state.
 
 ### A visual refresh
@@ -463,7 +435,7 @@ Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/i
 
 </Update>
 
-<Update label="March 17th,2026" tags={["Dashboard"]}>
+<Update label="March 17th, 2026" tags={["Dashboard"]}>
 
 ## Major system changes
 
@@ -485,13 +457,9 @@ That's a wrap for this release notes. We hope you enjoyed these new updates. If 
 
 </Update>
 
-<Update label="February 24st,2026" tags={["Dashboard", "Design"]}>
+<Update label="February 24th, 2026" tags={["Dashboard", "Design"]}>
 
 ## Experience Nubo in light mode
-
-<Frame>
-![Light mode gif](/images/release-notes/02-26-2026/light_mode.gif)
-</Frame>
 
 ### A brighter and more customizable dashboard  
 
@@ -541,7 +509,7 @@ That's a wrap for this release notes. We hope that you enjoy these new updates. 
 
 </Update>
 
-<Update label="January 1st,2026" tags={["Dashboard"]}>
+<Update label="January 1st, 2026" tags={["Dashboard"]}>
 
 ## Status popups, Env file uploads, and Design changes
 

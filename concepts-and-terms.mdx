@@ -13,7 +13,7 @@ The top-level container for your app and everything around it: landing page, API
 
 An environment inside a Project. Most people run `dev`, `staging`, and `production` Spaces.
 
-Each Space has its own variables, its own deploy history, and its own URLs. You can break things in `dev` without touching `production`.
+Each Space has its own deploy history and its own URLs. You can break things in `dev` without touching `production`.
 
 ## Frame
 
@@ -28,7 +28,7 @@ Other platforms call this a "service" or "app". On Nubo it's a Frame.
 
 ## Deployment
 
-One build-and-release of a Frame. Pushed code? That's a deployment. Hit "Deploy" in the dashboard? Also a deployment. Each one has a build log, a status (Queued, Building, Online, Failed), and a commit it was built from. See [Deployments](/deployments).
+One build-and-release of a Frame. Pushed code? That's a deployment. Hit "Deploy" in the dashboard? Also a deployment. Each one has a build log, a status (Queued, Building, Succeeded, Failed, Canceled), and a commit it was built from. See [Deployments](/deployments).
 
 ## Builder
 
@@ -41,7 +41,7 @@ Pick per-Frame in **Frame Settings → Builder**.
 
 ## Volume
 
-A block of persistent storage you can attach to one or more Frames. Files written to a volume's mount path survive redeploys, rollbacks, and restarts. See [Volumes](/volumes).
+A block of persistent storage you can attach to a single Frame. Files written to a volume's mount path survive redeploys, rollbacks, and restarts. See [Volumes](/volumes).
 
 ## Variable
 

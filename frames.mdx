@@ -3,7 +3,7 @@ title: "Frames"
 description: "The unit of deployment in Nubo"
 ---
 
-A Frame is one deployable app - your landing page, API, Discord bot, or anything else you'd normally stand up on its own server. Each Frame gets its own domain, its own deploy history, and its own settings. Frames live inside a [Space](/concepts-and-terms#spaces), and Spaces live inside a [Project](/concepts-and-terms#projects).
+A Frame is one deployable app - your landing page, API, Discord bot, or anything else you'd normally stand up on its own server. Each Frame gets its own domain, its own deploy history, and its own settings. Frames live inside a [Space](/concepts-and-terms#space), and Spaces live inside a [Project](/concepts-and-terms#project).
 
 If you're coming from another platform: a Frame is roughly what other tools call a "service" or "app".
 
@@ -47,6 +47,7 @@ Open any Frame in the dashboard and you'll see its current state in real time:
 | **Degraded** | Running, but not all replicas are healthy. |
 | **Error** | No healthy replicas. The dashboard will tell you why. |
 | **Stopped** | Scaled to zero or explicitly stopped. |
+| **Suspended** | Paused because billing is past due. Restore billing to bring it back. |
 
 When a Frame is in **Error**, Nubo surfaces what went wrong (crash, out of memory, health-check failure, etc.) right next to the status so you don't have to go hunting through logs.
 
@@ -100,7 +101,7 @@ curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<spac
 ```
 
 <Note>
-  Changing the port re-rolls the Frame so the new value takes effect. Picks must be between 1024 and 65535.
+  Changing the port re-rolls the Frame so the new value takes effect. Picks must be between 1024 and 65535, and a few reserved ports (6379, 27017, 9898, and 27018) are rejected because they collide with system services.
 </Note>
 
 ## Delete a Frame

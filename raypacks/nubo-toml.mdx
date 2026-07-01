@@ -12,7 +12,7 @@ Raypacks works without any config for most apps. When you need to override a def
 entrypoint = "./cmd/server"
 ```
 
-That's the whole file format today. More keys land as packs grow.
+That's everything the Raypacks builder reads today. More keys land as packs grow.
 
 ## `[build]`
 
@@ -37,7 +37,7 @@ If you don't set it, Raypacks finds the entrypoint on its own. You only need thi
 Settings can come from three places. Higher beats lower:
 
 1. **`nubo.toml`** (committed to your repo)
-2. **Dashboard / API** overrides (per-Frame, set in the UI or via `PATCH`)
+2. **Dashboard / API** overrides (per-Frame, set in the UI)
 3. **Raypacks auto-detection**
 
 This matches what most people expect: a `nubo.toml` checked into the repo is the source of truth. Dashboard tweaks fill in the gaps. Auto-detection is the fallback.
