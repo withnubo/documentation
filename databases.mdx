@@ -49,6 +49,7 @@ You get back the username, password, database name, and a full connection string
 
 ```json
 {
+  "engine": "postgres",
   "user": "nubo",
   "password": "••••••••",
   "database": "nubo",
@@ -89,7 +90,7 @@ curl -X DELETE https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<spa
   -H "Authorization: Bearer <your-token>"
 ```
 
-If you injected the connection string into an app, remember to remove that variable from the app afterward so a later deploy doesn't try to reach a database that's gone.
+Nubo automatically removes any variable it injected from this database when you delete it, so an injected connection string cleans itself up. If you copied the connection string into an app by hand, remember to remove that variable yourself so a later deploy doesn't try to reach a database that's gone.
 
 ## Plans and limits
 

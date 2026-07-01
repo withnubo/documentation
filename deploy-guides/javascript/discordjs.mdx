@@ -70,7 +70,7 @@ If you see "Logged in as <bot-name>", you're ready.
     In the Frame's **Variables** tab, add `DISCORD_TOKEN` with your bot token. See [Environment variables](/environment-variables) for details.
   </Step>
   <Step title="Port doesn't matter (almost)">
-    Discord bots don't accept HTTP, but Nubo expects a port. Set it to anything (`3000` is fine). The Frame's URL won't serve anything useful, which is correct.
+    Discord bots don't accept HTTP, but Nubo expects a port. Set it to any valid port (`3000` is fine); ports below 1024 and a few reserved infra ports aren't allowed. The Frame's URL won't serve anything useful, which is correct.
   </Step>
   <Step title="Deploy">
     Hit deploy. Check the Logs tab for "Logged in as ...".

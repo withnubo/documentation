@@ -41,7 +41,7 @@ Watch the Frame's [status](/frames#what-a-frames-status-means) or the [deploymen
 
 **Doesn't:**
 - Roll back environment variables or Frame settings. Those stay as they are. If your bug is in config, update the config and redeploy - no rollback needed.
-- Go backwards past a failed build. You can only roll back to deploys that succeeded.
+- Roll back to a failed build. You can only target deploys that succeeded (including a good one that predates later failures).
 
 ## A common flow
 

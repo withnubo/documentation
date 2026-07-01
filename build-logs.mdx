@@ -28,12 +28,12 @@ If a step fails, the logs stop there and the error message is the last thing pri
 
 ## How long logs stick around
 
-On the free plan, build logs are kept for **7 days**. Paid plans keep them longer (up to about 30 days). The latest finished deploy of each Frame is always kept regardless of plan, so you'll never lose your most recent log even if the rest of the window has aged out.
+On the free plan, build logs are kept for **7 days**. On paid plans they're retained indefinitely, for as long as the deployment exists. The latest finished deploy of each Frame is always kept regardless of plan, so you'll never lose your most recent log even if the rest of the window has aged out.
 
-After the window:
+After the free plan's 7-day window:
 
 - The dashboard marks the deployment's logs as expired.
-- The API returns `410 Gone` when you ask for them.
+- The API returns a not-found error when you ask for them. Once the deployment is around 30 days old, that settles into a `410 Gone`.
 
 If you need long-term retention (for compliance, for your own debugging archive, etc.), pull the logs before they expire and store them wherever you store your own data.
 

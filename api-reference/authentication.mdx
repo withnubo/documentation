@@ -3,7 +3,7 @@ title: "Authentication"
 description: "How to authenticate against the Nubo API"
 ---
 
-Every API call needs a personal access token in the `Authorization` header.
+Every API call authenticates with a Bearer token in the `Authorization` header. For scripts and integrations, use a personal access token (`nubo_pat_...`).
 
 ```bash
 curl https://shuttle.withnubo.com/v2/projects \

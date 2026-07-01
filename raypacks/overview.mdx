@@ -13,10 +13,10 @@ We started with [Paketo (Cloud Native Buildpacks)](https://paketo.io). It works,
 
 What's different:
 
-- **Daemonless.** No background Docker daemon. Builds run as a single Kubernetes Job and exit when done.
+- **Daemonless.** No background Docker daemon. Builds run in an isolated, ephemeral build environment that shuts down when finished.
 - **Auto-detection first.** Drop in a `go.mod`, a `package.json`, or an `index.html` and Raypacks picks the right pack. No config required for the common case.
 - **Real config when you need it.** Override anything via `nubo.toml` at the repo root. See [`nubo.toml` reference](/raypacks/nubo-toml).
-- **Cached.** Module downloads (Go modules, `node_modules`, layer digests) persist between builds of the same Frame.
+- **Cached.** Module downloads (Go modules, the npm/pnpm/yarn download cache, layer digests) persist between builds of the same Frame.
 
 ## The four packs
 

@@ -14,6 +14,10 @@ Variables are scoped to either a **Project** or a **Frame**:
 
 If the same key exists at both levels, the Frame value wins.
 
+<Note>
+  When you wire a managed database to an app (via `nubo.toml`), Nubo auto-injects the connection string as a Frame variable named `DATABASE_URL` (the key is configurable with `inject_as` in `nubo.toml`). If you also set `DATABASE_URL` yourself, the platform-managed value can override it.
+</Note>
+
 ## Add variables
 
 From the dashboard, open the Frame and go to **Frame Settings** to manage its variables. The dashboard manages variables at the Frame level only; to set project-scoped variables, use the API (`POST /v2/projects/<id>/variables`). Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`).
@@ -59,7 +63,16 @@ They're injected into your app's runtime environment and handle the usual connec
 
 ## Update or remove
 
-Changing a variable doesn't automatically redeploy - trigger a new deploy from the dashboard or push a commit to apply the change. To delete:
+Changing a variable doesn't automatically redeploy - trigger a new deploy from the dashboard or push a commit to apply the change. To change a value (the rotate-a-secret flow), PATCH the variable by its ID:
+
+```bash
+curl -X PATCH https://shuttle.withnubo.com/v2/variables/<variable_id> \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"value": "new-value"}'
+```
+
+To delete:
 
 ```bash
 curl -X DELETE https://shuttle.withnubo.com/v2/variables/<variable_id> \
@@ -83,4 +96,4 @@ Rotate a secret by setting a new value; the old one is overwritten.
 
 ## The port your app should listen on
 
-Nubo doesn't set `PORT` for you. Pick a port in your Frame's config and have your app listen on that port explicitly, or set a `PORT` variable yourself and read it from your app.
+Nubo doesn't set `PORT` for you. The port configured on your Frame is the source of truth for routing, so your app must listen on exactly that port. Setting a `PORT` variable is just a convenience your app can read: it does not change the routed port, and its value must match the Frame's configured port.

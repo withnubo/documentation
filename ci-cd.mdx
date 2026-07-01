@@ -27,10 +27,12 @@ If pushes aren't triggering deploys:
 
 ## Skip a deploy on a specific commit
 
-Include one of these tags anywhere in your commit message and Nubo will skip the deploy for that push:
+Include one of these tags in the message of your latest (head) commit and Nubo will skip the deploy for that push:
 
 - `[skip ci]`
 - `[ci skip]`
+
+Only the head commit of the push is checked, so a tag on an earlier commit in a multi-commit push won't skip anything. Put it on the commit you push last.
 
 Useful for documentation-only changes, chore commits, or when you want to batch several commits before the next deploy.
 
@@ -68,16 +70,35 @@ Leave any of these blank to go back to Nubo's default for your language.
 
 ## From the API
 
-Turn auto-deploy off on a Frame:
+`PATCH /ci` replaces the **entire** CI spec in one request.
+
+<Warning>
+  This endpoint is a full replace, not a partial update. Any field you leave out of the body is reset to its default, not left at its stored value. Omitting `ignored_paths` clears it, omitting `preview_deploys` turns previews off, omitting `build_command` and `install_command` clears them, and so on. Read the current spec first, change the field(s) you care about, then PATCH the whole object back.
+</Warning>
+
+Read the current spec, flip `auto_deploy_primary`, and send the complete object back:
 
 ```bash
 curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/ci \
   -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
-  -d '{ "auto_deploy_primary": false }'
+  -d '{
+    "auto_deploy_primary": false,
+    "skip_tags": ["[skip ci]", "[ci skip]"],
+    "ignored_paths": [],
+    "root_directory": "/",
+    "build_command": null,
+    "install_command": null,
+    "preview_deploys": false,
+    "preview_source": "pull_requests",
+    "preview_allowed_branches": [],
+    "preview_ttl_hours": 168,
+    "preview_retention_count": 2,
+    "preview_env_overrides": {}
+  }'
 ```
 
-All the same settings are available - `auto_deploy_primary` (the legacy `auto_deploy` alias is still accepted on input), `preview_deploys`, `skip_tags`, `ignored_paths`, `root_directory`, `build_command`, `install_command`. Send only the fields you want to change.
+The full CI spec has twelve fields: `auto_deploy_primary` (the legacy `auto_deploy` alias is still accepted on input), `skip_tags`, `ignored_paths`, `root_directory`, `build_command`, `install_command`, `preview_deploys`, `preview_source`, `preview_allowed_branches`, `preview_ttl_hours`, `preview_retention_count`, and `preview_env_overrides`. Send the complete object every time so you don't wipe fields you didn't mean to touch.
 
 ## Related
 
