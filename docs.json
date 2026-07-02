@@ -89,7 +89,7 @@
                         "group": "Tools",
                         "pages": [
                             "cli",
-                            "mcp"
+                            "mcp-server"
                         ]
                     },
                     {
