@@ -1,0 +1,120 @@
+---
+title: "Account security"
+description: "Protect your account with a second factor: authenticator apps and passkeys"
+---
+
+You sign in to Nubo with GitHub. Adding a second factor means a stolen GitHub session isn't enough to get into your Nubo account: after the GitHub step, we ask for a code from your authenticator app or a tap on your passkey.
+
+You can enroll two kinds of factors, in any combination:
+
+- **Authenticator app (TOTP)**: six-digit codes from apps like 1Password, Google Authenticator, or Authy.
+- **Passkeys (WebAuthn)**: Touch ID, Windows Hello, or a hardware security key. You can register more than one and give each a name.
+
+Enable either one (or both) from the security section of your account settings in the [dashboard](https://console.withnubo.com).
+
+## Set up an authenticator app
+
+From your account settings, start the authenticator setup. You'll get a QR code to scan (or a secret to paste in manually), then you confirm with the first six-digit code your app shows. Codes rotate every 30 seconds.
+
+The same flow over the API:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/auth/mfa/totp/init \
+  -H "Authorization: Bearer <your-token>"
+```
+
+That returns the `secret`, an `otpauth_uri` you can feed to any authenticator, and a ready-to-render `qr_svg`. Then activate with a current code:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/auth/mfa/totp/activate \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "code": "123456" }'
+```
+
+If the code doesn't match, nothing changes and you can try again. Setup only completes on a correct code.
+
+## Add a passkey
+
+Passkey registration happens in the browser, so the dashboard is the natural place: start the flow from your account settings, approve the prompt (Touch ID, Windows Hello, or your security key), and give the passkey a name so you can tell your devices apart later. Unnamed passkeys show up as "Passkey".
+
+You can register multiple passkeys. Each one is listed with its name and the date it was added.
+
+## Recovery codes
+
+The first time you enroll a factor, Nubo generates **10 one-time recovery codes** and shows them to you once. Save them somewhere safe (a password manager is perfect). If you lose your phone and your passkeys, a recovery code is how you get back in.
+
+Each code works exactly once. They look like `ABCDE-23456`, and you can type them with or without the hyphen, in any case.
+
+Need a fresh set? Regenerate at any time (this replaces all existing codes):
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/auth/mfa/recovery/regenerate \
+  -H "Authorization: Bearer <your-token>"
+```
+
+<Warning>
+  Recovery codes are shown only when they're generated. If you didn't save them, regenerate a new set now rather than finding out at sign-in.
+</Warning>
+
+## What sign-in looks like
+
+With a second factor enabled, sign-in becomes a two-step flow:
+
+1. You sign in with GitHub as usual.
+2. Instead of landing in the dashboard, you're asked for your second factor: a passkey tap, a six-digit code, or a recovery code.
+
+The second step has a **10-minute window**. Take longer and you'll be asked to start sign-in again. After **10 failed attempts** the challenge is thrown away and you start over from the GitHub step.
+
+<Note>
+  Personal access tokens are not affected. The second factor gates interactive sign-in; existing tokens keep working, so your CI and scripts won't break when you turn this on. See [API authentication](/api-reference/authentication).
+</Note>
+
+## Check your status
+
+```bash
+curl https://shuttle.withnubo.com/v2/auth/mfa \
+  -H "Authorization: Bearer <your-token>"
+```
+
+```json
+{
+  "enabled": true,
+  "required": false,
+  "totp": true,
+  "passkeys": [
+    { "id": "...", "name": "MacBook Touch ID", "added_at": "2026-06-01T12:00:00Z" }
+  ],
+  "recovery_codes_remaining": 8
+}
+```
+
+`enabled` is true when at least one factor is set up. `recovery_codes_remaining` tells you how many unused recovery codes you have left; if it's getting low, regenerate.
+
+## Disable a factor
+
+Remove the authenticator app:
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/auth/mfa/totp \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Remove a passkey by its id (from the status response above):
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/auth/mfa/webauthn/<passkey_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+When you remove your last factor, the second-factor prompt disappears from sign-in and your recovery codes are deleted. Enrolling again later generates a brand-new set.
+
+## Related
+
+<Card title="API authentication" icon="key" href="/api-reference/authentication">
+  Personal access tokens for scripts and CI
+</Card>
+
+<Card title="Environment variables" icon="lock" href="/environment-variables">
+  Keep secrets out of your code
+</Card>

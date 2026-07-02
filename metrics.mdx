@@ -1,0 +1,86 @@
+---
+title: "Metrics and request analytics"
+description: "See what your Frames consume and what traffic hits them"
+---
+
+Nubo gives you two views into a running app: resource metrics (what a Frame consumes) and request analytics (the traffic our edge sees on the way in). Both live in the dashboard and both are available over the API.
+
+## Resource metrics
+
+Every Frame tracks its CPU, memory, and network usage over the last 7 days, broken out per day. Alongside the usage you get your plan's per-Frame limits, so you can tell at a glance how much headroom you have. See [Plans](/plans) for what each tier allows.
+
+```bash
+curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/metrics \
+  -H "Authorization: Bearer <your-token>"
+```
+
+The response covers the 7-day window: a `daily` series (one point per day, oldest first, with average CPU cores, average memory in bytes, and network transfer in bytes), plus window-wide averages (`cpu_cores_avg`, `ram_bytes_avg`) and a `net_transfer_bytes_total`.
+
+There's also a project-level rollup at `GET /v2/projects/<project_id>/metrics`. It aggregates every Frame in the project: health counts (online, building, degraded, canceled, stopped), deployment stats over the last 14 days (totals, success rate, a daily series, and deploy duration percentiles), and the same 7-day usage picture summed across the project with a per-Frame breakdown.
+
+## Request analytics
+
+Every request that reaches your Frames through our edge is counted, so you get real traffic numbers without adding a client-side script or changing your app.
+
+```bash
+curl "https://shuttle.withnubo.com/v2/projects/<project_id>/requests?days=30" \
+  -H "Authorization: Bearer <your-token>"
+```
+
+```json
+{
+  "window_days": 30,
+  "available": true,
+  "total": 48210,
+  "unique_visitors": 3121,
+  "errors_4xx": 402,
+  "errors_5xx": 17,
+  "error_rate": 0.0087,
+  "p50_ms": 42,
+  "p95_ms": 310,
+  "p99_ms": 890,
+  "bytes_out_total": 5312478000,
+  "daily": [{ "day": "2026-06-01", "total": 1620, "uniques": 118, "errors": 12 }],
+  "top_paths": [{ "path": "/api/checkout", "count": 9182 }],
+  "by_country": [{ "country": "US", "count": 21044 }],
+  "by_frame": { "<frame_id>": { "total": 40110, "uniques": 2890, "errors_5xx": 11 } }
+}
+```
+
+What you get:
+
+- **Totals**: request count, unique visitors, 4xx and 5xx counts, and an `error_rate` (4xx plus 5xx over total).
+- **Latency**: p50, p95, and p99 response times in milliseconds, measured at the edge.
+- **Bandwidth**: total bytes sent out over the window.
+- **Daily series**: per-day requests, uniques, and errors, ready to chart.
+- **Top paths**: the 10 most-requested paths.
+- **Countries**: the top 10 countries by request count.
+- **Per-Frame breakdown**: requests, uniques, and 5xx errors for each Frame that received traffic in the window, so you can see which app the traffic (or the errors) belongs to.
+
+## Time windows
+
+The `days` query parameter controls the analytics window. It defaults to 7 and accepts anything from 1 to 90. One caveat: top paths and countries are computed from detailed request records that are kept for about 30 days, so those two lists cover at most the last 30 days even when you ask for a longer window. Totals, uniques, errors, latency, and the daily series honor the full window you request.
+
+## How unique visitors are counted
+
+We never store raw visitor IP addresses. When a request comes through our edge, the client IP is hashed (a truncated SHA-256) together with a salt that rotates daily, and only that hash is kept. Unique visitor counts are computed from those hashes.
+
+Because the salt changes every day, the same person visiting on two different days produces two different hashes. In practice that means uniques are counted per day: a visitor who comes back tomorrow counts again, the raw address is never written anywhere, and the stored hashes can't be used to follow one visitor across days.
+
+## When data isn't available
+
+If analytics can't be reached, the requests endpoint still returns `200` with `available: false` and zeroed numbers instead of failing. The dashboard shows the section as unavailable. Resource metrics behave the same way: a Frame with no telemetry yet (say, one deployed a minute ago) shows a zero-filled 7-day series rather than an error.
+
+## Related
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  The apps these numbers describe
+</Card>
+
+<Card title="Plans" icon="credit-card" href="/plans">
+  The per-Frame CPU and memory limits shown next to your usage
+</Card>
+
+<Card title="API authentication" icon="key" href="/api-reference/authentication">
+  Get a token for the API examples above
+</Card>
