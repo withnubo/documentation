@@ -1,0 +1,125 @@
+---
+title: "Organizations"
+description: "A shared home for a group of people, with roles and one owner"
+---
+
+An organization is a shared home for a group of people on Nubo. It has a name, a unique handle, and a member list where everyone holds a role. Roles carry through to any [Projects](/concepts-and-terms#project) the org holds: when a Project belongs to an org, its admins and owners can manage it without any per-project setup.
+
+There are two kinds. A **personal** organization is created for you automatically when you create your first Project, and every Project you create is filed under it. Organizations you create yourself are **standard** orgs, meant for a company or a group of collaborators. Today new Projects always land in your personal org; there's no way yet to move a Project into a standard org.
+
+## Roles
+
+Every member holds exactly one role:
+
+| Role | What it can do |
+|------|----------------|
+| **member** | See the org, its member list, and its Projects in their project list. |
+| **admin** | Everything a member can, plus add and remove members. Gets admin-level access to the org's Projects. |
+| **owner** | Everything an admin can, plus transfer ownership. Gets full owner access to the org's Projects. Exactly one per org. |
+
+If you're not a member of an org, it doesn't exist for you: any request for it returns `404`.
+
+## Create an organization
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/orgs \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Acme Inc" }'
+```
+
+The name can be 1 to 100 characters. Nubo derives a unique handle from it (lowercase letters, numbers, and dashes: `Acme Inc` becomes `acme-inc`, with a numeric suffix if that handle is taken) and returns both:
+
+```json
+{ "id": "665f1c2ab8f4e35d9c0a1b2c", "handle": "acme-inc" }
+```
+
+You become the org's owner.
+
+## List your organizations
+
+```bash
+curl https://shuttle.withnubo.com/v2/orgs \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Returns every org you belong to (including your personal one) with your role in each:
+
+```json
+[
+  {
+    "id": "665f1c2ab8f4e35d9c0a1b2c",
+    "handle": "acme-inc",
+    "name": "Acme Inc",
+    "kind": "standard",
+    "role": "owner",
+    "member_count": 3
+  }
+]
+```
+
+`GET /orgs/<org_id>` returns the same shape for a single org, plus its `owner_user_id`.
+
+## Manage members
+
+Any member can list the roster. Each entry carries a `user_id`, a `role`, and a `billing_admin` flag:
+
+```bash
+curl https://shuttle.withnubo.com/v2/orgs/<org_id>/members \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Admins and owners can add a member by user id, as either `member` (the default) or `admin`:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/orgs/<org_id>/members \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "user_id": "<user-id>", "role": "admin" }'
+```
+
+You can't add someone as `owner`; ownership only moves through a transfer. Adding someone who's already in the org returns `400`.
+
+Removing a member is a `DELETE`, also for admins and owners:
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/orgs/<org_id>/members/<user_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+<Note>
+  The owner can't be removed. Transfer ownership to someone else first, then remove them if you need to.
+</Note>
+
+## Transfer ownership
+
+Only the current owner can do this, and the new owner must already be a member of the org:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/orgs/<org_id>/transfer \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{ "user_id": "<member-user-id>" }'
+```
+
+The target is promoted to owner and you're moved down to admin. Transferring to yourself is a no-op.
+
+## How org billing works
+
+Organizations don't change how you're billed today. Plans, invoices, and payment methods stay on individual accounts exactly as described in [Plans](/plans). Creating an org or adding members doesn't create new charges.
+
+The `billing_admin` flag you see in the members response is informational today: it's reserved for org-level billing, and the owner always has it set.
+
+## Related
+
+<Card title="Plans and billing" icon="credit-card" href="/plans">
+  How accounts are billed
+</Card>
+
+<Card title="Authentication" icon="lock" href="/api-reference/authentication">
+  Get a token for the API calls on this page
+</Card>
+
+<Card title="Concepts and terms" icon="book" href="/concepts-and-terms">
+  Projects, Spaces, and Frames explained
+</Card>

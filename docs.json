@@ -24,7 +24,8 @@
                         "pages": [
                             "index",
                             "quickstart",
-                            "concepts-and-terms"
+                            "concepts-and-terms",
+                            "studio"
                         ]
                     },
                     {
@@ -54,6 +55,7 @@
                             "ci-cd",
                             "preview-deployments",
                             "build-logs",
+                            "metrics",
                             "rollback",
                             "environment-variables",
                             "custom-domains",
@@ -64,7 +66,15 @@
                     {
                         "group": "Account",
                         "pages": [
-                            "plans"
+                            "plans",
+                            "account-security"
+                        ]
+                    },
+                    {
+                        "group": "Collaboration",
+                        "pages": [
+                            "teams",
+                            "organizations"
                         ]
                     },
                     {
@@ -76,9 +86,10 @@
                         ]
                     },
                     {
-                        "group": "Command line",
+                        "group": "Tools",
                         "pages": [
-                            "cli"
+                            "cli",
+                            "mcp"
                         ]
                     },
                     {
