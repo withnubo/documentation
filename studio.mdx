@@ -17,6 +17,10 @@ There's nothing to install. Open [studio.withnubo.com](https://studio.withnubo.c
 
 The PM is the only agent you talk to. The Designer and Developer work behind it, and the PM summarizes what they did back to you. You get one calm conversation while the real work fans out in the background.
 
+## Models
+
+Out of the box, Studio runs on Nubo's default models, so you can start building without configuring anything. You can also bring your own key for Claude, OpenAI, Gemini, or any OpenAI-compatible endpoint, including a local runner like Ollama or LM Studio. Each of the three agents can use a different model, so you might put a stronger model on the Developer and a lighter one on the Project Manager.
+
 ## The live preview
 
 The preview runs entirely in your browser: dependencies install and the dev server boots right there in the sandbox. That means it's fast, and you can iterate as many times as you like before anything touches your Nubo account. Publishing is a separate, explicit step.
@@ -40,6 +44,12 @@ From that point on it's a regular Frame. You manage it from the dashboard like a
 <Note>
   Studio needs access to your GitHub account to publish, since the generated code lives in a repo you own and Nubo deploys from it like any other Frame.
 </Note>
+
+## Plans and budgets
+
+Every Nubo plan includes a monthly allowance of AI tokens for generation on Nubo's default models: 250K on the free Trial, 2M on Basic, 10M on Silver, and 20M on Platinum. When you reach your allowance, generation pauses and you can either bring your own model key, which bypasses the budget and is billed by your provider rather than Nubo, or upgrade your plan for a higher allowance.
+
+Published apps carry a small "Built with Nubo" badge on the free Trial. Removing the badge and pointing a [custom domain](/custom-domains) at a published app are both included on the paid plans.
 
 ## When to use it
 

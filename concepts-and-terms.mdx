@@ -26,9 +26,17 @@ A running app. Your landing page is a Frame. Your API is a Frame. Your Discord b
 
 Other platforms call this a "service" or "app". On Nubo it's a Frame.
 
+Frames come in two kinds. An **App Frame** is source you build and run from a GitHub branch (the default, and what most of these docs describe). A **Database Frame** is managed storage Nubo runs for you (Postgres, MySQL, MongoDB, or Redis) that your apps connect to. See [Databases](/databases).
+
+## Frame visibility
+
+Every Frame is either **Public** or **Private**. Private is the default: only people with access to the Project can see it. Make a Frame Public and it shows up on your [public profile](#public-profile). Set it per Frame in **Frame Settings → Visibility**.
+
 ## Deployment
 
 One build-and-release of a Frame. Pushed code? That's a deployment. Hit "Deploy" in the dashboard? Also a deployment. Each one has a build log, a status (Queued, Building, Succeeded, Failed, Canceled), and a commit it was built from. See [Deployments](/deployments).
+
+Deployments come in two kinds. A **Primary** deployment serves the Frame's main URL: it's what visitors get. A **Preview** deployment is a temporary copy, typically built from a pull request, that gets its own URL and is torn down when the PR merges or closes. See [Preview deployments](/preview-deployments).
 
 ## Builder
 
@@ -62,6 +70,10 @@ A group of people you share Projects with. Members get a role (viewer, member, a
 ## Organization
 
 A shared home for a group of people, with roles and a single owner. Every account gets a personal organization, and you can create shared ones for a company or a group of collaborators. See [Organizations](/organizations).
+
+## Public profile
+
+Your builder page at `withnubo.com/@handle`. It shows your name, bio, and the Frames you've marked [Public](#frame-visibility). Turn it on (and edit what it shows) in **Settings → Public profile**. See [Profiles](/profiles).
 
 ## Self-hosted agent
 

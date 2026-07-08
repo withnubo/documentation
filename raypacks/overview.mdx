@@ -31,7 +31,9 @@ Detection runs top to bottom. The first pack that matches wins.
 
 ## When to use the classic builder (Paketo)
 
-Raypacks is in Beta. If you hit something it doesn't cover yet (a stack that's not in the four packs above, or a niche `BP_*` knob you relied on), switch the Frame's **Builder** to **Paketo** in **Frame Settings**. Paketo isn't going anywhere; it's the fallback while Raypacks grows.
+Raypacks has packs for Go, Node, static sites, and Dockerfiles. Anything it doesn't have a pack for falls to the classic [Paketo (Cloud Native Buildpacks)](https://paketo.io) builder: Python, PHP, and C apps build on Paketo. Rust isn't a supported stack on Nubo yet.
+
+Raypacks is in Beta. If you hit something it doesn't cover (a stack outside the four packs, or a niche `BP_*` knob you relied on), switch the Frame's **Builder** to **Paketo** in **Frame Settings**, or pin it per Frame in [`nubo.toml`](/raypacks/nubo-toml) with `builder = "paketo"` (or the `stack = "paketo"` escape hatch). Paketo isn't going anywhere; it's the fallback while Raypacks grows.
 
 ## Where to go next
 

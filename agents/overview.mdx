@@ -28,6 +28,16 @@ Agents are a good fit when you:
 
 If none of that applies, our managed infrastructure works out of the box with no setup.
 
+## Ownership and status
+
+Agents are tied to your user account: they're owner-scoped, not shared across a Team or Organization. Each person registers and manages their own agents.
+
+Every agent shows a live status of online or offline, which reflects whether it's currently connected to Nubo. An offline agent can't be chosen as a deploy target: its option is disabled in the New Frame **Target** picker until it reconnects.
+
+## Removing an agent
+
+You can remove an agent from the **Agents** section of **Settings**. If any Frames still target it, the removal is blocked and you'll see a message like `N frame(s) still target this agent; remove or migrate them first`. Delete or move those Frames to another target first, then remove the agent.
+
 ## What you'll need
 
 - A Linux or macOS machine (the installer sets up the tools the agent needs: git, Docker, the Cloud Native Buildpacks pack CLI, and Caddy)

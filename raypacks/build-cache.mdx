@@ -14,7 +14,7 @@ Every Frame gets its own build cache that survives between deploys. It's how a r
 | npm | `/raypacks-cache/npm` | `npm`'s download cache (covers pnpm and yarn install layers too) |
 | OCI layers | `/raypacks-cache/layers` | Per-layer digest map so unchanged layers skip gzip + upload |
 
-The cache is a single Kubernetes `PersistentVolumeClaim` per Frame, mounted into the build pod. You don't manage it; Nubo creates it on first deploy.
+The cache is a single persistent volume per Frame, 5Gi by default, mounted into the build. You don't manage it; Nubo creates it on first deploy.
 
 ## Cache hits in the wild
 
@@ -30,6 +30,19 @@ A cache miss is fine; the build still works. Common reasons it happens:
 - **Lockfile changed.** Added a new dependency? Its sources need to be fetched once.
 - **Manual reset.** Delete the Frame and start over and you get a fresh cache.
 
+## Concurrent builds
+
+Your plan sets how many builds can run at once. Push while you're already at the limit and the new build is turned away with a "concurrent build limit reached" message (HTTP 429); it isn't queued, so wait for a running build to finish and push again.
+
+| Plan | Builds at once |
+|---|---|
+| Trial | 2 |
+| Basic | 2 |
+| Silver | 4 |
+| Platinum | 6 |
+
+A build that's been running for more than 60 minutes is treated as stale and stops counting against your limit, so a stuck build can never block your next push forever.
+
 ## Custom caching needs
 
-You can't configure the cache today (size, paths, etc. are fixed). If you have a use case that doesn't fit the defaults, let us know at [support@withnubo.com](mailto:support@withnubo.com).
+You can't configure the cache today (its 5Gi size and paths are fixed). If you have a use case that doesn't fit the defaults, let us know at [support@withnubo.com](mailto:support@withnubo.com).

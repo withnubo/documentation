@@ -33,6 +33,10 @@ For every Node project:
 
 If you don't have a `build` script (a bare API or bot), only the install step runs.
 
+### Command overrides
+
+Most projects need nothing here: Raypacks picks the install and build steps from your lockfile and `package.json`. For a project that doesn't fit the defaults, a Frame exposes **Install command** and **Build command** overrides in **Frame Settings**, under **Build**. Set either one to replace the auto-detected step (for example a custom install flag, or a build script that isn't named `build`); the build command runs after install. Leave them blank to let Raypacks pick.
+
 ## Runtime
 
 | pm | Entrypoint |
@@ -59,7 +63,6 @@ Your `start` script is the contract Raypacks expects. Define one and the pack li
 
 ## Limits today
 
-- No customization of the install command yet (no per-Frame env vars at install time).
 - No `engines.node` enforcement (we ship `node:22-slim` regardless).
 - Workspaces (`pnpm-workspace.yaml`, npm workspaces) build everything but the root scripts run.
 
