@@ -8,7 +8,7 @@ PHP isn't covered by [Raypacks](/raypacks/overview) yet, so PHP Frames use the c
 
 What Paketo needs from you:
 
-1. A `project.toml` that sets a web server, a web root, and a port.
+1. A `project.toml` that sets a web root and a port.
 2. PHP source files (and optionally a `composer.json`).
 
 ## Quick start
@@ -34,19 +34,15 @@ name = "PHP Starter"
 version = "1.0.0"
 
 [[build.env]]
-name = "BP_PHP_SERVER"
-value = "php-server"
-
-[[build.env]]
 name = "BP_PHP_WEB_DIR"
 value = "htdocs"
 
 [[build.env]]
-name = "BPE_PORT"
+name = "PORT"
 value = "8080"
 ```
 
-`BP_PHP_WEB_DIR` is the folder that holds `index.php`. `BPE_PORT` sets the runtime port (and `PORT` env var). The Frame's port setting should match.
+`BP_PHP_WEB_DIR` is the folder that holds `index.php`. `PORT` sets the port PHP's web server listens on. The Frame's port setting should match.
 
 ## Deploy
 
@@ -58,7 +54,7 @@ value = "8080"
     Hit **+ Frame**, connect the repo.
   </Step>
   <Step title="Confirm the port">
-    Match what `BPE_PORT` is set to (8080 here).
+    Match what `PORT` is set to (8080 here).
   </Step>
   <Step title="Deploy">
     Paketo installs Composer deps if you have a `composer.json`, then starts PHP's web server.

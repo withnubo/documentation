@@ -72,7 +72,7 @@ git push -u origin main
     Should match the port your app actually listens on (`8080` for the example above).
   </Step>
   <Step title="Deploy">
-    Hit deploy. The first build takes 30–60 seconds. You can follow it in the Logs tab.
+    Hit deploy. The first build takes 30 to 60 seconds. You can follow it in the Logs tab.
   </Step>
 </Steps>
 
@@ -80,14 +80,14 @@ Once the build finishes, your app is live at a `*.nubo.onl` URL shown in the das
 
 ## Monorepos and multiple binaries
 
-If your repo has more than one binary (`cmd/api/main.go`, `cmd/worker/main.go`), Raypacks picks the alphabetically first one by default. Pin a specific binary with `nubo.toml`:
+If your repo has more than one binary (`cmd/api/main.go`, `cmd/worker/main.go`), Raypacks picks the alphabetically first one by default. You can point the build at a specific one with a root `nubo.toml`:
 
 ```toml nubo.toml
 [build]
 entrypoint = "./cmd/api"
 ```
 
-Deploy each binary as a separate Frame. They get their own URLs, env vars, and deploy history.
+That file lives once at the repo root, though, so its `entrypoint` applies to every Frame built from that repo: a single committed `nubo.toml` can't hand two Frames two different binaries. To deploy several binaries as separate Frames, set each Frame's build **Source directory** to that binary's package (`cmd/api`, `cmd/worker`) under **Frame Settings** instead. Each Frame keeps its own URL, env vars, and deploy history.
 
 ## Things that trip people up
 
@@ -95,6 +95,7 @@ Deploy each binary as a separate Frame. They get their own URLs, env vars, and d
 - **Binding to `localhost`.** Listen on `0.0.0.0` (or empty host like `":8080"`), not `127.0.0.1`. Nothing outside the container can reach `localhost`.
 - **Library repos.** If your repo has no `main.go` anywhere, Raypacks won't pick it up. You need a `package main` somewhere with a `main()`.
 - **CGO.** The Go pack builds with `CGO_ENABLED=0`. If you depend on a C library, switch the Frame's Builder to **Paketo** for now.
+- **Go version.** The Go pack builds on a fixed Go version. It doesn't read the `go` directive from your `go.mod`, so bumping `go 1.XX` there won't change the toolchain the build uses.
 
 ## How the build works
 

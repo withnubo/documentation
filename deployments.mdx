@@ -20,6 +20,10 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -H "Authorization: Bearer <your-token>"
 ```
 
+<Note>
+  Your plan sets how many builds can run at once. If you start a deploy while you're already at that limit, Nubo returns **HTTP 429** instead of queuing it, and asks you to wait for a running build to finish before retrying.
+</Note>
+
 ## The five steps of a deploy
 
 1. **Trigger.** Push or manual. The deploy shows as **Building** once a builder picks it up.
@@ -40,6 +44,17 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
 ```
 
 The deploy moves to **Canceled** and the Frame stays on whatever was already running. Already-succeeded deploys can't be cancelled; use [Rollback](/rollback) to revert to a previous version instead.
+
+## Promote a preview to Primary
+
+Happy with a [preview deployment](/preview-deployments) and want it to become the version your Frame serves? Promote it. A succeeded preview is made the Frame's **Primary**, and the previous Primary steps back to a preview, so nothing is thrown away.
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/deployments/<deployment_id>/promote \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Only a deployment that has succeeded can be promoted. Promote moves a preview *forward* to become Primary; [Rollback](/rollback) goes the other way, back to an older succeeded version.
 
 ## Deployment history
 

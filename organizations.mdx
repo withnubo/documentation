@@ -106,9 +106,15 @@ The target is promoted to owner and you're moved down to admin. Transferring to 
 
 ## How org billing works
 
-Organizations don't change how you're billed today. Plans, invoices, and payment methods stay on individual accounts exactly as described in [Plans](/plans). Creating an org or adding members doesn't create new charges.
+An organization's plan is billed per seat, and every member is one seat. The monthly cost is the plan's price times the number of members, so a three-person organization on Basic pays for three seats. Plan prices are listed in [Plans](/plans).
 
-The `billing_admin` flag you see in the members response is informational today: it's reserved for org-level billing, and the owner always has it set.
+Your personal organization is always a single seat, so if you work solo nothing changes: you're billed exactly like an individual account.
+
+Adding a member adds a seat and removing one frees it, and your next invoice reflects the change. The owner manages the plan and payment method from the **Billing** page and can grant the same access to other members by making them a **billing admin** (the owner always has it).
+
+## Public profile
+
+An organization has a public profile at `withnubo.com/@handle` that lists its Public [Frames](/frames). Your personal account has one too, at your own handle. It's a builder page anyone can visit: it shows the name, bio, and the Frames marked Public. See [Profiles](/profiles) for what it shows and how to edit it.
 
 ## Related
 

@@ -7,9 +7,23 @@ Nubo applies per-user rate limits to prevent runaway scripts from swamping the A
 
 ## What's limited
 
-Write calls (create, update, delete, rollback) are limited. Read calls (`GET`) are not. You can poll your deployments or your Frame status as often as you like.
+Write calls (create, update, delete, rollback) are limited. Read calls (`GET`, `HEAD`, `OPTIONS`) are not. You can poll your deployments or your Frame status as often as you like.
 
-Limits are per-user and per-endpoint: each write endpoint has its own 60-second bucket, keyed on your account (not on the token you use). So hitting the limit on one endpoint doesn't block writes to others. Writes are limited conservatively; the exact thresholds are tuned over time based on usage patterns and aren't part of our stability contract.
+Limits are per-user and per-endpoint: each write endpoint has its own 60-second bucket, keyed on your account (not on the token you use). So hitting the limit on one endpoint doesn't block writes to others.
+
+## The caps
+
+Each cap is the number of write calls allowed to that kind of endpoint per 60-second window:
+
+| Operation | Calls / 60s |
+|-----------|-------------|
+| Roll back or cancel a deployment | 10 |
+| Create a Project, Space, Frame, deployment, or custom domain | 20 |
+| Delete anything | 30 |
+| Update anything, or create/update variables | 60 |
+| Any other write | 120 |
+
+These numbers are tuned over time based on usage patterns, so treat them as current values rather than a fixed contract. We only ever loosen them without notice; see the [stability policy](/api-reference/stability).
 
 ## If you hit the limit
 
@@ -24,7 +38,9 @@ You'll get back:
 }
 ```
 
-Wait up to 60 seconds and retry, and you'll be back in business.
+The `429` body is the only signal Nubo sends. There are no `X-RateLimit-*` or `Retry-After` headers to read; branch on the status code and the `internal_code` instead. Wait up to 60 seconds and retry, and you'll be back in business.
+
+The limiter also fails open: if its backing store is briefly unavailable, writes are let through rather than blocked, so a limiter outage never stops you from shipping.
 
 ## Handling rate limits in your client
 

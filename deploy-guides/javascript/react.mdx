@@ -68,6 +68,12 @@ Push to GitHub, then in the Nubo dashboard:
 - **`vite preview` in `start`.** `vite preview` is for local checking only; it's not a production server. Use `serve` or another static server.
 - **Hardcoded `serve -l 3000`.** Use `${PORT:-3000}` so the Frame's port setting actually applies.
 
+## Environment variables
+
+<Warning>
+  Vite bakes `VITE_`-prefixed variables into the bundle at **build** time, but Nubo injects Project and Frame variables only at **runtime**. A `VITE_` variable you set in the dashboard never reaches the built bundle: the build already finished before it exists. Either bake the value in at build time, or fetch config from your own runtime endpoint after the app loads. See [Environment variables](/environment-variables) for details.
+</Warning>
+
 ## Going truly static
 
 If you don't need a Node container, build locally and deploy with the [Static pack](/raypacks/packs/static) instead. The Static pack serves on port 80, so set the Frame port to 80. It also looks for `index.html` at the repo root or in `public/`, so committing `dist/` on its own isn't enough: rename `dist/` to `public/` (giving you `public/index.html`) or move the built files to the repo root, then remove `package.json`. Nubo will then ship the files behind nginx with no Node runtime at all. Useful for cheap landing pages; not useful when you want to redeploy from a git push.

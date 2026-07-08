@@ -18,9 +18,9 @@ curl https://shuttle.withnubo.com/v2/projects \
 ## Create a token
 
 1. Open the [Nubo dashboard](https://console.withnubo.com).
-2. Go to **Settings → Developer → Personal access tokens**.
-3. Click **New token**, give it a name (e.g. "ci-runner", "deploy-bot", "local-dev"), and create it. (Expiration is only settable via the API.)
-4. Copy the token immediately. It starts with `nubo_pat_` and it's shown exactly once.
+2. Go to **Settings → Tokens & agents**.
+3. Under **Personal access tokens**, enter a name (1 to 80 characters, e.g. "ci-runner", "deploy-bot", "local-dev") and click **Create**. (Expiration is only settable via the API.)
+4. Copy the token immediately. It starts with `nubo_pat_` followed by 40 alphanumeric characters, and it's shown exactly once.
 
 <Warning>
   The raw token is displayed **once** at creation. If you lose it, create a new one - Nubo cannot recover the original.
@@ -39,7 +39,7 @@ Give each integration its own token. That way a leak or team change only invalid
 
 ## Rotate or revoke a token
 
-From **Settings → Developer → Personal access tokens**, hit **Revoke** next to any token. Revoked tokens stop working immediately on the next request.
+From **Settings → Tokens & agents**, hit **Revoke** next to any token. Revoked tokens stop working immediately on the next request.
 
 To rotate, create a new token, update whatever's using the old one, and revoke the old one.
 

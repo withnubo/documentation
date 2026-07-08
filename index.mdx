@@ -20,10 +20,11 @@ If you've got code and a port number, you've got a Nubo deploy.
 
 ## What ships out of the box
 
-- **Auto-detected builds.** Go, Node, PHP, Python, and static sites are recognized from your repo. No config required for the common case.
-- **Push-to-deploy.** Every push to your tracked branch triggers a build. Preview deploys for every PR.
+- **Auto-detected builds.** Go, Node, and static sites deploy with zero config on the default builder. Python and PHP are covered too, via the Paketo builder (a one-click switch in Frame Settings).
+- **Push-to-deploy.** Every push to your tracked branch triggers a build. Opt in to preview deploys for pull requests.
 - **HTTPS + a free domain.** Every Frame gets a `*.nubo.onl` URL with HTTPS. Bring your own domain when you're ready.
-- **Environments.** A Project holds multiple Spaces (`dev`, `staging`, `production`), each with their own history and URL.
+- **Managed databases.** Run Postgres, MySQL, MongoDB, or Redis as a Frame, no outside provider required. See [Databases](/databases).
+- **Environments.** A Project holds multiple Spaces (`dev`, `staging`, `production`), each with its own deploy history. Every deployed Frame gets its own `*.nubo.onl` URL.
 - **Rollback in one click.** Bad deploy? Roll back to a known-good version from the dashboard.
 
 ## A note on builders

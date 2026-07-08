@@ -39,6 +39,8 @@ Watch the Frame's [status](/frames#what-a-frames-status-means) or the [deploymen
 - Show up in your deployment history so you have a clear record of what happened.
 - Work the same way on Nubo's cloud and on your own [self-hosted agent](/agents/overview).
 
+Rollback and [Promote](/deployments#promote-a-preview-to-primary) are opposites: Promote moves a preview *forward* to become the Frame's Primary, while Rollback goes *back* to an older succeeded version.
+
 **Doesn't:**
 - Roll back environment variables or Frame settings. Those stay as they are. If your bug is in config, update the config and redeploy - no rollback needed.
 - Roll back to a failed build. You can only target deploys that succeeded (including a good one that predates later failures).

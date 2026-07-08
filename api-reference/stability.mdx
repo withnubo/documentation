@@ -13,7 +13,7 @@ Send this alongside your token:
 Nubo-Version: 2026-05-24
 ```
 
-Every response carries a `Nubo-Build` header naming the exact build that served it, so your client can double-check what it actually got.
+Every response echoes two headers back: `Nubo-Version`, the contract version it was served against (the date you pinned, or the default if you sent nothing), and `Nubo-Build`, the exact build that served it. Between them your client can double-check what it actually got.
 
 If you don't send the header, you fall through to the default, which is whatever the **oldest still-supported** version is. New versions never silently upgrade you. Your integration keeps behaving the way it did yesterday until you decide to move.
 

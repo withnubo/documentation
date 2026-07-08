@@ -20,7 +20,7 @@ If the same key exists at both levels, the Frame value wins.
 
 ## Add variables
 
-From the dashboard, open the Frame and go to **Frame Settings** to manage its variables. The dashboard manages variables at the Frame level only; to set project-scoped variables, use the API (`POST /v2/projects/<id>/variables`). Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`).
+From the dashboard, open the Frame and go to **Frame Settings** to manage its variables. The dashboard manages variables at the Frame level only; to set project-scoped variables, use the API (`POST /v2/projects/<id>/variables`). Keys must start with a letter or underscore and contain only letters, numbers, and underscores (`[A-Za-z_][A-Za-z0-9_]*`). Empty values are rejected.
 
 Via the API (note: the body is a JSON **array**, so you can add multiple at once):
 
@@ -37,6 +37,24 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -H "Content-Type: application/json" \
   -d '[{"key": "LOG_LEVEL", "value": "debug"}, {"key": "API_KEY", "value": "..."}]'
 ```
+
+## Declare variables in nubo.toml
+
+You can also declare Frame variables in `nubo.toml`, under the Frame's `[frames.env]` table. This is handy for non-secret config you want checked into the repo:
+
+```toml
+[[frames]]
+name = "web"
+path = "apps/web"
+stack = "sveltekit"
+port = 3000
+
+[frames.env]
+PUBLIC_API_BASE = "https://api.example.com"
+LOG_LEVEL = "info"
+```
+
+Values declared here are applied **additively** on each deploy: Nubo upserts them onto the Frame. Removing a key from `nubo.toml` does **not** delete it from the Frame; to remove a variable, delete it from the dashboard or via the API. For secrets, prefer the dashboard or API over `nubo.toml` so plaintext values never land in your repository.
 
 ## Using variables in your app
 
