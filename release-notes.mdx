@@ -2,8 +2,112 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 ---
-<Update label="July 3rd, 2026" tags={["Plans", "Bug-fixes"]}>
+<Update label="July 10th, 2026" tags={["UI", "Dashboard", "Frames", "Bug-fixes"]}>
 
+## A design overhaul, public profiles, and searchable build logs
+
+![The redesigned Nubo interface](/images/release-notes/07-10-2026/design.png)
+
+Nubo has a brand-new, optimized look. We've refreshed the entire interface while preserving all the functionality and features you rely on. Alongside the redesign: public profiles and organizations, an improved Frame overview with searchable build logs, a customizable navigation bar, and a round of smaller fixes.
+
+### Public profiles and organizations
+
+<Frame>
+  <img src="/images/release-notes/07-10-2026/public profile.png" alt="Descriptive alt text" />
+</Frame>
+
+We're introducing public profiles and organizations. Enable a public-facing profile from your Settings page, then toggle individual Frames to public visibility from that Frame's settings. Public Frames appear on your profile, which you can share via a link found in Settings. Our goal is to help you showcase your projects and share your work more easily with the world.
+<Columns cols={2}> 
+<Frame>
+  <img src="/images/release-notes/07-10-2026/orgs.png" alt="Descriptive alt text" />
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/profile.png" alt="Profile overviwq" />
+</Frame>
+
+</Columns>
+
+### Improved Frame overview and build logs
+
+We've changed the Frame management flow: rather than the sidebar widget, Frames now open in a pop-up window. We've also added new functionality to the Frame Logs tab. Logs now include a search bar above the log output, so you can search by keyword, timestamp, or date, and buttons below the search bar let you jump directly to specific keyword matches within the logs. We hope this makes troubleshooting faster and gives you clearer insight into what's changed.
+
+### A new, customizable navigation bar
+<Columns cols={2}> 
+To help streamline your workflow, you can now edit and manage which widgets appear in your navigation bar, as well as the order in which they're stacked.
+<Frame>
+  <img src="/images/release-notes/07-10-2026/widget.gif" alt="Widget demo" />
+</Frame>
+</Columns>
+<Columns cols={2}>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/activity_widget.png" alt="Activity widget" className="rounded-lg" noZoom/>
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/shortcut_widget.png" alt="Recent widget" className="rounded-lg" noZoom/>
+</Frame>
+</Columns>
+<Columns cols={2}>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/recent_widget.png" alt="Recent widget" className="rounded-lg" noZoom/>
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/plan_widget.png" alt="Recent widget" className="rounded-lg" noZoom />
+</Frame>
+</Columns>
+
+### Smaller things worth mentioning
+
+- **Docs cleanup pass**: Fixed a bunch of small inaccuracies across the docs (plans, API versions, previews, build logs, and more), removed some broken links/images, and added new pages for MCP server, Teams, Organizations, Account security, Metrics, and Studio.
+- **Frame resource migration, fixed**: A background fix that correctly applies the right CPU/memory limits to existing Frames based on your plan tier — no Frames were downgraded, and everything's now sized correctly.
+- **Preview builds, more reliable**: Fixed an issue where some preview deployments could get stuck or fail to load, and made sure previews now build with the correct builder (Raypacks or Paketo) to match your Frame's setup.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
+<Update label="July 3rd, 2026" tags={["MCP", "Plans", "Bug-fixes"]}>
+
+## New: Nubo MCP Server Support
+
+Nubo now supports MCP, making it easy to connect your projects to AI assistants and other MCP-compatible clients. You can securely inspect, deploy, and manage your infrastructure using your existing Nubo account and permissions.
+
+Every MCP request is authenticated with your Nubo account and sent through the existing API, so your permissions, rate limits, role-based access control, and audit logs continue to work exactly as they do today.
+
+- Connect Nubo to any MCP-compatible client.
+- Use a local MCP server or connect through Nubo's hosted endpoint.
+- Authenticate with your existing Nubo account with no additional credentials required.
+- Grant clients only the permissions they need with scoped access: read, deploy, and write.
+- No separate backend or permission system; every request goes through Nubo's existing API.
+
+Start using AI to inspect, deploy, and manage your Nubo projects while keeping the same security model you're already familiar with.
+
+### Getting Started
+
+There are two ways to get started with Nubo's MCP server: you can connect your MCP client, or run it locally instead.
+
+**Connecting your client (Claude Code)**
+
+If you're using Claude Code, you can connect your client by running:
+
+```bash
+claude mcp add --transport http nubo https://mcp.withnubo.com/mcp
+```
+
+**Running it locally**
+
+You can also run it locally using the install command:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-mcp/install.sh | bash
+nubo-mcp login
+```
+
+Then register the server with your client. For Claude Code:
+
+```bash
+claude mcp add nubo -- nubo-mcp stdio
+```
 ## New pricing: more plans, more flexibility
 
 We've updated our pricing to give you more options depending on where you are and what you need. There's a new plan in the middle of the lineup, self-hosted agents get simple flat pricing, and a round of bug fixes rides along.
