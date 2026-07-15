@@ -3,21 +3,42 @@ title: "Plans and billing"
 description: "What each plan includes and how billing works"
 ---
 
-Every new account starts on the **Trial** for 7 days. The Trial isn't a plan you pick; it's the default starting state. From the **Billing** page in your account settings you can switch to **Basic** or **Platinum**.
+Every new account starts on the **Trial** for 7 days. The Trial isn't a plan you pick; it's the default starting state. From the **Billing** page in your account settings you can switch to **Basic**, **Silver**, or **Platinum**.
 
 ## What each plan includes
 
-| | Trial | Basic | Platinum |
-|---|---|---|---|
-| Duration | 7 days | Monthly | Monthly |
-| Build power | Standard | Standard | Faster (2 vCPU / 4Gi build vs 500m / 1Gi) |
-| Frame size | 1 vCPU / 1Gi | 1 vCPU / 1Gi | 4 vCPU / 8Gi |
-| Volumes | 1 volume, 50 GB each, 50 GB total | 3 volumes, 100 GB each, 200 GB total | 50 volumes, 1024 GB each, 10240 GB total |
-| Custom domains | Yes | Yes | Yes |
-| Build priority | Standard | Standard | Priority queue |
-| Support | Community | Community | Priority email |
+| | Trial | Basic | Silver | Platinum |
+|---|---|---|---|---|
+| Price | Free | $9/month | $29/month | $59/month |
+| Duration | 7 days | Monthly | Monthly | Monthly |
+| Frame size | 1 vCPU / 1Gi | 1 vCPU / 1Gi | 2 vCPU / 4Gi | 4 vCPU / 8Gi |
+| Build power | Standard | Standard | Standard | Faster (2 vCPU / 4Gi build vs 500m / 1Gi) |
+| Volumes | 1 volume, 50 GB each, 50 GB total | 3 volumes, 100 GB each, 200 GB total | 10 volumes, 500 GB each, 2000 GB total | 50 volumes, 1024 GB each, 10240 GB total |
+| Custom domains | Yes | Yes | Yes | Yes |
+| Build priority | Standard | Standard | Standard | Priority queue |
+| Support | Community | Community | Community | Priority email |
+| Build minutes / month | 300 | 1,000 | 3,000 | 6,000 |
+| Max build duration | 30 min | 60 min | 90 min | 120 min |
 
-Every new account starts on the Trial, which uses the same per-container limits as Basic (1 vCPU / 1Gi), so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
+Every new account starts on the Trial, which includes 300 build minutes per month and uses the same per-container limits as Basic (1 vCPU / 1Gi), so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
+
+### Team seats
+
+Add team members to your account. Each seat includes additional build minutes, a monthly usage credit, and access to projects you grant them.
+
+| | Basic | Silver | Platinum |
+|---|---|---|---|
+| Price per seat | $4/month | $7/month | $12/month |
+| Build minutes per seat | +500 min | +1,000 min | +2,000 min |
+| Usage credit per seat | $4/month | $7/month | $12/month |
+
+Team members' builds on granted projects draw from the project owner's monthly build-minute allowance. If the owner has a spend cap enabled (see Overage below), it applies across all builds by all team members on all projects.
+
+### Overage
+
+By default, builds block when you reach your monthly build-minute allowance. If you enable overage, you can keep building at $0.01 per minute beyond your allowance. Trial accounts cannot enable overage.
+
+When you enable overage, you can optionally set a monthly spend cap. Once you hit the cap, builds block again. You can adjust your spend cap or disable overage at any time from the Billing page.
 
 ## The Billing page
 
@@ -49,6 +70,21 @@ Yes. Upgrades are prorated and applied immediately. Downgrades also take effect 
 
 **Does the monthly usage credit roll over?**
 No. Each plan includes a monthly usage credit that resets each cycle and does not roll over.
+
+**What counts as a build minute?**
+A build minute is one minute of build-pod runtime. Queue time is free; you only pay for the time your build is actually running. Build minutes accrue per second and are rounded up to the nearest minute.
+
+**Is queue time free?**
+Yes. You only pay for the time your build is actually running on the build pod. Waiting in the queue doesn't count against your build-minute allowance.
+
+**How do team-member builds affect my allowance?**
+Team members' builds on projects you've granted them access to draw from your project owner allowance. The build-minute usage is pooled at the account level, not per user. If you have a spend cap enabled, it applies across all builds by any team member.
+
+**What happens when I reach my build-minute allowance?**
+By default, builds block and you'll see an error. You can enable overage from your Billing page to keep building at $0.01 per minute. You can optionally set a monthly spend cap when you enable overage.
+
+**Do unused build minutes roll over to the next month?**
+No. Your build-minute allowance resets at the start of each monthly billing cycle. Unused minutes do not carry forward.
 
 **What happens to my volumes if I downgrade?**
 Existing volumes keep working. If you go below your new plan's caps, you won't be able to create new volumes until you're under the limit.
