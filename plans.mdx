@@ -26,9 +26,9 @@ Every new account starts on the **Trial** for 7 days. The Trial isn't a plan you
 
 Every new account starts on the Trial, which includes 300 build minutes per month and uses the same per-container limits as Basic (1 vCPU / 1Gi), so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
 
-### Team seats
+### Seats
 
-Add team members to your account. Each seat includes additional build minutes, a monthly usage credit, and access to projects you grant them.
+Add members to your [Organization](/organizations). Each seat includes additional build minutes, a monthly usage credit, and access to the projects you share.
 
 | | Basic | Silver | Platinum |
 |---|---|---|---|
@@ -36,7 +36,7 @@ Add team members to your account. Each seat includes additional build minutes, a
 | Build minutes per seat | +500 min | +1,000 min | +2,000 min |
 | Usage credit per seat | $4/month | $7/month | $12/month |
 
-Team members' builds on granted projects draw from the project owner's monthly build-minute allowance. If the owner has a spend cap enabled (see Overage below), it applies across all builds by all team members on all projects.
+Members' builds on shared projects draw from the Organization's monthly build-minute allowance. If a spend cap is enabled (see Overage below), it applies across all builds by all members on all projects.
 
 ### Overage
 
@@ -79,7 +79,7 @@ No. Each plan includes a monthly usage credit that resets each cycle and does no
 A build minute is one minute of build-pod runtime. Queue time is free; you only pay for the time your build is actually running, and usage accrues per second. Only billed overage is rounded up to whole minutes on your invoice.
 
 **How do team-member builds affect my allowance?**
-Team members' builds on projects you've granted them access to draw from your project owner allowance. The build-minute usage is pooled at the account level, not per user. If you have a spend cap enabled, it applies across all builds by any team member.
+Members' builds on projects shared with them draw from the Organization's allowance. Build-minute usage is pooled for the Organization, not per member. If a spend cap is enabled, it applies across all builds by any member.
 
 **What happens when I reach my build-minute allowance?**
 By default, builds block and you'll see an error. You can enable overage from your Billing page to keep building at $0.01 per minute. You can optionally set a monthly spend cap when you enable overage.
