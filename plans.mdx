@@ -15,16 +15,16 @@ Every new account starts on the **Trial** for 7 days. The Trial isn't a plan you
 |---|---|---|---|---|
 | Price | Free | $9/month | $29/month | $59/month |
 | Duration | 7 days | Monthly | Monthly | Monthly |
-| Frame size | 1 vCPU / 1Gi | 1 vCPU / 1Gi | 2 vCPU / 4Gi | 4 vCPU / 8Gi |
-| Build power | Standard | Standard | Standard | Faster (2 vCPU / 4Gi build vs 500m / 1Gi) |
+| Frame size | 1 vCPU / 1Gi | 2 vCPU / 2Gi | 4 vCPU / 8Gi | 8 vCPU / 16Gi |
+| Build power | Standard (500m / 1Gi) | Standard (500m / 1Gi) | Faster (1 vCPU / 2Gi) | Faster (2 vCPU / 4Gi) |
 | Volumes | 1 volume, 50 GB each, 50 GB total | 3 volumes, 100 GB each, 200 GB total | 10 volumes, 512 GB each, 1024 GB total | 50 volumes, 2048 GB each, 2048 GB total |
 | Custom domains | Yes | Yes | Yes | Yes |
-| Build priority | Standard | Standard | Standard | Priority queue |
-| Support | Community | Community | Community | Priority email |
+| Build priority | Standard | Standard | Priority queue | Priority queue |
+| Support | Community | Community | Priority email | Priority email |
 | Build minutes / month | 300 | 1,000 | 3,000 | 6,000 |
 | Max build duration | 30 min | 60 min | 90 min | 120 min |
 
-Every new account starts on the Trial, which includes 300 build minutes per month and uses the same per-container limits as Basic (1 vCPU / 1Gi), so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
+Every new account starts on the Trial, which includes 300 build minutes per month at 1 vCPU / 1Gi per Frame, so you can build something real before you commit. When the 7 days are up, switch to a paid plan to keep deploying.
 
 ### Seats
 
@@ -78,7 +78,7 @@ No. Each plan includes a monthly usage credit that resets each cycle and does no
 **What counts as a build minute?**
 A build minute is one minute of build-pod runtime. Queue time is free; you only pay for the time your build is actually running, and usage accrues per second. Only billed overage is rounded up to whole minutes on your invoice.
 
-**How do team-member builds affect my allowance?**
+**How do other members' builds affect my allowance?**
 Members' builds on projects shared with them draw from the Organization's allowance. Build-minute usage is pooled for the Organization, not per member. If a spend cap is enabled, it applies across all builds by any member.
 
 **What happens when I reach my build-minute allowance?**
