@@ -3,7 +3,9 @@ title: "Frames"
 description: "The unit of deployment in Nubo"
 ---
 
-A Frame is one deployable app - your landing page, API, Discord bot, or anything else you'd normally stand up on its own server. Each Frame gets its own domain, its own deploy history, and its own settings. Frames live inside a [Space](/concepts-and-terms#spaces), and Spaces live inside a [Project](/concepts-and-terms#projects).
+A Frame is one deployable app - your landing page, API, Discord bot, or anything else you'd normally stand up on its own server. Each Frame gets its own domain, its own deploy history, and its own settings. Frames live inside a [Space](/concepts-and-terms#space), and Spaces live inside a [Project](/concepts-and-terms#project).
+
+Frames come in two kinds: an App Frame (the code you deploy) and a [Database](/databases) Frame (managed storage your apps connect to). Everything below covers App Frames unless noted.
 
 If you're coming from another platform: a Frame is roughly what other tools call a "service" or "app".
 
@@ -47,6 +49,7 @@ Open any Frame in the dashboard and you'll see its current state in real time:
 | **Degraded** | Running, but not all replicas are healthy. |
 | **Error** | No healthy replicas. The dashboard will tell you why. |
 | **Stopped** | Scaled to zero or explicitly stopped. |
+| **Suspended** | Paused because billing is past due. Restore billing to bring it back. |
 
 When a Frame is in **Error**, Nubo surfaces what went wrong (crash, out of memory, health-check failure, etc.) right next to the status so you don't have to go hunting through logs.
 
@@ -70,11 +73,12 @@ Both return `202 Accepted`. The Frame moves through **Stopped** and back to **On
 
 ## Update a Frame's settings
 
-The Frame's **Settings** tab groups everything you can change into clear sections (General, Source, Runtime, Environment variables, Custom domains, Danger zone). A sticky save bar at the bottom tracks unsaved changes so you always know if something is pending.
+The Frame's **Settings** tab groups everything you can change into clear sections (General, Visibility, Source, Build, Runtime, Continuous deployment, Preview deployments, Environment variables, Custom domains, Danger zone). A sticky save bar at the bottom tracks unsaved changes so you always know if something is pending.
 
 You can:
 
 - Rename the Frame.
+- Set the Frame's visibility. A Frame is Private by default; set it Public to list it on your organization's [public profile](/profiles). Changing visibility requires an organization admin.
 - Switch the branch Nubo watches.
 - Change the port your app listens on.
 - Scale the replica count up or down.
@@ -100,7 +104,7 @@ curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<spac
 ```
 
 <Note>
-  Changing the port re-rolls the Frame so the new value takes effect. Picks must be between 1024 and 65535.
+  Changing the port re-rolls the Frame so the new value takes effect. Picks must be between 1024 and 65535, and a few reserved ports (6379, 27017, 9898, and 27018) are rejected because they collide with system services.
 </Note>
 
 ## Delete a Frame

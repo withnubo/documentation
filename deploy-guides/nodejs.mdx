@@ -100,6 +100,8 @@ Add a `build` script that produces JavaScript and a `start` script that runs it:
 
 Nubo runs `npm run build` automatically when a `build` script exists.
 
+For a non-standard project, you can override the **Install command** and **Build command** per Frame under **Frame Settings**. Leave them blank to let Raypacks auto-detect from your lockfile and scripts.
+
 ## Things that trip people up
 
 - **No `start` script.** Nubo will try `node index.js` as a fallback. If your entry isn't `index.js`, set `"main"` in `package.json` or add a `start` script.

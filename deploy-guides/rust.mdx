@@ -10,7 +10,7 @@ Rust isn't supported on managed Nubo yet.
 
 ## Options today
 
-- **Self-hosted agents.** Run a [self-hosted agent](/agents/overview) on your own machine. Agents support custom Dockerfiles, so a Rust binary deploys exactly like anywhere else.
+- **Build and run it yourself.** [Self-hosted agents](/agents/overview) build with Cloud Native Buildpacks (`pack build`), not Dockerfiles, so an agent hits the same missing-Rust-pack wall as managed. To ship Rust today, build the image in your own CI, push it to a registry, and run the container on your own host.
 - **Wait for it.** A Rust pack is on the Raypacks roadmap (the engine itself is written in Rust, so we're motivated). Watch the [release notes](/release-notes).
 
 ## Want to help us prioritize?

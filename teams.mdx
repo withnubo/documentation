@@ -1,0 +1,134 @@
+---
+title: "Teams"
+description: "Invite people and share the projects you own"
+---
+
+Nubo starts everyone out solo: every Project belongs to exactly one account. Teams are how you let other people in. You create a team, invite people by email, and grant the team a role on any project you own. Ownership and [billing](/plans) never move: the project still belongs to you, your teammates just get access.
+
+<Note>
+  Teams and [Organizations](/organizations) are separate systems. A Team is a lightweight way to share the Projects you own with a group. An Organization is the ownership and identity root: it's where a Project actually lives and where your public handle comes from. You can use one, both, or neither.
+</Note>
+
+## Create a team
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/teams \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme",
+    "slug": "acme"
+  }'
+```
+
+You become the team's **owner**. The name can be anything up to 100 characters. The slug must be lowercase letters, numbers, and single dashes (max 63), and it's unique across Nubo.
+
+`GET /v2/teams` lists every team you're in, with your role and the member count.
+
+## The four roles
+
+Roles are ordered `viewer < member < admin < owner`, and each one includes everything below it:
+
+| Role | What it adds |
+|---|---|
+| **Viewer** | See the team, its members, and the projects shared with it. |
+| **Member** | A higher rung than viewer when your effective access on a shared project is worked out (see below). |
+| **Admin** | Invite and remove people, change member roles, rename the team, and manage project shares. |
+| **Owner** | Delete the team. Every team has exactly one: the person who created it. |
+
+A few guardrails: you can't invite someone as owner, you can't promote a member to owner, the owner's role can't be changed, and the owner can't be removed. Team ownership isn't transferable self-service today; contact support if you need it moved.
+
+## Invite people
+
+Invites go out by email. From a team you're an admin (or owner) of:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/teams/<team_id>/invitations \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "dev@example.com",
+    "role": "member"
+  }'
+```
+
+The recipient gets an email with an accept link. Invitations expire after **7 days**, and accepting only works while signed in to a Nubo account whose email matches the one invited (case doesn't matter). Under the hood the link calls `POST /v2/teams/invitations/<token>/accept`.
+
+To take back an invite:
+
+```bash
+curl -X DELETE https://shuttle.withnubo.com/v2/teams/<team_id>/invitations/<invitation_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+`GET /v2/teams/<team_id>/invitations` lists the team's invitations (admin and up).
+
+## Share a project with the team
+
+Sharing works through **grants**: you give the whole team a role on a project you own.
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/teams/<team_id>/grants \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": "<project_id>",
+    "role": "member"
+  }'
+```
+
+Two things must both be true: you're an admin (or owner) of the team, and you own the project. The grant role can be `viewer`, `member`, or `admin` (never `owner`), and a project can only be shared with a given team once. The shared project then shows up in every member's project list, and they can open its Spaces, [Frames](/frames), and logs.
+
+<Note>
+  Billing doesn't move. Everything on a shared project keeps billing to the project's owner, no matter which team member is using it.
+</Note>
+
+## How effective access works
+
+Your effective role on a shared project is the **lower** of two things: your role in the team, and the team's grant role on the project.
+
+- Grant is `admin`, you're a `viewer` in the team: you act as a viewer.
+- Grant is `viewer`, you're an `admin` in the team: still a viewer. The grant caps the whole team.
+- Grant is `admin`, you're a `member`: member.
+
+If you don't own a project, no team of yours has a grant on it, and you don't get access through an [organization](/organizations), the project simply doesn't exist for you: the API returns `404`, not `403`.
+
+## Revoke access
+
+Change a grant's role or remove it entirely (admin and up):
+
+```bash
+curl -X PATCH https://shuttle.withnubo.com/v2/teams/<team_id>/grants/<grant_id> \
+  -H "Authorization: Bearer <your-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "viewer"}'
+
+curl -X DELETE https://shuttle.withnubo.com/v2/teams/<team_id>/grants/<grant_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Removing a person works the same way: `DELETE /v2/teams/<team_id>/members/<user_id>`, or `PATCH` the same path with a new `role` to promote or demote instead. Deleting the team itself (`DELETE /v2/teams/<team_id>`, owner only) removes its memberships, invitations, and grants in one go. The projects that were shared are untouched and stay with their owners.
+
+## Endpoints at a glance
+
+| Endpoint | Minimum role |
+|---|---|
+| `GET` / `POST /v2/teams` | any signed-in user |
+| `POST /v2/teams/invitations/<token>/accept` | any signed-in user |
+| `GET` on `/v2/teams/<team_id>`, its `/members`, its `/grants` | viewer |
+| `PATCH /v2/teams/<team_id>` | admin |
+| `PATCH` / `DELETE /v2/teams/<team_id>/members/<user_id>` | admin |
+| `GET` / `POST` / `DELETE` on `/v2/teams/<team_id>/invitations` | admin |
+| `POST` / `PATCH` / `DELETE` on `/v2/teams/<team_id>/grants` | admin |
+
+Creating a grant additionally requires that you own the project being shared. All endpoints use the same bearer tokens as the rest of the API; see [Authentication](/api-reference/authentication).
+
+## Related
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  What your teammates can see inside a shared project
+</Card>
+
+<Card title="Plans and billing" icon="credit-card" href="/plans">
+  Billing stays with the project owner
+</Card>

@@ -3,16 +3,110 @@ title: "nubo.toml"
 description: "The one config file Raypacks reads"
 ---
 
-Raypacks works without any config for most apps. When you need to override a default (a build entrypoint Raypacks can't guess, for example), drop a `nubo.toml` at the root of your repo.
+Most apps deploy with no config at all: Raypacks detects your stack and Nubo runs a single Frame straight from your repo. When you want to say more (pin a build entrypoint, add a database, run more than one Frame from a single repo), drop a `nubo.toml` at the root of your repo. Nubo reads it on every push.
 
-## Anatomy
+## A minimal file
+
+For a single service, the one key you're likely to reach for is the build entrypoint:
 
 ```toml nubo.toml
 [build]
 entrypoint = "./cmd/server"
 ```
 
-That's the whole file format today. More keys land as packs grow.
+That's all Raypacks needs to build. Everything below is optional and only kicks in when you declare it.
+
+## Declaring infrastructure
+
+To run more than one Frame from a repo, or to add a database, list your Frames explicitly. Each `[[frames]]` block is one Frame.
+
+```toml nubo.toml
+version = 1
+
+[project]
+name = "ledger"
+
+[[frames]]
+name = "web"
+path = "apps/web"
+stack = "sveltekit"
+port = 3000
+replicas = 2
+
+[frames.env]
+PUBLIC_API_BASE = "https://api.example.com"
+
+[[frames.volumes]]
+name = "uploads"
+mount_path = "/data/uploads"
+size_gb = 10
+
+[[frames]]
+name = "primary"
+kind = "database"
+engine = "postgres"
+version = "16"
+storage_gb = 20
+inject_into = "web"
+```
+
+### `version`
+
+Schema version. Defaults to `1`. Leave it at `1`.
+
+### `[project]`
+
+Project-level settings.
+
+- `name`: a display name for the Project.
+
+### `[[frames]]`
+
+One block per Frame. Nubo matches Frames by `name`, so keep names stable once you've picked them.
+
+- `name` (required): the Frame's name.
+- `kind`: `"app"` (the default) or `"database"`.
+
+For an app Frame:
+
+- `path`: the subdirectory to build from, for monorepos. Defaults to the repo root (`.`).
+- `stack`: override auto-detection. One of `static`, `node`, `sveltekit`, `react`, `vue`, `go`, `dockerfile`, `paketo`. `stack = "dockerfile"` forces the Dockerfile pack; `stack = "paketo"` sends the Frame to the Paketo builder (see below).
+- `builder`: `"raypacks"` (the default) or `"paketo"`. The escape hatch when a Frame needs the classic builder.
+- `port`: the port your app listens on.
+- `replicas`: how many copies to run. Defaults to `1`.
+
+### `[frames.env]`
+
+Environment variables for the Frame above it. Keys are added or updated on each push; removing a key here does not delete it from the Frame (see [Reconcile](#how-nubo-applies-the-file)).
+
+```toml nubo.toml
+[frames.env]
+LOG_LEVEL = "info"
+PUBLIC_API_BASE = "https://api.example.com"
+```
+
+### `[[frames.volumes]]`
+
+Persistent volumes for the Frame above it.
+
+- `name`: a name for the volume.
+- `mount_path`: where it mounts inside the container.
+- `size_gb`: size in GB. Defaults to `1`.
+- `read_only`: mount read-only. Defaults to `false`.
+
+A Frame that attaches a volume runs exactly one replica (a persistent volume has a single writer), so `replicas` is forced to `1` for that Frame.
+
+### Database Frames
+
+Set `kind = "database"` (or simply an `engine`) to declare a managed database as a Frame:
+
+- `engine`: `postgres` (the default), `mysql`, `mongodb`, or `redis`.
+- `version`: the engine version, for example `"16"`.
+- `storage_gb`: the data volume size. It only grows (see below).
+- `inject_into`: the `name` of an app Frame to wire this database into.
+- `inject_as`: the environment variable the connection string lands under. Defaults to `DATABASE_URL`.
+
+With `inject_into = "web"`, Nubo sets `DATABASE_URL` on the `web` Frame to this database's connection string, so your app connects with no secrets to copy. Set `inject_as` to use a different variable name.
 
 ## `[build]`
 
@@ -32,12 +126,22 @@ entrypoint = "./cmd/api"
 
 If you don't set it, Raypacks finds the entrypoint on its own. You only need this when you have multiple binaries and want to pick a specific one, or when your layout doesn't match what auto-detection looks for.
 
+## How Nubo applies the file
+
+On every push, Nubo reconciles your Frames to match `nubo.toml`. Reconcile is additive-only and deliberately safe:
+
+- **It never deletes.** Removing a Frame, database, volume, or env var from `nubo.toml` does not remove it from Nubo. Delete it from your dashboard when you actually want it gone.
+- **Database storage only grows.** Raising `storage_gb` expands the volume. Lowering it is ignored, so data is never shrunk out from under you.
+- **A volume pins the Frame to one replica.** Declare a volume and `replicas` becomes `1` for that Frame, whatever number you wrote.
+- **Databases are created for you.** A `kind = "database"` Frame in `nubo.toml` is provisioned automatically on the next push.
+- **New app Frames are not.** A new app Frame named in `nubo.toml` is not auto-created; create it in your dashboard first, then `nubo.toml` keeps its settings in sync. Until it exists, Nubo notes it and moves on rather than risk a broken deploy.
+
 ## Precedence
 
 Settings can come from three places. Higher beats lower:
 
 1. **`nubo.toml`** (committed to your repo)
-2. **Dashboard / API** overrides (per-Frame, set in the UI or via `PATCH`)
+2. **Dashboard / API** overrides (per-Frame, set in the UI)
 3. **Raypacks auto-detection**
 
 This matches what most people expect: a `nubo.toml` checked into the repo is the source of truth. Dashboard tweaks fill in the gaps. Auto-detection is the fallback.

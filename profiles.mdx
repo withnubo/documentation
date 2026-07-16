@@ -1,0 +1,60 @@
+---
+title: "Public profiles"
+description: "Your builder page at withnubo.com/@handle, showing the Frames you choose to share"
+---
+
+Every account and every organization on Nubo has a public profile at `withnubo.com/@handle`. It is a simple builder page: your name, a short bio, your avatar, the date you joined, the Frames you have chosen to make public, your recent deployments, and an activity heatmap that fills in as you ship.
+
+It is one identity for people and organizations alike. A personal account and a standard [organization](/organizations) each get their own `@handle` and their own page, built the same way.
+
+## What a profile shows
+
+<CardGroup cols={2}>
+  <Card title="Name, bio, and avatar" icon="user">
+    The display name, short bio, and picture you set in Settings.
+  </Card>
+  <Card title="Joined date" icon="calendar">
+    When the account or organization was created.
+  </Card>
+  <Card title="Public Frames" icon="cube">
+    Only the Frames you have marked Public, each linking to its live URL.
+  </Card>
+  <Card title="Recent deployments" icon="rocket">
+    The latest deploys across your public Frames.
+  </Card>
+  <Card title="Activity heatmap" icon="grid">
+    A calendar view that shows how often you have been shipping.
+  </Card>
+</CardGroup>
+
+## Turning it on
+
+There are two switches, and both are yours to control.
+
+**Publish your profile.** Go to **Settings > Profile** and turn on the public-profile toggle. Until you flip it on, nothing is shown publicly. Once it is on, anyone with the link can visit your page at `withnubo.com/@handle`.
+
+**Make a Frame public.** Every [Frame](/frames) is Private by default, and only Public Frames appear on a profile. Open a Frame's **Settings > Visibility** and switch it to Public. Private Frames stay visible only to people with access to the Project.
+
+<Note>
+  Changing a Frame's visibility requires an organization admin. If you are not an admin of the owning organization, ask one to make the Frame public or private for you.
+</Note>
+
+## What stays private
+
+A profile only ever shows what you deliberately opt in. Project ids, [environment variables](/environment-variables), email addresses, and internal hostnames are never part of the page, so nothing sensitive is exposed just because a profile is live.
+
+The two defaults are worth remembering together. An organization's profile page is public by default, but its Frames are Private by default. That means a fresh profile shows your name and bio and nothing else until you make a Frame public on purpose.
+
+## Related
+
+<Card title="Frames" icon="cube" href="/frames">
+  Set a Frame to Public or Private from its Settings
+</Card>
+
+<Card title="Organizations" icon="users" href="/organizations">
+  Handles, roles, and how a workspace is shared
+</Card>
+
+<Card title="Concepts and terms" icon="book" href="/concepts-and-terms">
+  The words Nubo uses, in one place
+</Card>

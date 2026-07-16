@@ -9,10 +9,6 @@ Nubo Agents let you run your applications on your own machines instead of our ma
 
 An agent is a lightweight binary that runs on your server. It connects back to Nubo and waits for work. When you deploy a Frame to an agent, the build and the runtime both happen on your machine.
 
-<Frame>
-  <img src="/images/agent-architecture.png" alt="Agent architecture diagram" />
-</Frame>
-
 Here's what happens when you deploy:
 
 1. You create a Frame in Nubo and pick which agent should run it
@@ -31,6 +27,16 @@ Agents are a good fit when you:
 - Want more control over the runtime environment
 
 If none of that applies, our managed infrastructure works out of the box with no setup.
+
+## Ownership and status
+
+Agents are tied to your user account: they're owner-scoped, not shared across a Team or Organization. Each person registers and manages their own agents.
+
+Every agent shows a live status of online or offline, which reflects whether it's currently connected to Nubo. An offline agent can't be chosen as a deploy target: its option is disabled in the New Frame **Target** picker until it reconnects.
+
+## Removing an agent
+
+You can remove an agent from the **Agents** section of **Settings**. If any Frames still target it, the removal is blocked and you'll see a message like `N frame(s) still target this agent; remove or migrate them first`. Delete or move those Frames to another target first, then remove the agent.
 
 ## What you'll need
 

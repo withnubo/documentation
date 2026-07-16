@@ -1,0 +1,94 @@
+---
+title: "MCP server"
+description: "Operate your Nubo account from Claude, Cursor, and other MCP clients"
+---
+
+Nubo runs a hosted [Model Context Protocol](https://modelcontextprotocol.io) server at `mcp.withnubo.com`. Add it to an MCP client like Claude Code, Claude Desktop, or Cursor and you can operate your account in natural language: inspect Projects, Spaces, and [Frames](/frames), trigger deployments, read build and runtime logs, and manage [environment variables](/environment-variables).
+
+Under the hood it's a thin pass-through over Nubo's public `/v2` API. Every call runs under your own token and your own permissions; the server adds no privileged path of its own and holds no secrets.
+
+## Connect
+
+Point your MCP client at:
+
+```text
+https://mcp.withnubo.com/mcp
+```
+
+The first request comes back `401` with an OAuth challenge, and your client takes it from there:
+
+1. The client registers itself with Nubo's authorization server automatically. There's no client ID or secret to configure.
+2. Your browser opens and you sign in with GitHub, the same sign-in the dashboard uses.
+3. If your account has [MFA](/account-security) enabled, you complete that step too.
+4. The client receives a scoped access token for your account and starts making tool calls.
+
+Access tokens last one hour. Your client renews them in the background with a refresh token that lasts 30 days, so you won't re-do the browser dance every session.
+
+## Tools
+
+| Tool | What it does |
+|------|--------------|
+| `whoami` | Show the signed-in account: email, plan, and status. |
+| `list_projects` | List the Projects you can access. |
+| `list_spaces` | List the Spaces in a Project. |
+| `list_frames` | List the Frames in a Space. |
+| `get_frame` | Get a single Frame's details. |
+| `list_deployments` | List a Frame's deployments, newest first. |
+| `get_build_logs` | Get the build logs for a specific deployment. |
+| `get_runtime_logs` | Get recent runtime logs for a Frame. |
+| `get_frame_metrics` | Get resource usage metrics for a Frame. |
+| `list_variables` | List the environment variables defined on a Frame. |
+| `list_repositories` | List the GitHub repositories you can deploy from. |
+| `deploy_frame` | Trigger a new deployment using the Frame's current configuration. |
+| `start_frame` | Start a stopped Frame. |
+| `stop_frame` | Stop a running Frame. |
+| `set_variable` | Create or update an environment variable on a Frame. |
+| `create_project` | Create a new Project. |
+| `create_space` | Create a new Space in a Project. |
+| `create_frame` | Create a new Frame in a Space from a GitHub repository. |
+| `list_teams` | List the teams you belong to. |
+
+## How access is scoped
+
+The token your MCP client holds is not a full personal access token. Three things bound what it can do:
+
+- **OAuth scopes.** Tokens can carry `nubo:read`, `nubo:deploy`, and `nubo:write`. Read-only calls need `nubo:read`; anything that changes state (deploys, variables, creating or stopping things) needs `nubo:write`. A client that doesn't ask for scopes gets `nubo:read` only.
+- **A limited API surface.** MCP tokens work on your Projects and everything inside them (Spaces, Frames, deployments, logs, metrics, variables), plus read-only access to your linked repositories, your account profile, and your teams. The rest of the API rejects them, so an MCP token can't touch billing or account settings.
+- **Your own permissions.** The server forwards your token to the API, which enforces the same ownership and access rules as any other request. Nothing is visible or changeable through MCP that you couldn't reach from the dashboard.
+
+## Run it locally instead
+
+Prefer a local server over the hosted one? Install the `nubo-mcp` binary and sign in:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-mcp/install.sh | bash
+nubo-mcp login
+```
+
+`nubo-mcp login` opens your browser and stores a credential on your machine, the same one the [CLI](/cli) uses. Then register the server with your client. For Claude Code:
+
+```bash
+claude mcp add nubo -- nubo-mcp stdio
+```
+
+<Note>
+  On a headless box, skip the browser: set `NUBO_TOKEN` to a personal access token and the local server uses it instead of the stored credential. See [API authentication](/api-reference/authentication) for how to create one.
+</Note>
+
+## Related
+
+<Card title="CLI" icon="terminal" href="/cli">
+  Browse your account from the terminal
+</Card>
+
+<Card title="API authentication" icon="key" href="/api-reference/authentication">
+  Personal access tokens for scripts and integrations
+</Card>
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  The unit of deployment the MCP tools operate on
+</Card>
+
+<Card title="Environment variables" icon="key" href="/environment-variables">
+  What set_variable and list_variables manage
+</Card>

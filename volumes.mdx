@@ -18,7 +18,7 @@ A volume attaches to one Frame at a time, so to move data between Frames you det
 From the dashboard:
 
 1. Open any Project and click the **Volumes** tab (or use **Quick actions → New volume**).
-2. Pick a name and a size between 1 GiB and 1 TiB.
+2. Pick a name and a size between 1 GiB and 2 TiB (2048 GiB). Your plan may cap it lower.
 3. Hit **Create**.
 
 The volume shows up in the list immediately and is ready to attach.
@@ -41,6 +41,11 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes \
 
 Open the Frame's sidebar, scroll to the **Volumes** panel, and pick a volume from the list. Set the mount path your app expects (e.g. `/data`, `/app/uploads`, `/srv/data`) and save. The Frame rolls with the volume mounted on the next deploy.
 
+A couple of rules apply to what a volume can attach to:
+
+- **Single writer.** A volume has one writer at a time, so it attaches to a Frame running a single replica. A Frame scaled beyond one replica can't mount it.
+- **Same region.** The volume and the Frame have to be in the same region.
+
 ```bash
 curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volume_id>/attach \
   -H "Authorization: Bearer <your-token>" \
@@ -52,7 +57,7 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/volumes/<volu
 ```
 
 <Note>
-  Mount paths are validated. You can't mount on a reserved system root or any of its subdirectories: `/`, `/bin`, `/boot`, `/dev`, `/etc`, `/lib`, `/proc`, `/root`, `/run`, `/sbin`, `/sys`, `/usr`, and `/var`.
+  Mount paths are validated. The path has to be absolute (start with `/`) and can't contain `..`. You also can't mount on a reserved system root or any of its subdirectories: `/`, `/bin`, `/boot`, `/dev`, `/etc`, `/lib`, `/proc`, `/root`, `/run`, `/sbin`, `/sys`, `/usr`, and `/var`.
 </Note>
 
 ## Detach a volume
@@ -99,7 +104,7 @@ Anything that needs to stick around between deploys:
 
 ## Pricing
 
-You pay by the provisioned size of a managed volume for as long as it exists, whether it's attached or not. A 50 GiB volume costs half what a 100 GiB one does. Detaching does not stop the meter; delete the volume to stop the meter.
+You pay by the provisioned size of a managed volume for as long as it exists, whether it's attached or not, and whether the Frame it's attached to is running or stopped. A 50 GiB volume costs half what a 100 GiB one does. Detaching or stopping the Frame does not stop the meter; delete the volume to stop the meter.
 
 Your plan caps the max size per volume, the total GiB you can hold, and how many volumes you can have at once. See [Plans](/plans) for the current limits.
 

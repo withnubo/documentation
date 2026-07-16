@@ -19,8 +19,12 @@ Library-only repos (no `main.go` anywhere) fall through detection. They're not d
 Raypacks figures out what to build, in this order:
 
 1. `[build].entrypoint` in [`nubo.toml`](/raypacks/nubo-toml)
-2. `--entrypoint` passed at build time
+2. `--entrypoint` passed at build time (local `rp` CLI only)
 3. Auto-detection: `./main.go` at the root, then the first `cmd/<name>/main.go` (alphabetical)
+
+<Note>
+`--entrypoint` is a flag for the local `rp` CLI. Managed Nubo builds never pass it, so on the platform the entrypoint comes from `nubo.toml` `[build].entrypoint` (or the dashboard override) or auto-detection. Pin it in `nubo.toml` when you have more than one candidate.
+</Note>
 
 The plan table shows which won:
 

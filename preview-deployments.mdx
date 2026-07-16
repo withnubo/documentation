@@ -13,37 +13,87 @@ Every pull request gets its own running copy of your app at a unique URL. Share 
 4. Push a new commit to the PR? Nubo rebuilds the preview.
 5. Merge or close the PR? Nubo tears the preview down.
 
-Production is never affected. Previews run in the same Space and use the same build configuration. [Project-scoped environment variables](/environment-variables) carry over automatically. Frame-scoped variables stay with the production Frame - if you need a secret to be available in previews too, set it at the Project level.
+Production is never affected. Previews run in the same Space and use the same build configuration. Both [Project-scoped and Frame-scoped environment variables](/environment-variables) from the production Frame carry over into the preview automatically. If the same name is set at both levels, the Frame-scoped value wins, just like it does in production.
+
+## What gets a preview
+
+By default every pull request opened against a tracked branch gets a preview. You can widen or narrow that with `preview_source` on the CI spec:
+
+- **`pull_requests`** (default) - one preview per open pull request.
+- **`pull_requests_and_branches`** - also builds a preview for pushes to branches that don't have a pull request open yet.
+- **`branch_allowlist`** - only previews branches you name in `preview_allowed_branches`. Any branch not on the list is skipped.
+
+A few kinds of change never get a preview:
+
+- **Fork pull requests.** A PR opened from a fork of your repo is ignored, so code from outside your organization never runs with your Frame's environment.
+- **Draft pull requests.** A draft is skipped until you mark it ready for review, and Nubo builds the preview at that point.
+- **Self-hosted agent Frames.** Previews run on Nubo's Managed infrastructure only. A Frame that deploys to your own agent keeps shipping its primary deploys, but Nubo does not spin up per-PR previews for it.
 
 ## Enable or disable previews
 
-Open the Frame's **CI/CD** tab. "Preview deployments" is on by default. Turn it off if you don't want previews on a particular Frame.
+Previews are enabled per Frame. Open the Frame's **CI/CD** tab and turn on "Preview deployments" for any Frame where you want a preview per pull request. Turn it back off to stop building previews for that Frame.
 
-From the API:
+<Warning>
+  The API route `PATCH .../ci` **replaces the whole CI spec**, it does not merge. Any field you leave out of the body resets to its default: auto-deploy switches off, custom build and install commands clear, and skip tags reset. Sending just `{ "preview_deploys": true }` would quietly wipe the rest of your CI settings. The **CI/CD** toggle above changes only this one field, so prefer it for a single flip.
+</Warning>
+
+If you do script it, fetch the Frame first, take its `spec.ci` object, change `preview_deploys`, and PATCH the complete object back:
+
+```bash
+curl https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id> \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Then send the full spec (these are the field defaults, replace each value with what your Frame returned so nothing else changes):
 
 ```bash
 curl -X PATCH https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/ci \
   -H "Authorization: Bearer <your-token>" \
   -H "Content-Type: application/json" \
-  -d '{ "preview_deploys": false }'
+  -d '{
+    "auto_deploy_primary": true,
+    "skip_tags": ["[skip ci]", "[ci skip]"],
+    "ignored_paths": [],
+    "root_directory": "/",
+    "build_command": null,
+    "install_command": null,
+    "preview_deploys": true,
+    "preview_source": "pull_requests",
+    "preview_allowed_branches": [],
+    "preview_ttl_hours": 168,
+    "preview_retention_count": 2,
+    "preview_env_overrides": {}
+  }'
 ```
 
 ## Finding the preview URL
 
-Check the **Deployments** tab on the Frame; previews show up there labeled with the PR number. Direct link support in the GitHub PR UI (with a comment from Nubo) is on the roadmap.
+Check the **Deployments** tab on the Frame; previews show up there labeled with the PR number. Nubo also writes back to the pull request itself: it posts a comment containing the **Preview URL**, plus a commit status and a GitHub deployment. These update on every build and are removed when the PR closes.
 
 ## What's different from a production deploy
 
 A preview is a separate runtime with its own URL, but otherwise behaves like any other Frame:
 
 - Build steps, language detection, and runtime behavior are identical.
-- Project-scoped [environment variables](/environment-variables) are available in the preview. Frame-scoped ones stay with the production Frame; promote them to the Project level if you need them in previews.
+- Both Project-scoped and Frame-scoped [environment variables](/environment-variables) are available in the preview, with the Frame-scoped value winning if a name is set at both levels.
+- Need previews to point at a staging database or a sandbox API key instead of production? Set `preview_env_overrides` on the CI spec. Each entry replaces that variable for previews only, applied on top of the inherited Project- and Frame-scoped values, so your production Frame keeps its own settings.
 - [Build logs](/build-logs) are captured the same way.
 - Custom domains are **not** attached to previews - previews use their Nubo-assigned URL only.
 
+## Promote a preview to primary
+
+Happy with what a preview is showing? You can make it your live version without waiting for a merge. Open the Frame's **Deployments** tab, find the preview (it must have finished building successfully), and choose **Promote**. Nubo repoints your production URL at that build and demotes the previous primary. It is the same swap [rollback](/deployments) uses, just pointed forward instead of back.
+
 ## Cleanup
 
-Previews are torn down automatically when the PR is closed (merged or not). If you need to wipe a preview manually before that, delete the corresponding entry from the Deployments tab.
+Previews are torn down automatically when the PR is closed (merged or not). Two other things clean them up even while the PR is still open:
+
+- **Inactivity TTL.** A preview that goes untouched for `preview_ttl_hours` (default 168, one week; max 8760, one year) is reaped. Configure it on the CI spec.
+- **Retention cap.** Only the newest `preview_retention_count` previews per Frame are kept (default 2, max 50); older ones are reaped first. Configure it on the CI spec too.
+
+The preview that is currently promoted to primary is never reaped by either rule, so a preview you have shipped stays up.
+
+There is no manual delete button for a running preview. To force one down, close the pull request (you can reopen it to rebuild), or let the TTL and retention rules take care of it.
 
 ## Related
 

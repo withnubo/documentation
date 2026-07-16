@@ -9,8 +9,8 @@ This is the fastest path from a fresh Nubo account to a running app served over 
 
 You'll need:
 
-- A [Nubo account](https://console.withnubo.com/signup)
-- The [Nubo GitHub App](https://github.com/apps/nubo-apps) installed on the repo you want to deploy
+- A [Nubo account](https://console.withnubo.com/register)
+- The [Nubo GitHub App](https://github.com/apps/nubo-application) installed on the repo you want to deploy
 - An app that listens on a port (Go, Node, Python, PHP, or a static `index.html`)
 
 No CLI to install. No Dockerfile to write.
@@ -30,9 +30,13 @@ Inside your Project, click **+ Frame**:
 1. Pick the GitHub repo to deploy.
 2. Pick the branch Nubo should watch. Pushes here trigger redeploys.
 3. Set the port your app listens on.
-4. Leave **Builder** on the default ([Raypacks Beta](/raypacks/overview)) for Go, Node, and static sites. Switch to **Paketo** for Python or PHP.
+4. Optionally set a source directory if your app doesn't build from the repo root (leave it empty for most repos).
 
 Hit deploy. The build starts immediately. Watch it in the Logs tab.
+
+<Note>
+  New Frames build with [Raypacks Beta](/raypacks/overview), the default builder, which covers Go, Node, and static sites. If you need **Paketo** (for Python or PHP), open the Frame's **Settings** tab and change the **Builder** there. The New Frame dialog has no Builder control.
+</Note>
 
 ## 3. Open your app
 

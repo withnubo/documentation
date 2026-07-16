@@ -3,7 +3,7 @@ title: "Custom domains"
 description: "Serve a Frame under your own hostname"
 ---
 
-Every Frame gets a Nubo-assigned domain out of the box. When you're ready to go live you can attach a custom domain (anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain) and Nubo will serve the Frame there with HTTPS.
+Every Frame gets a Nubo-assigned domain out of the box (something like `your-app-a1b2.nubo.onl`), and PR preview deployments get their own hostname under `*.preview.nubo.onl`. When you're ready to go live you can attach a custom domain (anything like `shop.mystore.com`, `api.mysite.io`, or even a root domain) and Nubo will serve the Frame there with HTTPS.
 
 The exact DNS you'll set up depends on whether the Frame runs on **managed** infrastructure (our cloud) or a **self-hosted agent** (your own server). The API is the same either way.
 
@@ -29,6 +29,14 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
 
 The response tells you exactly which DNS records to create. The shape differs by infrastructure.
 
+<Note>
+  A custom hostname has to be a real domain: at least two labels (`shop.mystore.com`, not `localhost`), ASCII only, no wildcards (`*.mystore.com`), and no underscores. Each hostname attaches to one Frame at a time.
+</Note>
+
+<Note>
+  Using a root/apex domain (like `mystore.com` rather than `shop.mystore.com`)? A plain CNAME isn't valid at a zone apex, so it will be rejected at most registrars. Use an ALIAS or ANAME record, or a provider that supports CNAME flattening, pointing at the same target Nubo gives you.
+</Note>
+
 ### Managed Frames
 
 You'll create a single CNAME record pointing at the value Nubo gives you back:
@@ -51,7 +59,7 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -H "Authorization: Bearer <your-token>"
 ```
 
-Once DNS resolves to the right target, Nubo issues a free certificate and starts serving traffic at your hostname. You can call `/verify` again any time to re-poll.
+Until DNS points at that target, `/verify` reports that the hostname does not yet resolve; keep polling as DNS propagates. Once it resolves, Nubo issues a free Let's Encrypt certificate (renewed automatically) and starts serving traffic at your hostname. You can call `/verify` again any time to re-poll.
 
 ### Self-hosted agent Frames
 
@@ -68,11 +76,22 @@ Agent Frames provision TLS automatically - no verification step:
 }
 ```
 
-Add the single CNAME, pointing at either the Frame's system subdomain or the agent's base domain - any name that resolves to the agent's IP works. The first HTTPS request to the new hostname triggers cert issuance; after that, the Frame is live.
+Add the single CNAME, pointing at either the Frame's system subdomain or the agent's base domain - any name that resolves to the agent's IP works. Once the CNAME is in place, Caddy provisions the certificate automatically the next time it reloads its config (shortly after the domain is attached), and the Frame is live.
 
 <Note>
   For agent Frames, ACME needs at least one of port 80 (HTTP-01) or port 443 (TLS-ALPN-01) reachable from the public internet for automatic TLS issuance to work. Caddy tries both, and if both are firewalled, TLS provisioning will fail.
 </Note>
+
+## Set a primary domain
+
+A Frame can have several custom domains attached at once. Mark one as the **primary** domain to make it the canonical hostname for the Frame. Only a domain that's already `active` can be made primary:
+
+```bash
+curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space_id>/frames/<frame_id>/domains/shop.mystore.com/primary \
+  -H "Authorization: Bearer <your-token>"
+```
+
+Calling it again on the current primary toggles the flag back off.
 
 ## Verify it's working
 
@@ -107,7 +126,7 @@ Returns the Frame's system domain(s) plus every custom domain attached, with the
 ### Status stuck on `pending`
 
 - **Managed:** your CNAME isn't resolving to the value Nubo handed you yet. Re-check your DNS (`dig shop.mystore.com`) and call `/verify` again.
-- **Agent:** the agent was offline when the domain was added. Restart the agent and the domain will apply on the next reconnect.
+- **Agent:** the agent was offline when the domain was added. Attach tasks aren't replayed on reconnect, so once the agent is back online, re-add the domain: `DELETE` it, then `POST` it again.
 
 ### TLS certificate error
 

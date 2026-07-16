@@ -1,7 +1,205 @@
 --- 
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
---- 
+---
+<Update label="July 10th, 2026" tags={["UI", "Dashboard", "Frames", "Bug-fixes"]}>
+
+## A design overhaul, public profiles, and searchable build logs
+
+![The redesigned Nubo interface](/images/release-notes/07-10-2026/design.png)
+
+Nubo has a brand-new, optimized look. We've refreshed the entire interface while preserving all the functionality and features you rely on. Alongside the redesign: public profiles and organizations, an improved Frame overview with searchable build logs, a customizable navigation bar, and a round of smaller fixes.
+
+### Public profiles and organizations
+
+<Frame>
+  <img src="/images/release-notes/07-10-2026/public profile.png" alt="Descriptive alt text" />
+</Frame>
+
+We're introducing public profiles and organizations. Enable a public-facing profile from your Settings page, then toggle individual Frames to public visibility from that Frame's settings. Public Frames appear on your profile, which you can share via a link found in Settings. Our goal is to help you showcase your projects and share your work more easily with the world.
+<Columns cols={2}> 
+<Frame>
+  <img src="/images/release-notes/07-10-2026/orgs.png" alt="Descriptive alt text" />
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/profile.png" alt="Profile overviwq" />
+</Frame>
+
+</Columns>
+
+### Improved Frame overview and build logs
+
+We've changed the Frame management flow: rather than the sidebar widget, Frames now open in a pop-up window. We've also added new functionality to the Frame Logs tab. Logs now include a search bar above the log output, so you can search by keyword, timestamp, or date, and buttons below the search bar let you jump directly to specific keyword matches within the logs. We hope this makes troubleshooting faster and gives you clearer insight into what's changed.
+
+### A new, customizable navigation bar
+<Columns cols={2}> 
+To help streamline your workflow, you can now edit and manage which widgets appear in your navigation bar, as well as the order in which they're stacked.
+<Frame>
+  <img src="/images/release-notes/07-10-2026/widget.gif" alt="Widget demo" />
+</Frame>
+</Columns>
+<Columns cols={2}>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/activity_widget.png" alt="Activity widget" className="rounded-lg" noZoom/>
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/shortcut_widget.png" alt="Recent widget" className="rounded-lg" noZoom/>
+</Frame>
+</Columns>
+<Columns cols={2}>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/recent_widget.png" alt="Recent widget" className="rounded-lg" noZoom/>
+</Frame>
+<Frame>
+  <img src="/images/release-notes/07-10-2026/plan_widget.png" alt="Recent widget" className="rounded-lg" noZoom />
+</Frame>
+</Columns>
+
+### Smaller things worth mentioning
+
+- **Docs cleanup pass**: Fixed a bunch of small inaccuracies across the docs (plans, API versions, previews, build logs, and more), removed some broken links/images, and added new pages for MCP server, Teams, Organizations, Account security, Metrics, and Studio.
+- **Frame resource migration, fixed**: A background fix that correctly applies the right CPU/memory limits to existing Frames based on your plan tier — no Frames were downgraded, and everything's now sized correctly.
+- **Preview builds, more reliable**: Fixed an issue where some preview deployments could get stuck or fail to load, and made sure previews now build with the correct builder (Raypacks or Paketo) to match your Frame's setup.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
+<Update label="July 3rd, 2026" tags={["MCP", "Plans", "Bug-fixes"]}>
+
+## New: Nubo MCP Server Support
+
+Nubo now supports MCP, making it easy to connect your projects to AI assistants and other MCP-compatible clients. You can securely inspect, deploy, and manage your infrastructure using your existing Nubo account and permissions.
+
+Every MCP request is authenticated with your Nubo account and sent through the existing API, so your permissions, rate limits, role-based access control, and audit logs continue to work exactly as they do today.
+
+- Connect Nubo to any MCP-compatible client.
+- Use a local MCP server or connect through Nubo's hosted endpoint.
+- Authenticate with your existing Nubo account with no additional credentials required.
+- Grant clients only the permissions they need with scoped access: read, deploy, and write.
+- No separate backend or permission system; every request goes through Nubo's existing API.
+
+Start using AI to inspect, deploy, and manage your Nubo projects while keeping the same security model you're already familiar with.
+
+### Getting Started
+
+There are two ways to get started with Nubo's MCP server: you can connect your MCP client, or run it locally instead.
+
+**Connecting your client (Claude Code)**
+
+If you're using Claude Code, you can connect your client by running:
+
+```bash
+claude mcp add --transport http nubo https://mcp.withnubo.com/mcp
+```
+
+**Running it locally**
+
+You can also run it locally using the install command:
+
+```bash
+curl -fsSL https://dl.withnubo.com/nubo-mcp/install.sh | bash
+nubo-mcp login
+```
+
+Then register the server with your client. For Claude Code:
+
+```bash
+claude mcp add nubo -- nubo-mcp stdio
+```
+## New pricing: more plans, more flexibility
+
+We've updated our pricing to give you more options depending on where you are and what you need. There's a new plan in the middle of the lineup, self-hosted agents get simple flat pricing, and a round of bug fixes rides along.
+
+### Pick the plan that fits
+
+Plans now start at \$9 a month and come with \$9 of usage credit, so you only pay for what you actually use — no surprise bills, no paying for idle resources.
+
+- **Trial** — free for seven days, no card required.
+- **Basic** — \$9 per seat, includes \$9 of usage credit.
+- **Silver** — $29 per seat, adds more headroom, storage, and support.
+- **Platinum** — $59 per seat, for teams that need the most Nubo has to offer.
+
+Rather run it on your own hardware? **Self-hosted agents** are $5 per agent per month and let you deploy through Nubo on your own infrastructure. See [Plans](/plans) for the full breakdown.
+
+### Bug fixes
+
+- New Frames now use the correct builder on their first deploy.
+- A Frame's public URL stays stable across redeploys — no more random URL changes.
+- Preview deployments no longer time out due to server scheduling issues.
+- Preview builds now respect the Frame's selected builder instead of defaulting to Paketo.
+- Existing Frames now correctly reflect the resource limits for their plan tier.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+<Update label="June 26th, 2026" tags={["Deployments", "Raypacks"]}>
+
+## nubo.toml, the one config file Raypacks reads
+
+Raypacks works without any config for most apps. But when you need to step in and tell it something it can't figure out on its own, you can now drop a `nubo.toml` at the root of your repo and take control. Think of it as your single source of truth for how your app gets built.
+
+- **Pick a specific binary** when you have more than one. Set the entry point and Raypacks builds from exactly there.
+- **Don't need it? Don't add it.** Raypacks auto-detects most setups, so the file is completely optional.
+- **Bad config gets caught before the build starts**, so you'll see a clear error in your logs instead of a confusing failure ten minutes in.
+- **Every build shows a plan summary** of the final values and where each one came from, so there's no guessing what Raypacks decided.
+
+Best of all, `nubo.toml` acts like a blueprint for your project: a source of truth you scaffold once, then stand up your entire stack in minutes.
+
+### Smaller things worth mentioning
+
+- The default builder is now Raypacks.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
+<Update label="June 19th, 2026" tags={["Deployments", "Analytics", "Support", "Raypacks", "Bug-fixes"]}>
+
+## Deploy from a subdirectory, real request analytics, and a faster builder in beta
+
+This release brings subdirectory deploys for monorepos, per-Frame request analytics straight from our edge, in-app support tickets, and a new daemonless builder in beta. Plus a round of bug fixes.
+
+### Deploy from a subdirectory
+
+Got a monorepo where your app lives in a subfolder instead of the root? Now you can set a **source directory** and Nubo builds from exactly that folder.
+
+- Set it when you first create a Frame.
+- Change it anytime in **Frame Settings**.
+- Works on managed cloud and on your own agents.
+
+### Per-Frame request analytics
+
+You can now see real HTTP request traffic for each of your Frames, captured directly from Nubo's own edge, so what you're seeing is what's actually happening.
+
+- View volume, latency, status codes, and egress per Frame.
+- This isn't an estimate scraped from infrastructure metrics; it's real request traffic.
+
+Knowing how your app performs under live traffic is the difference between reacting to problems and preventing them. More depth is on the way, but the core picture is live now.
+
+### In-app support tickets
+
+You can now open and view any support tickets you've opened, right from the dashboard.
+
+### Beta: faster daemonless builds and layer cache
+
+You can now replace your Paketo / Cloud Native Buildpacks build path with **Raypacks**, a daemonless OCI buildpack system focused on speed and cache efficiency. This feature is still in beta, so we're testing for and addressing bugs as they appear.
+
+### Bug fixes
+
+- Fixed a bug where you couldn't upgrade your account.
+- Fixed a bug where the repo picker would leak another tenant's repos to GitHub collaborators.
+- Fixed a bug where a Frame settings patch would overlay onto unrelated fields.
+- Fixed a bug where an "Invalid request body" error would pop up when submitting a form without first expanding the "General" FAQ dropdown.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
+
 <Update label="June 1st, 2026" tags={["Teams", "Security", "Databases", "Metrics", "Frames", "CI/CD", "Previews", "Dashboard"]}>
 
 ## Teams, a second factor for your account, more database engines, and metrics you can trust
@@ -139,7 +337,7 @@ Billing runs by the hour for every volume you've provisioned, whether or not it'
 
 ### Pick a plan that fits
 
-Nubo now has plans. Every new account starts on a **7-day Trial** on us, so you can build something real before you commit. The Trial runs at standard Basic-level compute.
+Nubo now has plans. Every new account starts on a **7-day Trial** on us, so you can build something real before you commit. The Trial runs at trial-level compute (about half of Basic).
 
 - **Basic**: side projects and smaller apps.
 - **Platinum**: bigger Frames, faster builds, more storage.
@@ -207,10 +405,6 @@ Big one. Self-hosted Agents let you run Frames on your own servers. The managed 
 
 ### Introducing self-hosted Agents
 
-<Frame>
-![Agent setup in the dashboard](/images/release-notes/04-29-2026/agent.svg)
-</Frame>
-
 If you want to run on specific hardware, keep data on-premise, or use a server you already own, install the [Nubo Agent](/agents/overview) on Linux or macOS. Deploy Frames to it from the same dashboard you'd use for our managed cloud.
 
 The agent is a single binary that connects back to Nubo and waits for work. Install it, point wildcard DNS at your server, and you're set. Your Frames get their own subdomain on a domain you control, with TLS via ACME.
@@ -220,10 +414,6 @@ Everything else in this release works the same on self-hosted Agents as on manag
 See the [Agents overview](/agents/overview) for when to use one, or [Quickstart](/agents/quickstart) to install your first agent.
 
 ### Push to deploy
-
-<Frame>
-![Push-to-deploy flow](/images/release-notes/04-29-2026/push_to_deploy.svg)
-</Frame>
 
 Install the [Nubo GitHub App](https://github.com/apps/nubo-application) on your repo. Every push to your Frame's tracked branch triggers a build and release.
 
@@ -246,7 +436,7 @@ You see the token exactly once at creation. We store it as a hash, never in plai
 Pin your API client to a specific contract with the `Nubo-Version` header:
 
 ```
-Nubo-Version: 2026-05-08
+Nubo-Version: 2026-05-24
 ```
 
 - **Most releases ship under the same date.** Bug fixes, new endpoints, and tuning don't move your pin. A new version is only cut when a change would actually break existing clients (field removed, type changed, validation tightened).
@@ -258,19 +448,11 @@ Production integrations should pin. Scripts and one-offs can skip the header and
 
 ### Preview deployments for every PR
 
-<Frame>
-![Preview deployment URL in the dashboard](/images/release-notes/04-29-2026/preview_deployments.svg)
-</Frame>
-
 Every pull request against your tracked branch now gets its own running copy of the app at a Nubo-assigned URL. Share it with teammates, click around, show a customer what's coming. What they see is what will ship.
 
 Previews rebuild on every push to the PR and tear themselves down when the PR closes. Project-scoped [environment variables](/environment-variables) carry over, so your secrets and config keep working. See [Preview deployments](/preview-deployments).
 
 ### One-click rollback
-
-<Frame>
-![Rollback button in the dashboard](/images/release-notes/04-29-2026/rollback.svg)
-</Frame>
 
 Shipped a bad commit? Open the Deployments tab, pick a previous working deploy, hit **Rollback**. Your Frame is back on that version in seconds, no rebuild. Same on managed cloud and self-hosted Agents. See [Rollback](/rollback).
 
@@ -284,17 +466,9 @@ Hit **Stop** to take a Frame offline: replicas scale to zero on our cloud, the c
 
 ### Live Frame status
 
-<Frame>
-![Live Frame status in the dashboard](/images/release-notes/04-29-2026/runtime_status.svg)
-</Frame>
-
 Your Frame's status updates in the dashboard the moment it changes. No refresh, no polling. If an app crashes, runs out of memory, or fails its health check, the dashboard flips to an error state and shows the reason. You shouldn't have to read logs to find out something's wrong.
 
 ### A real deploy history
-
-<Frame>
-![Deployment history](/images/release-notes/04-29-2026/deployment_history.svg)
-</Frame>
 
 Every build is now a record you can browse. Open the Frame's **Deployments** tab to see the commit, the time, what triggered the deploy, and whether it succeeded. Pull the same data programmatically:
 
@@ -374,10 +548,6 @@ If you installed the Nubo GitHub App on an organization but only saw your person
 
 ### A sidebar that gets out of your way
 
-<Frame>
-![Collapsed sidebar with activity heatmap and account dropdown](/images/release-notes/05-08-2026/collapsed_sidebar.svg)
-</Frame>
-
 Hit the new chevron in the sidebar header to collapse it to a thin icon-only strip. Each Project shows up as a colored tile with its initials, so you can still pick one without expanding. The notification ping moves onto your avatar at the bottom-left. Click the avatar for a small Profile / Sign out menu, in either state.
 
 ### A visual refresh
@@ -398,7 +568,7 @@ Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/i
 
 </Update>
 
-<Update label="March 17th,2026" tags={["Dashboard"]}>
+<Update label="March 17th, 2026" tags={["Dashboard"]}>
 
 ## Major system changes
 
@@ -420,13 +590,9 @@ That's a wrap for this release notes. We hope you enjoyed these new updates. If 
 
 </Update>
 
-<Update label="February 24st,2026" tags={["Dashboard", "Design"]}>
+<Update label="February 24th, 2026" tags={["Dashboard", "Design"]}>
 
 ## Experience Nubo in light mode
-
-<Frame>
-![Light mode gif](/images/release-notes/02-26-2026/light_mode.gif)
-</Frame>
 
 ### A brighter and more customizable dashboard  
 
@@ -476,7 +642,7 @@ That's a wrap for this release notes. We hope that you enjoy these new updates. 
 
 </Update>
 
-<Update label="January 1st,2026" tags={["Dashboard"]}>
+<Update label="January 1st, 2026" tags={["Dashboard"]}>
 
 ## Status popups, Env file uploads, and Design changes
 

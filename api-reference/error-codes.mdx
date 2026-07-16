@@ -17,6 +17,7 @@ Every error from the Nubo API follows the same shape:
 - The HTTP status tells you the broad category (4xx client error, 5xx server error).
 - `internal_code` identifies the specific failure and is stable over time.
 - `message` is a human-readable description. The text may be reworded between releases; your client should not pattern-match on it.
+- Validation errors add a `details` array of human-readable strings, one per field that failed. It's absent on every other kind of error.
 
 ## Using codes in your client
 

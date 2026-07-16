@@ -21,6 +21,11 @@ curl -fsSL https://dl.withnubo.com/nubo-agent/install.sh | bash -s -- [OPTIONS]
 | `--version` | Agent version to install | `latest` |
 | `--skip-deps` | Don't install dependencies | |
 | `--skip-service` | Don't create a background service | |
+| `--no-telemetry` | Disable anonymous install telemetry | |
+
+## Install telemetry
+
+The installer sends anonymous telemetry by default so we can spot install failures across platforms. No source code, environment variables, or identifiers are collected. Turn it off with the `--no-telemetry` flag, or by setting `NUBO_TELEMETRY=0` or `DO_NOT_TRACK=1` in the environment before you run the installer.
 
 ## Running manually
 

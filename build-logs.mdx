@@ -5,6 +5,8 @@ description: "See what happened during any recent build"
 
 Every time Nubo builds your app, it captures the full output - what was installed, what compiled, what started. Logs are kept long enough that you can look back at a build that succeeded last Tuesday or the one that failed five deploys ago.
 
+Nubo keeps two kinds of logs. **Build logs**, the subject of this page, cover the deploy itself: cloning, installing, compiling, starting. **Runtime logs** are what your app prints once it's live, every line your process writes to standard output and standard error. Build logs are tied to a single deployment; runtime logs stream continuously while the Frame runs.
+
 ## From the dashboard
 
 Open your Frame and click **Deployments**. Pick any deployment from the list to see its logs. Builds that are in progress stream live; older ones load from the archive.
@@ -26,14 +28,32 @@ For most apps, the logs walk through cloning the commit Nubo checked out, the bu
 
 If a step fails, the logs stop there and the error message is the last thing printed.
 
+## Search across a whole Project
+
+A single build log is scoped to one deployment, and a Frame's runtime log is scoped to that one Frame. When you want to look across everything at once (say, every "connection refused" from the last hour, wherever it happened), open your Project and go to **Logs**. It merges runtime and build output from every Frame and Space into one stream you can filter and live-tail.
+
+The filter box takes a small query language:
+
+- **Bare words** match anywhere in a line, case-insensitive. List several and they're combined with AND, so `database timeout` needs both.
+- **"Quoted phrases"** match an exact run of text, spaces included.
+- **/regex/** matches a regular expression against the line.
+- **AND**, **OR**, **NOT** combine terms, a leading `-` negates the next one (`-stopped`), and `( )` groups them.
+- **Fields** narrow by metadata: `space:`, `frame:`, `kind:` (app or database), `status:`, `level:` (error, warn, info, debug, trace), `since:`, and `until:`. Wrap a value that has spaces in quotes, like `space:"my space"`.
+- **`source:`** keeps just one kind of line: `source:runtime` or `source:build`.
+- **Time bounds** on `since:` and `until:` take either a relative duration (`15m`, `2h`, `3d`, `1w`) or an ISO-8601 date or timestamp (`2026-07-01`, `2026-07-01T09:00:00`).
+
+For example, `level:error frame:api "database is locked" since:1h` shows error-level lines from the `api` Frame that contain that phrase in the last hour.
+
 ## How long logs stick around
 
-On the free plan, build logs are kept for **7 days**. Paid plans keep them longer (up to about 30 days). The latest finished deploy of each Frame is always kept regardless of plan, so you'll never lose your most recent log even if the rest of the window has aged out.
+On the free plan, build logs are kept for **7 days**. On paid plans they're retained indefinitely, for as long as the deployment exists. The latest finished deploy of each Frame is always kept regardless of plan, so you'll never lose your most recent log even if the rest of the window has aged out.
 
-After the window:
+After the free plan's 7-day window:
 
 - The dashboard marks the deployment's logs as expired.
-- The API returns `410 Gone` when you ask for them.
+- The API returns a not-found error when you ask for them. Once the deployment is around 30 days old, that settles into a `410 Gone`.
+
+Runtime logs age out on their own schedule, which follows your plan. The searchable history reaches back 7 days on the Trial, 30 days on Basic, 60 days on Silver, and 90 days on Platinum, with a 90-day ceiling across the board. Older lines drop out of the history, but the live tail always shows the most recent activity no matter which plan you're on.
 
 If you need long-term retention (for compliance, for your own debugging archive, etc.), pull the logs before they expire and store them wherever you store your own data.
 

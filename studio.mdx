@@ -1,0 +1,76 @@
+---
+title: "Studio"
+description: "Describe an app, watch an AI crew build it, publish it to Nubo"
+---
+
+[Nubo Studio](https://studio.withnubo.com) is a prompt-first app builder. You describe what you want, a small crew of AI agents designs and writes it, you watch it run live in your browser, and when you're happy you publish it to your Nubo account, where it runs as a normal [Frame](/frames).
+
+There's nothing to install. Open [studio.withnubo.com](https://studio.withnubo.com), sign in with your Nubo account, and type what you want to build.
+
+## How it works
+
+1. You land on a prompt box and describe the app.
+2. A Project Manager agent reads your prompt, asks a few sharp questions about style, UX, and scope, and writes a short brief.
+3. The PM delegates: a Designer settles the look (palette, type, layout) and a Developer writes the code.
+4. As the Developer writes files, the app runs live in an in-browser sandbox. You see it update as it's built, no deploy needed.
+5. When you're happy, publish. Studio ships a real Frame to your Nubo account and gives you a live `*.nubo.onl` URL.
+
+The PM is the only agent you talk to. The Designer and Developer work behind it, and the PM summarizes what they did back to you. You get one calm conversation while the real work fans out in the background.
+
+## Models
+
+Out of the box, Studio runs on Nubo's default models, so you can start building without configuring anything. You can also bring your own key for Claude, OpenAI, Gemini, or any OpenAI-compatible endpoint, including a local runner like Ollama or LM Studio. Each of the three agents can use a different model, so you might put a stronger model on the Developer and a lighter one on the Project Manager.
+
+## The live preview
+
+The preview runs entirely in your browser: dependencies install and the dev server boots right there in the sandbox. That means it's fast, and you can iterate as many times as you like before anything touches your Nubo account. Publishing is a separate, explicit step.
+
+## Databases and extra services
+
+If your app needs persistence, the crew doesn't just fake it. When the PM decides the project needs a database (or a genuinely separate service), it asks you first: an approval card shows up in the chat. Authorize it and Studio provisions the infrastructure on Nubo, then wires the database into your app as a `DATABASE_URL` environment variable automatically.
+
+So a Studio project isn't limited to a single static page. An app plus its database is a normal shape, and each piece becomes its own Frame in your account.
+
+## Publishing to Nubo
+
+Published apps are not a special kind of deployment. When you publish, Studio:
+
+1. Pushes the generated code to a GitHub repository you own.
+2. Creates (or reuses) a Project and Space in your Nubo account, then creates a Frame from that repo.
+3. Streams the build and hands you the live URL when it's up.
+
+From that point on it's a regular Frame. You manage it from the dashboard like anything else you deploy: environment variables, logs, deploy history, stop and start, [custom domains](/custom-domains), all of it. You can keep iterating in Studio and publish again, or take over the repo and work on the code directly.
+
+<Note>
+  Studio needs access to your GitHub account to publish, since the generated code lives in a repo you own and Nubo deploys from it like any other Frame.
+</Note>
+
+## Plans and budgets
+
+Every Nubo plan includes a monthly allowance of AI tokens for generation on Nubo's default models: 250K on the free Trial, 2M on Basic, 10M on Silver, and 20M on Platinum. When you reach your allowance, generation pauses and you can either bring your own model key, which bypasses the budget and is billed by your provider rather than Nubo, or upgrade your plan for a higher allowance.
+
+Published apps carry a small "Built with Nubo" badge on the free Trial. Removing the badge and pointing a [custom domain](/custom-domains) at a published app are both included on the paid plans.
+
+## When to use it
+
+Studio is the fastest path from "I have an idea" to "it's live on the internet". It's a good fit for landing pages, small tools, prototypes, and apps you want to stand up without opening an editor. When you outgrow it, the code is yours: it's a normal repo deployed as a normal Frame, so switching to hand-written commits is just pushing to the branch.
+
+If you'd rather deploy code you've already written, start with the [quickstart](/quickstart) instead.
+
+## Related
+
+<Card title="Quickstart" icon="rocket" href="/quickstart">
+  Deploy your own repo to Nubo
+</Card>
+
+<Card title="Frames" icon="square-dashed" href="/frames">
+  What a published Studio app becomes
+</Card>
+
+<Card title="Databases" icon="database" href="/databases">
+  Managed databases Studio can provision for you
+</Card>
+
+<Card title="Custom domains" icon="globe" href="/custom-domains">
+  Serve your published app at your own hostname
+</Card>

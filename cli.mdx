@@ -5,7 +5,7 @@ description: "Sign in and browse your account from the terminal with the nubo co
 
 `nubo` is the Nubo command-line tool. Sign in once, then look at your projects, Frames, databases, volumes, and agents without leaving the terminal, either with quick `ls` commands or a full-screen interactive view.
 
-Today it's read-only. It's built for checking on things and for scripting (it can print raw JSON), not yet for deploying or editing. Those are coming.
+Today it's read-only. It's built for checking on things and for scripting (it can print raw JSON), not for deploying or editing. To deploy or change something, use the dashboard, a git push, or the [API](/api-reference/authentication).
 
 ## Install
 
@@ -30,7 +30,7 @@ nubo whoami                # shows who you're signed in as
 `nubo login` opens your browser, you sign in with GitHub, and the CLI saves a long-lived token to `~/.config/nubo/credentials.json` (readable only by you). From then on every command uses it.
 
 <Note>
-  Prefer not to use the browser, or on a headless box like a CI runner? Create a personal access token in the dashboard (**Settings → Personal access tokens**) and use `nubo login --with-token`, or pipe it in with `nubo login --token-stdin`. See [API authentication](/api-reference/authentication) for more on tokens.
+  Prefer not to use the browser, or on a headless box like a CI runner? Create a personal access token in the dashboard (**Settings → Tokens & agents**) and use `nubo login --with-token`, or pipe it in with `nubo login --token-stdin`. See [API authentication](/api-reference/authentication) for more on tokens.
 </Note>
 
 ## Browse your stuff
@@ -83,7 +83,7 @@ By default the CLI talks to `https://shuttle.withnubo.com` using your saved logi
 
 ## What it can't do yet
 
-This first version is read-only on purpose. It can't create, update, or delete anything, kick off deploys, run a shell, manage environment variables, or stream build logs. The plumbing for those is in place, so they'll show up in later versions.
+This version is read-only on purpose. It can't create, update, or delete anything, kick off deploys, run a shell, manage environment variables, or stream build logs. To deploy or change something, use the dashboard, a git push, or the [API](/api-reference/authentication).
 
 ## Related
 
