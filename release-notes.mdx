@@ -2,6 +2,38 @@
 title: "Release notes" 
 description: "Stay up to date with the changes at Nubo" 
 ---
+<Update label="July 17th, 2026" tags={["UI", "Dashboard", "Frames", "Bug-fixes"]}>
+
+## Project logs, a refreshed homepage, and reliability fixes
+
+<Frame>
+  <img src="/images/release-notes/07-17-2026/project_logs.png" alt="logs page" />
+</Frame>
+
+This release brings a unified Project Logs page, a refreshed withnubo.com homepage, and a round of reliability fixes for the gateway and deployments.
+
+### Project logs
+
+Search across every Frame and Space in your project from one place, no more digging through individual build or runtime logs.
+
+- Powerful filter bar lets you search by keyword, exact phrase, or regex.
+- Combine filters with AND / OR / NOT, and narrow by space, frame, status, log level, or time range.
+- Live-tail support so you can watch new log lines come in as they happen.
+- Instantly find every error, warning, or specific issue across your whole project, no matter which Frame it came from.
+
+### Homepage update
+
+We refreshed the withnubo.com homepage with a new look, including an animated banner that shows off our different products, sections highlighting key features, and a live counter showing real deployments happening right now.
+
+### Smaller things worth mentioning
+
+- **Gateway reliability**: Fixed a background issue that could affect how traffic is routed. The system now clearly signals if something goes wrong instead of failing silently, and brief network hiccups no longer disrupt service.
+- **Deployment reliability**: Fixed an issue where some deployments could get stuck due to resource limits, and a bug so existing deployments update correctly. Deployments now consistently use the right setup, and addresses stay stable even after redeploying.
+
+Questions or feedback: `support@withnubo.com` or [Discord](https://discord.com/invite/4SM4faYqWQ).
+
+</Update>
+
 <Update label="July 10th, 2026" tags={["UI", "Dashboard", "Frames", "Bug-fixes"]}>
 
 ## A design overhaul, public profiles, and searchable build logs
@@ -13,16 +45,16 @@ Nubo has a brand-new, optimized look. We've refreshed the entire interface while
 ### Public profiles and organizations
 
 <Frame>
-  <img src="/images/release-notes/07-10-2026/public profile.png" alt="Descriptive alt text" />
+  <img src="/images/release-notes/07-10-2026/public profile.png" alt="Public profiles" />
 </Frame>
 
 We're introducing public profiles and organizations. Enable a public-facing profile from your Settings page, then toggle individual Frames to public visibility from that Frame's settings. Public Frames appear on your profile, which you can share via a link found in Settings. Our goal is to help you showcase your projects and share your work more easily with the world.
 <Columns cols={2}> 
 <Frame>
-  <img src="/images/release-notes/07-10-2026/orgs.png" alt="Descriptive alt text" />
+  <img src="/images/release-notes/07-10-2026/orgs.png" alt="organizations" />
 </Frame>
 <Frame>
-  <img src="/images/release-notes/07-10-2026/profile.png" alt="Profile overviwq" />
+  <img src="/images/release-notes/07-10-2026/profile.png" alt="Profile overview" />
 </Frame>
 
 </Columns>
