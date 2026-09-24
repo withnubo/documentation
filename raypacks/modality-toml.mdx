@@ -1,15 +1,17 @@
 ---
-title: "nubo.toml"
+title: "modality.toml"
 description: "The one config file Raypacks reads"
 ---
 
-Most apps deploy with no config at all: Raypacks detects your stack and Nubo runs a single Frame straight from your repo. When you want to say more (pin a build entrypoint, add a database, run more than one Frame from a single repo), drop a `nubo.toml` at the root of your repo. Nubo reads it on every push.
+Most apps deploy with no config at all: Raypacks detects your stack and Nubo runs a single Frame straight from your repo. When you want to say more (pin a build entrypoint, add a database, run more than one Frame from a single repo), drop a `modality.toml` at the root of your repo. Nubo reads it on every push.
+
+If your repo still has an older `nubo.toml`, rename it. Raypacks no longer reads that filename: when it finds one, it prints the decision "nubo.toml is no longer read; rename it to modality.toml" and falls back to auto-detection instead.
 
 ## A minimal file
 
 For a single service, the one key you're likely to reach for is the build entrypoint:
 
-```toml nubo.toml
+```toml modality.toml
 [build]
 entrypoint = "./cmd/server"
 ```
@@ -20,7 +22,7 @@ That's all Raypacks needs to build. Everything below is optional and only kicks 
 
 To run more than one Frame from a repo, or to add a database, list your Frames explicitly. Each `[[frames]]` block is one Frame.
 
-```toml nubo.toml
+```toml modality.toml
 version = 1
 
 [project]
@@ -79,7 +81,7 @@ For an app Frame:
 
 Environment variables for the Frame above it. Keys are added or updated on each push; removing a key here does not delete it from the Frame (see [Reconcile](#how-nubo-applies-the-file)).
 
-```toml nubo.toml
+```toml modality.toml
 [frames.env]
 LOG_LEVEL = "info"
 PUBLIC_API_BASE = "https://api.example.com"
@@ -119,7 +121,7 @@ The path Raypacks builds from. Defaults to auto-detect.
 
 Accepts `.`, `./path`, or `path/to/dir`. Absolute paths and `..` segments are rejected. The directory must contain a `main.go`.
 
-```toml nubo.toml
+```toml modality.toml
 [build]
 entrypoint = "./cmd/api"
 ```
@@ -128,27 +130,27 @@ If you don't set it, Raypacks finds the entrypoint on its own. You only need thi
 
 ## How Nubo applies the file
 
-On every push, Nubo reconciles your Frames to match `nubo.toml`. Reconcile is additive-only and deliberately safe:
+On every push, Nubo reconciles your Frames to match `modality.toml`. Reconcile is additive-only and deliberately safe:
 
-- **It never deletes.** Removing a Frame, database, volume, or env var from `nubo.toml` does not remove it from Nubo. Delete it from your dashboard when you actually want it gone.
+- **It never deletes.** Removing a Frame, database, volume, or env var from `modality.toml` does not remove it from Nubo. Delete it from your dashboard when you actually want it gone.
 - **Database storage only grows.** Raising `storage_gb` expands the volume. Lowering it is ignored, so data is never shrunk out from under you.
 - **A volume pins the Frame to one replica.** Declare a volume and `replicas` becomes `1` for that Frame, whatever number you wrote.
-- **Databases are created for you.** A `kind = "database"` Frame in `nubo.toml` is provisioned automatically on the next push.
-- **New app Frames are not.** A new app Frame named in `nubo.toml` is not auto-created; create it in your dashboard first, then `nubo.toml` keeps its settings in sync. Until it exists, Nubo notes it and moves on rather than risk a broken deploy.
+- **Databases are created for you.** A `kind = "database"` Frame in `modality.toml` is provisioned automatically on the next push.
+- **New app Frames are not.** A new app Frame named in `modality.toml` is not auto-created; create it in your dashboard first, then `modality.toml` keeps its settings in sync. Until it exists, Nubo notes it and moves on rather than risk a broken deploy.
 
 ## Precedence
 
 Settings can come from three places. Higher beats lower:
 
-1. **`nubo.toml`** (committed to your repo)
+1. **`modality.toml`** (committed to your repo)
 2. **Dashboard / API** overrides (per-Frame, set in the UI)
 3. **Raypacks auto-detection**
 
-This matches what most people expect: a `nubo.toml` checked into the repo is the source of truth. Dashboard tweaks fill in the gaps. Auto-detection is the fallback.
+This matches what most people expect: a `modality.toml` checked into the repo is the source of truth. Dashboard tweaks fill in the gaps. Auto-detection is the fallback.
 
 ## Validation
 
-Raypacks rejects bad config at plan time, before the build runs. You'll see a clear error in the build logs ("`nubo.toml: build.entrypoint './cmd/missing' has no main.go`") rather than a confusing `go build` failure ten minutes later.
+Raypacks rejects bad config at plan time, before the build runs. You'll see a clear error in the build logs ("`modality.toml: build.entrypoint './cmd/missing' has no main.go`") rather than a confusing `go build` failure ten minutes later.
 
 ## Inspecting the resolved plan
 
@@ -164,7 +166,7 @@ detect          go · github.com/you/your-app
 │ workdir          /app            │
 │ port             8080            │
 ╰──────────────────────────────────╯
-decision        entrypoint = ./cmd/api (nubo.toml)
+decision        entrypoint = ./cmd/api (modality.toml)
 ```
 
-If the `decision` line shows `(auto)` and you wanted something different, set the value in `nubo.toml` and redeploy.
+If the `decision` line shows `(auto)` and you wanted something different, set the value in `modality.toml` and redeploy.

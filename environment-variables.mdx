@@ -15,7 +15,7 @@ Variables are scoped to either a **Project** or a **Frame**:
 If the same key exists at both levels, the Frame value wins.
 
 <Note>
-  When you wire a managed database to an app (via `nubo.toml`), Nubo auto-injects the connection string as a Frame variable named `DATABASE_URL` (the key is configurable with `inject_as` in `nubo.toml`). If you also set `DATABASE_URL` yourself, the platform-managed value can override it.
+  When you wire a managed database to an app (via `modality.toml`), Nubo auto-injects the connection string as a Frame variable named `DATABASE_URL` (the key is configurable with `inject_as` in `modality.toml`). If you also set `DATABASE_URL` yourself, the platform-managed value can override it.
 </Note>
 
 ## Add variables
@@ -38,9 +38,9 @@ curl -X POST https://shuttle.withnubo.com/v2/projects/<project_id>/spaces/<space
   -d '[{"key": "LOG_LEVEL", "value": "debug"}, {"key": "API_KEY", "value": "..."}]'
 ```
 
-## Declare variables in nubo.toml
+## Declare variables in modality.toml
 
-You can also declare Frame variables in `nubo.toml`, under the Frame's `[frames.env]` table. This is handy for non-secret config you want checked into the repo:
+You can also declare Frame variables in `modality.toml`, under the Frame's `[frames.env]` table. This is handy for non-secret config you want checked into the repo:
 
 ```toml
 [[frames]]
@@ -54,7 +54,7 @@ PUBLIC_API_BASE = "https://api.example.com"
 LOG_LEVEL = "info"
 ```
 
-Values declared here are applied **additively** on each deploy: Nubo upserts them onto the Frame. Removing a key from `nubo.toml` does **not** delete it from the Frame; to remove a variable, delete it from the dashboard or via the API. For secrets, prefer the dashboard or API over `nubo.toml` so plaintext values never land in your repository.
+Values declared here are applied **additively** on each deploy: Nubo upserts them onto the Frame. Removing a key from `modality.toml` does **not** delete it from the Frame; to remove a variable, delete it from the dashboard or via the API. For secrets, prefer the dashboard or API over `modality.toml` so plaintext values never land in your repository.
 
 ## Using variables in your app
 

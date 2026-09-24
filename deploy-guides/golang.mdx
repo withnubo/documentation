@@ -80,14 +80,14 @@ Once the build finishes, your app is live at a `*.nubo.onl` URL shown in the das
 
 ## Monorepos and multiple binaries
 
-If your repo has more than one binary (`cmd/api/main.go`, `cmd/worker/main.go`), Raypacks picks the alphabetically first one by default. You can point the build at a specific one with a root `nubo.toml`:
+If your repo has more than one binary (`cmd/api/main.go`, `cmd/worker/main.go`), Raypacks picks the alphabetically first one by default. You can point the build at a specific one with a root `modality.toml`:
 
-```toml nubo.toml
+```toml modality.toml
 [build]
 entrypoint = "./cmd/api"
 ```
 
-That file lives once at the repo root, though, so its `entrypoint` applies to every Frame built from that repo: a single committed `nubo.toml` can't hand two Frames two different binaries. To deploy several binaries as separate Frames, set each Frame's build **Source directory** to that binary's package (`cmd/api`, `cmd/worker`) under **Frame Settings** instead. Each Frame keeps its own URL, env vars, and deploy history.
+That file lives once at the repo root, though, so its `entrypoint` applies to every Frame built from that repo: a single committed `modality.toml` can't hand two Frames two different binaries. To deploy several binaries as separate Frames, set each Frame's build **Source directory** to that binary's package (`cmd/api`, `cmd/worker`) under **Frame Settings** instead. Each Frame keeps its own URL, env vars, and deploy history.
 
 ## Things that trip people up
 

@@ -125,7 +125,7 @@
                     {
                         "group": "Configuration",
                         "pages": [
-                            "raypacks/nubo-toml",
+                            "raypacks/modality-toml",
                             "raypacks/build-cache"
                         ]
                     },
@@ -178,5 +178,11 @@
         "socials": {
             "github": "https://github.com/withnubo"
         }
-    }
+    },
+    "redirects": [
+        {
+            "source": "/raypacks/nubo-toml",
+            "destination": "/raypacks/modality-toml"
+        }
+    ]
 }

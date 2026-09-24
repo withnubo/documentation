@@ -18,23 +18,23 @@ Library-only repos (no `main.go` anywhere) fall through detection. They're not d
 
 Raypacks figures out what to build, in this order:
 
-1. `[build].entrypoint` in [`nubo.toml`](/raypacks/nubo-toml)
+1. `[build].entrypoint` in [`modality.toml`](/raypacks/modality-toml)
 2. `--entrypoint` passed at build time (local `rp` CLI only)
 3. Auto-detection: `./main.go` at the root, then the first `cmd/<name>/main.go` (alphabetical)
 
 <Note>
-`--entrypoint` is a flag for the local `rp` CLI. Managed Nubo builds never pass it, so on the platform the entrypoint comes from `nubo.toml` `[build].entrypoint` (or the dashboard override) or auto-detection. Pin it in `nubo.toml` when you have more than one candidate.
+`--entrypoint` is a flag for the local `rp` CLI. Managed Nubo builds never pass it, so on the platform the entrypoint comes from `modality.toml` `[build].entrypoint` (or the dashboard override) or auto-detection. Pin it in `modality.toml` when you have more than one candidate.
 </Note>
 
 The plan table shows which won:
 
 ```
-decision  entrypoint = ./cmd/api (nubo.toml)
+decision  entrypoint = ./cmd/api (modality.toml)
 ```
 
-If you have multiple `cmd/*/main.go` and don't pin a choice, the alphabetically first one wins. Pin the right one with `nubo.toml`:
+If you have multiple `cmd/*/main.go` and don't pin a choice, the alphabetically first one wins. Pin the right one with `modality.toml`:
 
-```toml nubo.toml
+```toml modality.toml
 [build]
 entrypoint = "./cmd/api"
 ```
@@ -80,7 +80,7 @@ If any of these block you, switch the Frame's **Builder** to **Paketo** for now 
 
 ## Common errors
 
-**`go.mod detected but no main.go found at root or under cmd/*`**: your repo is a library, or `main.go` lives somewhere Raypacks doesn't look. Add a `nubo.toml` entry pointing at the right directory.
+**`go.mod detected but no main.go found at root or under cmd/*`**: your repo is a library, or `main.go` lives somewhere Raypacks doesn't look. Add a `modality.toml` entry pointing at the right directory.
 
 **`go build` fails with "package . is not a main package"**: you set an entrypoint to a directory that has Go code but no `package main` in it. Point at the directory that actually contains the `main()` function.
 
@@ -88,4 +88,4 @@ If any of these block you, switch the Frame's **Builder** to **Paketo** for now 
 
 A single-binary repo with `main.go` at the root: no config needed.
 
-A monorepo with `cmd/api/main.go` and `cmd/worker/main.go`: one Frame per binary, each with its own `nubo.toml` (or use the dashboard's entrypoint override).
+A monorepo with `cmd/api/main.go` and `cmd/worker/main.go`: one Frame per binary, each with its own `modality.toml` (or use the dashboard's entrypoint override).
